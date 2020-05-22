@@ -1,0 +1,8 @@
+
+export const SET_SEARCH_PRODUCTS = 'SET_SEARCH_PRODUCTS';
+
+export const SEARCH_INPUT = 'SEARCH_INPUT';
+
+export const OPEN_MOBILE_SEARCH = 'OPEN_MOBILE_SEARCH';
+
+export const OPEN_MED_SEARCH = 'OPEN_MED_SEARCH';
