@@ -1,7 +1,7 @@
 import   React from 'react';
 import   Header from './components/Header';
 import { connect }            from "react-redux";
-import { BrowserHistory ,BrowserRouter, Router, Route, Switch } from 'react-router-dom'; 
+import { HashRouter , Router, Route, Switch } from 'react-router-dom'; 
 import './css/Main.css';
 
 import DisplayProductsContainer from './components/DisplayProductsContainer';
@@ -14,7 +14,7 @@ import Checkout                 from './components/Checkout';
 import TermsAndConditions       from './components/TermsAndConditions';
 
 
-import { createHashHistory } from 'history'
+import { hashHistory } from 'history'
 
  
 
@@ -30,7 +30,7 @@ class connectedMain extends React.Component {
 
   render() { 
     return (
-   <BrowserRouter history={createHashHistory}>
+   <HashRouter>
         <div>
            <div className='col-12'>
           
@@ -54,7 +54,7 @@ class connectedMain extends React.Component {
              </div>
             </div>
         </div>
-      </BrowserRouter>
+      </HashRouter>
     );
   }
 }
