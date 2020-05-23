@@ -54,7 +54,7 @@ var config = {
 		]
 	},
 	devServer: {
-		contentBase: './', // Default was BUILD_DIR; If using webpack use this.
+		contentBase: BUILD_DIR, // Default was BUILD_DIR; If using webpack use this.
 		historyApiFallback: true, // For router
 		compress: true,
 		port: 3000,
