@@ -3,7 +3,7 @@ var path              = require('path');
 var htmlWebpackPlugin = require('html-webpack-plugin');
  
 
-var BUILD_DIR = path.join(__dirname, 'dist');
+var BUILD_DIR = path.join(__dirname, '/dist');
 var APP_DIR   = path.join(__dirname, 'src');
 
 
@@ -19,7 +19,7 @@ var config = {
 		vendor: VENDOR_LIBS
 	},
 	output: {
-		path: path.resolve(__dirname, "/dist"), // If you need to serve content from multiple directories -> [BUILD_DIR, path.join(__dirname, 'assets')];
+		path: BUILD_DIR, // If you need to serve content from multiple directories -> [BUILD_DIR, path.join(__dirname, 'assets')];
 		filename: '[name].[hash].js',      // Assign default names + random number (hash)
 		publicPath: '/'
 	},
