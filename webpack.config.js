@@ -20,8 +20,7 @@ var config = {
 	},
 	output: {
 		path: path.resolve(__dirname, 'dist'), // If you need to serve content from multiple directories -> [BUILD_DIR, path.join(__dirname, 'assets')];
-		filename: '[name].[hash].js',      // Assign default names + random number (hash)
-		publicPath: '/'
+		filename: '[name].[hash].js'      // Assign default names + random number (hash)
 	},
 	module: {
 		rules: [
