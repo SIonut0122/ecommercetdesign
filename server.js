@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 
 
-const PORT = process.env.PORT;
+const PORT = 3000;
 const history = require('connect-history-api-fallback');
 
 const app = express();
@@ -13,7 +13,7 @@ if (process.env.NODE_ENV !== "production") {
     const webpack = require('webpack');
     const webpackDevMiddleware = require('webpack-dev-middleware');
     //require webpack config
-    const config = require('../../webpack.config.js');
+    const config = require(path.resolve(__dirname, 'webpack.config.js'));
     //create compiler
     const compiler = webpack(config);
     //use webpack-dev-middleware to serve the bundles
@@ -34,5 +34,5 @@ if (process.env.NODE_ENV !== "production") {
 
 //Listen
 app.listen(PORT, function() {
-    console.log('Server is listening...');
+    console.log('Server is listening...'+ PORT);
 });

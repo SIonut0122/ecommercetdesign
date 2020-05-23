@@ -19,7 +19,8 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.1",
     "redux": "^4.0.5",
-    "rimraf": "^3.0.2"
+    "rimraf": "^3.0.2",
+    "webpack-hot-middleware": "^2.25.0"
   },
   "scripts": {
     "start": "webpack-dev-server",

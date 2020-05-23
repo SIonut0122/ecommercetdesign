@@ -23,7 +23,7 @@ class Cart extends React.Component {
 		                <div className='nav_path_cont col-11'>
 		                 <span>
 		                 	<Link to={'/'} className='nav_path_home'>
-		                  	Acasa 
+		                  	Acasa
 		                  	</Link>
 		                  	/ 
 		                  	Cosul tau
