@@ -19,8 +19,9 @@ var config = {
 		vendor: VENDOR_LIBS
 	},
 	output: {
-		path: BUILD_DIR,                  // If you need to serve content from multiple directories -> [BUILD_DIR, path.join(__dirname, 'assets')];
-		filename: '[name].[hash].js'     // Assign default names + random number (hash)
+		path: path.resolve(__dirname, "dist"), // If you need to serve content from multiple directories -> [BUILD_DIR, path.join(__dirname, 'assets')];
+		filename: '[name].[hash].js',      // Assign default names + random number (hash)
+		publicPath: '/'
 	},
 	module: {
 		rules: [
@@ -39,9 +40,16 @@ var config = {
 				use: ['style-loader','css-loader','sass-loader']
 			},
 			{
-				test:/\.(jpe?g|png|gif|svg)$/i,
-				use: 'file-loader'
-			}
+		        test: /\.(png|jpe?g|gif)$/i,
+		        use: [
+		          {
+		            loader: 'file-loader',
+		            options: {
+		              name: 'images/[contenthash].[ext]',
+		            },
+		          },
+		        ],
+		      },
 			
 		]
 	},
@@ -62,6 +70,9 @@ var config = {
 			template: 'index.html' // Create on every build an 'index.html' inside dist folder
 		}),
 		new webpack.HotModuleReplacementPlugin(), // See changes faster without refresh. No full refresh.
+		new webpack.DefinePlugin({
+	       'process.env.NODE_ENV': JSON.stringify('production')
+	    })
 	],
 	// splitChunks checks for common files between bundle and vendor files
 	  // 'Splits' files into smaller pieces for greater optimization

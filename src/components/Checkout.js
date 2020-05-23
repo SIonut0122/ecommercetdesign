@@ -1,8 +1,8 @@
 import React from 'react';
 import '../css/Checkout.css';
 import { Link               } from 'react-router-dom';
-import cashOnDeliveryIcon from '../images/checkout/cash-on-delivery.png';
-import expressDelivery from '../images/checkout/express_delivery.png';
+import cashOnDeliveryIcon from '../images/cash-on-delivery.png';
+import expressDelivery from '../images/express_delivery.png';
  
 import logo2 from '../images/pants2.jpg';
 
