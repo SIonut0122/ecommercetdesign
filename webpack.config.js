@@ -19,7 +19,7 @@ var config = {
 		vendor: VENDOR_LIBS
 	},
 	output: {
-		path: path.resolve(__dirname, "dist"), // If you need to serve content from multiple directories -> [BUILD_DIR, path.join(__dirname, 'assets')];
+		path: path.resolve(__dirname, "/dist"), // If you need to serve content from multiple directories -> [BUILD_DIR, path.join(__dirname, 'assets')];
 		filename: '[name].[hash].js',      // Assign default names + random number (hash)
 		publicPath: '/'
 	},
@@ -54,7 +54,7 @@ var config = {
 		]
 	},
 	devServer: {
-		contentBase: BUILD_DIR, // Default was BUILD_DIR; If using webpack use this.
+		contentBase: [BUILD_DIR, path.join(__dirname, '/images')], // Default was BUILD_DIR; If using webpack use this.
 		historyApiFallback: true, // For router
 		compress: true,
 		port: 3000,
