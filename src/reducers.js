@@ -1,5 +1,5 @@
 
-import objectProducts from './products';
+import objectProducts from '../data/products';
 import { SET_SEARCH_PRODUCTS }  from "./constants/action-types";
 import { SEARCH_INPUT }  from "./constants/action-types";
 import { OPEN_MOBILE_SEARCH }  from "./constants/action-types";

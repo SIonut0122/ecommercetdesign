@@ -10,6 +10,7 @@ class Checkout extends React.Component {
 
 
 	state ={
+		deliveryMethodLoading: false,
 		deliveryChecked: false,
 		counties: ['Judet *','Alba','Arad','Argeș','Bacău','Bihor','Bistrița-Năsăud','Botoșani','Brașov','Brăila','Buzău','Caraș-Severin','Călărași','Cluj', 'Constanța','Covasna','Dâmbovița','Dolj','Galați','Giurgiu','Gorj','Harghita','Hunedoara','Ialomița','Iași','Ilfov','Maramureș', 'Mehedinți','Mureș','Neamț','Olt','Prahova','Satu Mare','Sălaj','Sibiu','Suceava','Teleorman','Timiș','Tulcea','Vaslui','Vâlcea', 'Vrancea'],
 		courierType: '',
@@ -50,7 +51,15 @@ class Checkout extends React.Component {
  
 
  
+componentDidMount() {
 
+	// Check if delivery is not selected already and display loading effect
+	if(!this.state.deliveryChecked) {
+		this.setState({ deliveryMethodLoading: true})
+		//  Hide select delivery method payment after 1 sec
+		setTimeout(() => this.setState({ deliveryMethodLoading: false }),1000);
+	}
+}
 handleDeliverySelect(e,courierType,courierPrice) {
 
 	this.setState({ deliveryChecked: e.target.checked, courierType: courierType, courierPrice: courierPrice })
@@ -164,7 +173,7 @@ handleAddressSubCity(e) {
 
 onAddressFocus(e) {
 	// Animate label input (Email,Password) and change input border on focus
-	e.target.parentElement.firstElementChild.setAttribute('style','transform:translateY(-163%);font-size:12.5px;color:#7D7D7D;');
+	e.target.parentElement.firstElementChild.setAttribute('style','transform:translateY(-175%);font-size:12.5px;color:#7D7D7D;');
 	e.target.setAttribute('style','border:1px solid #000');
 }
 
@@ -215,7 +224,11 @@ handleAddrProceedBtn =()=> {
 }
 
 addressBackBtn() {
-
+	// Display select delivery method loading effect
+	this.setState({ deliveryMethodLoading: true})
+	//  Hide select delivery method payment after 1 sec
+	setTimeout(() => this.setState({ deliveryMethodLoading: false }),1000);
+	// Scroll to top
 	this.scrollToTop();
 	// Go back to delivery checkbox page and clear all address inputs
 	this.setState({ 
@@ -243,10 +256,10 @@ backBtnFromPayment() {
  		if(!this.state.addressInputsValid) {
  			// Map through all labels and move label title to the top of inputs
 			let addressInputs = document.querySelectorAll('.chk_inp_label');
-			    addressInputs.forEach((el) => { el.setAttribute('style','transform:translateY(-163%);font-size:12.5px;color:#7D7D7D;'); });
+			    addressInputs.forEach((el) => { el.setAttribute('style','transform:translateY(-175%);font-size:12.5px;color:#7D7D7D;'); });
 			// Check if there was added some additional value and animate the additional value label
 			if(document.querySelector('.chk_add_inp_addinfo').value.length > 0) {
-				document.querySelector('.chk_inp_label_addinfo').setAttribute('style','transform:translateY(-163%);font-size:12.5px;color:#7D7D7D;');
+				document.querySelector('.chk_inp_label_addinfo').setAttribute('style','transform:translateY(-175%);font-size:12.5px;color:#7D7D7D;');
 			}
 		}
 	},500);
@@ -350,6 +363,11 @@ backBtnFromSumar() {
 													{/*  ---------------- CHECKOUT DELIVERY LIST  ----------------  */}
 													{!this.state.deliveryChecked && (
 													<React.Fragment>
+														{this.state.deliveryMethodLoading && (
+															<div className='chk_wrap_addr_loading_modal'>
+																<div className='chk-wrap-lds-ring'><div></div><div></div><div></div><div></div></div>
+															</div>
+														)}
 														<span className='chk_sec_title'>Metoda de livrare</span>
 
 														{/* Normal delivery */}

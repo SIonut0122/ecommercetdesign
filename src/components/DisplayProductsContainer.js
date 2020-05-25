@@ -1,6 +1,5 @@
 import React from 'react';
 import '../css/DisplayProductsContainer.css';
-import objectProducts from '../products';
 import RenderProducts from '../renderProducts';
 import { connect }            from "react-redux";
 import { setOpenMediumSearch } from '../actions';
@@ -70,15 +69,15 @@ setFilter(value, filterProp) {
     }
 
     this.setState( prevState => ({
-     filteredTerms,
-     passingTags: {
-      ...prevState.passingTags, // Get, set prevState and inside passingTags search for the filter propriety 
-      [filterProp]: {          // Get prevState of filter prop and set it to false (ex: color: {".green": false})
-        ...prevState.passingTags[filterProp],
-        [value]: !prevState.passingTags[filterProp][value]
-      }
-     }
-    })
+       filteredTerms,
+       passingTags: {
+        ...prevState.passingTags, // Get, set prevState and inside passingTags search for the filter propriety 
+        [filterProp]: {          // Get prevState of filter prop and set it to false (ex: color: {".green": false})
+          ...prevState.passingTags[filterProp],
+          [value]: !prevState.passingTags[filterProp][value]
+        }
+       }
+      })
     )
 }
 

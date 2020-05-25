@@ -44,7 +44,7 @@ handleLoginEmail(e) {
 handleLoginPassword(e) {
 	  let loginPasswordValue = e.target.value,
 	   		 // Check signinPasswordValue length to be higher than 0
-	      checkValueLength = loginPasswordValue.length > 0,
+	      checkValueLength = loginPasswordValue.length > 4,
 	   		 // Check for blank spaces
 	      checkWhiteSpaces = loginPasswordValue.trim().length === loginPasswordValue.length;
 
@@ -64,7 +64,7 @@ handleLoginPassword(e) {
 
 onLoginFocus(e) {
 	// Animate label input (Email,Password) and change input border on focus
-	e.target.parentElement.firstElementChild.setAttribute('style','transform:translateY(-150%);font-size:14px;color:#4B4B4B;');
+	e.target.parentElement.firstElementChild.setAttribute('style','transform:translateY(-150%);font-size:12.5px;color:#4B4B4B;');
 	e.target.setAttribute('style','border:1px solid #000');
 }
 
@@ -220,7 +220,7 @@ handleLoginBtn() {
 											<span className='log_register_button'>Inregistreaza-te</span>
 										</div>
 										<div className='row justify-content-center'>
-											<span className='log_regtitle_benefits col-10'>Si vei beneficia de:</span>
+											<span className='log_regtitle_benefits col-11'>Si vei beneficia de:</span>
 										</div>
 										<div className='row justify-content-center'>
 											<div className='log_register_benefitsbox col-11'>

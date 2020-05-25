@@ -35,13 +35,19 @@ $blackColor: #202020;
 	/* Header account icons */
 
 	.hsc_col_acc {
-		height: 42px !important; 
+		height: 48px !important; 
 		background-color: $blackColor;
+		margin-top:8px !important;
+	}
+	.hsccol_acc_cont { 
+	height: 100% !important;
+	margin-top:9px;
 	}
 	.hsc_col_acc .hsccol_acc_icon {
-		margin:6px 5px 0 5px;
+		margin:0 5px 0 5px;
 		width: 30px !important;
 		height: 30px !important;
+
 
 	}
 	.hsscol_fav_icon_no,
@@ -321,6 +327,7 @@ $blackColor: #202020;
 
 /* Search icon on medium breakpoint */
 .nav_m_search_med {
+	display: block;
 	right:20px;
 	position: absolute;
 	color: #fff;

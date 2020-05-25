@@ -23,13 +23,13 @@ $blueLightColor: #007bff;
 	display: inline-block;
  	border:2px solid $blackColor;
  	border-radius: 3px;
- 	width: 250px;
- 	height: 40px;
+ 	width: 300px;
+ 	height: 44px;
  	text-align: center;
  	cursor: pointer;
  	font-weight: bold;
  	font-size: 13px;
- 	padding-top:8px;
+ 	padding-top:10px;
  	margin:5px 10px 5px 10px;
  	transition: 0.2s ease-out;
  	color: $blackColor;
@@ -326,11 +326,12 @@ float: left;
  	position: relative;
  	width:100%;
  	max-width: 500px;
- 	height: 42px;
+ 	height: 45px;
  		border:1px solid $grayColorBorder;
  	border-radius: 4px;
  	transition: 0.2s;
  	margin-top: 20px;
+ 	
  
 
  }
@@ -428,13 +429,13 @@ float: left;
 	border:2px solid #DBDBDB;
 	display: inline-block;
  	border-radius: 3px;
- 	width: 250px;
- 	height: 40px;
+ 	width: 300px;
+ 	height: 44px;
  	text-align: center;
  	cursor: pointer;
  	font-weight: bold;
  	font-size: 13px;
- 	padding-top:8px;
+ 	padding-top:10px;
  	margin:5px 10px 5px 10px;
  	transition: 0.2s ease-out;
  	color: $blackColor;

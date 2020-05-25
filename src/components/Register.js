@@ -1,0 +1,343 @@
+import React from 'react';
+import '../css/Register.css'
+import { Link               } from 'react-router-dom'
+
+
+
+class Register extends React.Component {
+
+		state = {
+			regEmail: '',
+			regEmailValid: false,
+			regEmailErrMsg: false,
+			regLastName: '',
+			regLastNameValid: false,
+			regLastNameErrMsg: false,
+			regName: '',
+			regNameValid: false,
+			regNameErrMsg: false,
+			regPassword: '',
+			regPasswordValid: false,
+			regPasswordErrMsg: false,
+			regSex: null,
+			regAcceptNewsletter: false,
+			regAcceptTerms: false,
+			regAcceptTermsErrMsg:false,
+
+			regNewAccountLoad: false,
+		}
+
+
+
+
+handleRegEmail(e) {
+	let regEmailValue  = e.target.value,
+           // Check regEmailValue length to be higher than 0
+      checkValueLength = regEmailValue.length > 0,
+           // Check for blank spaces
+      checkWhiteSpaces = regEmailValue.trim().length === regEmailValue.length;
+
+        // if email value match, setstate value 
+    if(checkValueLength && checkWhiteSpaces) {
+        this.setState({regEmail: regEmailValue, regEmailValid: true, regEmailErrMsg: false })
+    } else if(regEmailValue.length === 0) {
+      // If input is empty, reset value input
+        this.setState({regEmail: '', regEmailValid: false})
+    } else {
+        this.setState({regEmail: regEmailValue, regEmailValid: false})
+    }
+}
+handleRegLastName(e) {
+	let regLastName      = e.target.value,
+	   		// Check regLastName length to be higher than 2
+	    checkValueLength = regLastName.length > 2,
+	   		// Check for blank spaces
+	    checkWhiteSpaces = regLastName.trim().length === regLastName.length;
+
+    	// If regLastName value match, setstate value 
+    if(checkValueLength && checkWhiteSpaces) {
+        this.setState({regLastName: regLastName, regLastNameValid: true, regLastNameErrMsg: false})
+    } else if(regLastName.length === 0) {
+      	// If input is empty, reset value input
+        this.setState({regLastName: '', regLastNameValid: false})
+    } else {
+        this.setState({regLastName: regLastName, regLastNameValid: false})
+    }	
+}
+handleRegName(e) {
+	let regName          = e.target.value,
+	   		// Check regName length to be higher than 2
+	    checkValueLength = regName.length > 2,
+	   		// Check for blank spaces
+	    checkWhiteSpaces = regName.trim().length === regName.length;
+
+    	// if regName value match, setstate value 
+    if(checkValueLength && checkWhiteSpaces) {
+        this.setState({regName: regName, regNameValid: true, regNameErrMsg: false})
+    } else if(regName.length === 0) {
+      	// If input is empty, reset value input
+        this.setState({regName: '', regNameValid: false})
+    } else {
+        this.setState({regName: regName, regNameValid: false})
+    }	
+}
+
+handleRegPassword(e) {
+	 let regPasswordValue  = e.target.value,
+	   		   // Check password length to be higher than 4
+	      checkValueLength = regPasswordValue.length > 4,
+	   		   // Check for blank spaces
+	      checkWhiteSpaces = regPasswordValue.trim().length === regPasswordValue.length;
+
+        	// If password value match, setstate value 
+	    if(checkValueLength && checkWhiteSpaces) {
+	        this.setState({regPassword: regPasswordValue, regPasswordValid: true, regPasswordErrMsg: false })
+	    } else if(regPasswordValue.length === 0) {
+	      	// If input is empty, reset value input
+	        this.setState({regPassword: '', regPasswordValid: false})
+	    } else {
+	        this.setState({regPassword: regPasswordValue, regPasswordValid: false})
+	    }
+}
+
+
+showHidePassword(e) {
+	let regInputPassword = document.querySelector('.reg_txt_input_pass'),
+	    checkAttribute   = regInputPassword.getAttribute('type');
+
+	// Check and change input type
+	if(checkAttribute === 'password') {
+		regInputPassword.setAttribute('type','text');
+		e.target.style.opacity = '1';
+	} else {
+		regInputPassword.setAttribute('type','password');
+		e.target.style.opacity = '0.7';
+	}
+	   // Focus on input on every change
+	   regInputPassword.focus();
+}
+handleRegSex(e) {
+	if(e.target.value !== 'Sex') {
+		this.setState({ regSex: e.target.value })
+	}
+}
+
+onRegFocus(e) {
+		// Animate label input (Email,Password etc.) and change input border on focus
+	e.target.parentElement.firstElementChild.setAttribute('style','transform:translateY(-162%);font-size:13px;color:#4B4B4B;');
+	e.target.setAttribute('style','border:1px solid #000');
+}
+
+onRegBlur() {
+	// Handle click outside login inputs and animate to bottom label (Email,Password etc.) if empty
+	let loginInputs = document.querySelectorAll('.reg_txt_input');
+	loginInputs.forEach((el) => {
+		// If input is empty, animate label back and set default input border color
+		if(el.value.length === 0) {
+			el.previousElementSibling.removeAttribute('style');
+			el.removeAttribute('style');
+		}
+	});
+}
+
+handleRegisterBtn() {
+	// Reset all register error messages
+ 	this.setState({ regNameErrMsg: false,regLastNameErrMsg: false, regPasswordErrMsg: false, regEmailErrMsg: false, regAcceptTermsErrMsg: false })
+ 	// Check for invalid inputs and display error message
+ 	switch(false){
+ 		case this.state.regEmailValid:
+ 		this.setState({ regEmailErrMsg: true })
+ 		break;
+ 		case this.state.regLastNameValid:
+ 		this.setState({ regLastNameErrMsg: true })
+ 		break;
+ 		case this.state.regNameValid:
+ 		this.setState({ regNameErrMsg: true })
+ 		break;
+ 		case this.state.regPasswordValid:
+ 		this.setState({ regPasswordErrMsg: true })
+ 		break;
+ 		case this.state.regAcceptTerms:
+ 		this.setState({ regAcceptTermsErrMsg: true })
+ 		break;
+ 		default:
+ 		// If all register inputs are valid, display loading effect
+ 		this.setState({ regNewAccountLoad: true })
+ 		// Hide register loading effect after 2 sec
+ 		setTimeout(() => { this.setState({ regNewAccountLoad: false })},2000);
+ 	}
+}
+
+
+
+	render() {
+		return (
+			<div>
+
+				{/* Navigation */}
+                <div className='row justify-content-center'>
+	                <div className='nav_path_cont col-11'>
+	                 <span>
+	                 	<Link to={'/'} className='nav_path_home'>
+	                  	Acasa 
+	                  	</Link>
+	                  	/ 
+	                  	Inregistrare
+	                  </span>
+	                </div>    
+                </div>
+
+				<div className='row justify-content-center'> 
+					<div className='register_container col-11'>
+
+						{/* Loading modal */}
+						{this.state.regNewAccountLoad && (
+						<div className='register_loading_modal'>
+							<div className='reg_load_modal'>
+								<span>Se creeaza contul</span>
+								<div className='reg_load_eff'>
+									<div></div><div></div><div></div><div></div>
+								</div>
+							</div>
+						</div>
+						)}
+
+						{/* Wishlist title */}
+						<div className='row justify-content-center'>
+							<span className='wishlist_title col-11'>
+								Inregistrare
+							</span>
+						</div>
+
+						{/* Register with google+ */}
+						<div className='row justify-content-center'>
+							<span className='reg_with_google_plus_btn'>
+								<i className='fab fa-google-plus-g'></i>
+								Google+ connect
+							</span>
+						</div>
+
+						<div className='row justify-content-center'>
+							<div className='reg_inputs col-11'>
+
+								<span className='reg_newaccount_title'>Cont nou</span>
+								<span className='reg_newaccount_subtitle'>Completează câmpurile de mai jos pentru a crea un cont.</span>
+								{/* Email reg input */}
+								<span className='reg_input_wrapper'>
+									<label>Email *</label>
+									<input type         = 'text' 
+										   className    = 'reg_txt_input'
+										   autoComplete = 'off'
+										   value        = {this.state.regEmail}
+										   onChange     = {(e) => this.handleRegEmail(e)}
+										   onFocus      = {(e) => this.onRegFocus(e)} 
+										   onBlur       = {(e) => this.onRegBlur(e)}>
+									</input>
+								</span>
+								{this.state.regEmailErrMsg && (
+							 	<span className='reg_err_msg'>Email invalid</span>
+							 	)}
+
+
+							 	{/* Last name reg input */}
+								<span className='reg_input_wrapper'>
+									<label>Prenume *</label>
+									<input type         = 'text' 
+										   className    = 'reg_txt_input'
+										   autoComplete = 'off'
+										   value        = {this.state.regLastName}
+										   onChange     = {(e) => this.handleRegLastName(e)}
+										   onFocus      = {(e) => this.onRegFocus(e)} 
+										   onBlur       = {(e) => this.onRegBlur(e)}>
+									</input>
+								</span>
+								{this.state.regLastNameErrMsg && (
+							 	<span className='reg_err_msg'>Prenume invalid</span>
+							 	)}
+
+
+							 	{/* Name reg input */}
+								<span className='reg_input_wrapper'>
+									<label>Nume *</label>
+									<input type         = 'text' 
+										   className    = 'reg_txt_input'
+										   autoComplete = 'off'
+										   value        = {this.state.regName}
+										   onChange     = {(e) => this.handleRegName(e)}
+										   onFocus      = {(e) => this.onRegFocus(e)} 
+										   onBlur       = {(e) => this.onRegBlur(e)}>
+									</input>
+								</span>
+								{this.state.regNameErrMsg && (
+							 	<span className='reg_err_msg'>Nume invalid</span>
+							 	)}
+
+
+							 	{/* Password reg input */}
+								<span className='reg_input_wrapper'>
+									<label>Parola *</label>
+									<input type         = 'password' 
+										   className    = 'reg_txt_input reg_txt_input_pass'
+										   autoComplete = 'off'
+										   value        = {this.state.regPassword}
+										   onChange     = {(e) => this.handleRegPassword(e)}
+										   onFocus      = {(e) => this.onRegFocus(e)} 
+										   onBlur       = {(e) => this.onRegBlur(e)}>
+									</input>
+
+									<i className='far fa-eye reg_showhide_icon' title='Show / Hide password' onClick={(e) => this.showHidePassword(e)}></i>
+								</span>
+								{this.state.regPasswordErrMsg && (
+							 	<span className='reg_err_msg'>Parola invalida</span>
+							 	)}
+
+
+							 	{/* Reg sex select */}
+							 	<span className='reg_input_wrapper'>
+									 <select className="custom-select form-control" onChange={(e)=>this.handleRegSex(e)}>
+									    	<option>Sex</option>
+									    	<option>Feminin</option>
+									    	<option>Masculin</option>
+									</select>
+								</span>
+
+								{/* Reg newsletter select */}
+								<span className='reg_newsletter_title'>Newsletter</span>
+
+								<div className='reg_agree_newsletter_div'>
+									<label className='custom-checkbox'>
+									  <input className='custom-control-input' type='checkbox' onChange={(e) => { this.setState({ regAcceptNewsletter: e.target.checked })}}/>
+									  <div className='custom-control-label reg_newsletter_txt'>
+									  		Sunt de acord să primesc de la tshirtdesign S.A. (tshirtdesign.ro) pe adresa de email, informaţii 
+											comerciale referitoare la această companie, precum și a partenerilor ei, în conformitate cu <span>regulamentul</span>. 
+									  </div>
+									</label>
+								</div>
+
+
+								{/* Reg agree terms */}
+								<div className='reg_agree_terms_div'>
+									<label className='custom-checkbox'>
+									  <input className='custom-control-input' type='checkbox' onChange={(e) => { this.setState({ regAcceptTerms: e.target.checked })}}/>
+									  <div className='custom-control-label reg_terms_txt'>
+									  		Am citit și sunt de acord cu <span>Regulamentul</span> magazinului.  
+									  </div>
+									</label>
+								</div>
+								{this.state.regAcceptTermsErrMsg && (
+								<span className='reg_err_msg'>Trebuie sa accepti regulamentul magazinului</span>
+								)}
+
+								<span className='reg_createacc_btn' onClick={()=>this.handleRegisterBtn()}>Inregistreaza-te</span>
+
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		)
+	}
+}
+
+export default Register;
