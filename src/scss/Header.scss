@@ -3,6 +3,7 @@
 $grayColorBorder: #C6C6C6;
 $grayColorInside: #808080;
 $blackColor: #202020;
+$redColor: #FA2C2C;
 
 @mixin disable-select {
   -webkit-user-select: none;
@@ -132,7 +133,8 @@ $blackColor: #202020;
  
 .search_mobile_dropdown input {
 	position: relative;
-	height: 35px;
+	height: 40px;
+	min-width: 80%;
 	padding:0 10px 0 10px;
 	border:none;
 	border-bottom: 2px solid $grayColorInside;
@@ -142,13 +144,17 @@ $blackColor: #202020;
 
 }
 .smdrop_buttons {
-	display: inline-block;
+	display: flex;
 	height: 35px;
+	min-width: 90%;
 	margin-top:25px;
+	justify-content: center;
 
 }
 .smdrop_buttons .smdrop_butt {
 	height: 30px;
+	min-width: 43%;
+ 	position: relative;
 	border:1px solid #fff;
 	color: #fff;
 	padding:4px 10px 4px 10px;
@@ -197,6 +203,7 @@ $blackColor: #202020;
 	position: relative;
 	display: inline-block;
 	min-height: 55px;
+ 	margin-bottom: 5px;
  
 }
 
@@ -219,12 +226,17 @@ $blackColor: #202020;
 	position: absolute;
 	height: 35px;
 	width: 40px;
-	border:1px solid #000;
-	color: #000;
+	color: $blackColor;
 	left:10px;
 	top:50%;
 	transform: translateY(-50%);
 	border-radius: 4px;
+	cursor: pointer;
+
+	&:hover {
+		opacity:0.7;
+	}
+
 }
 .hsc_col_logo_hambmenu i {
 	position: absolute;
@@ -235,10 +247,11 @@ $blackColor: #202020;
 }
 
 .hsc_col_search_mobile {
-	font-size: 23px;
+ 
+	font-size: 21px;
 	height: 33px;
 	right:30px;
-	margin-top:3px;
+ 	margin-top:5px;
 	cursor: pointer;
 	transition: 0.1s;
 	@include align-y;
@@ -296,7 +309,7 @@ $blackColor: #202020;
 	position: absolute;
 	top:-5px;
 	right: -5px;
-	background-color: #FA2C2C;
+	background-color: $redColor;
 	width: 20px;
 	height: 15px;
 	border-radius: 40%;
@@ -377,3 +390,42 @@ $blackColor: #202020;
 }
 
 
+/* Mobile dropmenu */
+
+.head_mob_menu {
+	position: absolute;
+	top:150px;
+	left:0;
+	max-height: 0;
+	transition: 0.2s;
+	overflow: hidden;
+	background-color: #fff;
+	display: flex;
+	flex-direction: column;
+
+}
+.h_mob_menu_btn {
+	min-width: 100%;
+	height: 40px;
+ 	padding-top:7px;
+	font-size: 16px;
+	font-weight: bold;
+	border-bottom:1px solid $grayColorBorder;
+	padding-left:10px;
+	text-transform: uppercase;
+	color: $blackColor;
+	transition: 0.1s ease-out;
+
+	&:hover {
+		 text-decoration: none;
+		 color: inherit;
+		 background-color: $blackColor;
+		 border-bottom:1px solid $blackColor;
+		 color: #fff;
+		}
+}
+
+.mobmenu_active {
+	min-height: 100vh;
+	padding-top:20px;
+}

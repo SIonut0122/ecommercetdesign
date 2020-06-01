@@ -2,15 +2,17 @@ import React from 'react';
 import '../css/Header.css';
 import { connect }            from "react-redux";
 import { Link               } from 'react-router-dom'
-import { setSearchInput,setOpenMobileSearch, setOpenMediumSearch } from '../actions';
-import { Router } from 'react-router-dom'; 
+import { setSearchInput,setOpenMobileSearch, setOpenMediumSearch,setSelectedProducts } from '../actions';
+import { Router   } from 'react-router-dom'; 
 
+import   menProducts from '../data/men';
+import   womanProducts from '../data/womans';
 
 
 
 const mapStateToProps = state => {
   return {  
-  		  objectProducts   : state.objectProducts,
+  		  selectedProducts : state.selectedProducts,
           searchInput      : state.searchInput,
           openMobileSearch : state.openMobileSearch,
           openMediumSearch : state.openMediumSearch
@@ -20,9 +22,10 @@ const mapStateToProps = state => {
 
 function mapDispatchToProps(dispatch) {
   return {
-          setSearchInput : inputValue  => dispatch(setSearchInput(inputValue)),
-          setOpenMobileSearch : bol  => dispatch(setOpenMobileSearch(bol)),
-          setOpenMediumSearch : bol  => dispatch(setOpenMediumSearch(bol)),
+  		  setSelectedProducts : products    => dispatch(setSelectedProducts(products)),
+          setSearchInput      : inputValue  => dispatch(setSearchInput(inputValue)),
+          setOpenMobileSearch : bol         => dispatch(setOpenMobileSearch(bol)),
+          setOpenMediumSearch : bol         => dispatch(setOpenMediumSearch(bol)),
         };
 }
 
@@ -30,26 +33,29 @@ function mapDispatchToProps(dispatch) {
 class connectedHeader extends React.Component {
 
 	state = {
-		openSortByMenu   : false
+		openSortByMenu   : false,
+		openMobileMenu   : false
 	}
-
 
 
 componentDidMount() {
 	window.addEventListener('resize', (e) =>this.handleHeaderResize(e));
 }
+
 componentWillUnmount() {
 	window.removeEventListener('resize', (e) =>this.handleHeaderResize(e));
 }
 
-
 handleHeaderResize(e) {
-	
-
-	// If breakpoint > mobile breakpoint, and mobile search is dislayed
+	 
 	if(window.innerWidth > 575.5) {
+		// Hide mobile search 
 		if(this.props.openMobileSearch) {
 			this.props.setOpenMobileSearch({ openMobileSearch: false })
+		}
+		// Close mobile menu if displayed
+		if(this.state.openMobileMenu) {
+			this.setState({ openMobileMenu: false })
 		}
 	}
 	// If medium search input is displayed of this breakpoints, close it
@@ -59,10 +65,7 @@ handleHeaderResize(e) {
 		}
 	}
 
-
-
 }
-
 
 /* Mobile search handler */
 openMobileSearch() {
@@ -75,12 +78,19 @@ openMobileSearch() {
 		setTimeout(() => {
 			document.querySelector('.search_mobile_dropdown').setAttribute('style','height:100% !important');
 		},200);
+
+		// Close mobile menu if displayed
+		if(this.state.openMobileMenu) {
+			document.querySelector('.head_mob_menu').classList.remove('mobmenu_active');
+			setTimeout(() => {
+			this.setState({ openMobileMenu: false })
+			},300)
+		}
 	}
 }
 
 /* Medium search Handler */
 openMedSizeSearch() {
-
 	// Close / display medium search input
 	if(this.props.openMediumSearch) {
 		this.props.setOpenMediumSearch({ openMediumSearch: false })
@@ -91,6 +101,25 @@ openMedSizeSearch() {
 		},200);
 	}
 }	
+
+ 
+
+handleMobileMenu() {
+
+	if(!this.state.openMobileMenu) {
+		this.setState({ openMobileMenu: true })
+		setTimeout(() => {
+			document.querySelector('.head_mob_menu').classList.add('mobmenu_active');
+		},300)
+	} else {
+		document.querySelector('.head_mob_menu').classList.remove('mobmenu_active');
+		setTimeout(() => {
+		this.setState({ openMobileMenu: false })
+		},300)
+	}
+
+
+}
 
 
 	render() {
@@ -105,11 +134,11 @@ openMedSizeSearch() {
 							<span className='smdrop_close'>&times;</span>
 						 	<div className='row'>
 								<div className='smdrop_wrap_input col-12' onClick={(e) => {e.stopPropagation()}}>
-								<span className='smdrop_title'>Search products</span>
+								<span className='smdrop_title'>Caută</span>
 									<div className='row justify-content-center'>
 										<input type='text'
 											   onChange={(e) => {this.props.setSearchInput({ searchInput: e.target.value })}} 
-											   value={this.props.searchInput}>
+									   	       value={this.props.searchInput}>
 										</input>
 									</div>
 									{/* Mobile search dropdown buttons */}
@@ -118,12 +147,12 @@ openMedSizeSearch() {
 											{this.props.searchInput.length > 0 && (
 											<span className='smdrop_butt mr-4' 
 												  onClick={() => {this.props.setOpenMobileSearch({ openMobileSearch: false })}}>
-												  See results ({this.props.objectProducts.length})
+												  Vezi rezultate ({this.props.selectedProducts !== null ? this.props.selectedProducts.length : '0'})
 											</span>
 											)}
 											<span className='smdrop_butt' 
 												  onClick={() => {this.props.setOpenMobileSearch({ openMobileSearch: false });this.props.setSearchInput({ searchInput: ''})}}>
-												  Cancel
+												  Anulează
 											</span>
 										</div>
 									</div>
@@ -149,7 +178,7 @@ openMedSizeSearch() {
 								<div className='row justify-content-center'>
 									<div className='hsc_col_logo col-12 col-sm-3 col-lg-2 col-xl-2 hsc_one_col'>
 										<div className='row'>
-											<span className='hsc_col_logo_hambmenu'><i className='fas fa-bars'></i></span>
+											<span className='hsc_col_logo_hambmenu' onClick={() => this.handleMobileMenu()}><i className='fas fa-bars'></i></span>
 											<span className='hsc_col_logo_img'>
 												T-SHIRT
 											</span>
@@ -189,8 +218,8 @@ openMedSizeSearch() {
 						<div className='row'>
 							<div className='head_nav_menu col-12'>
 								<div className='row justify-content-sm-start justify-content-md-center'>
-									<span className='nav_menu_link'>Barbati</span>
-									<span className='nav_menu_link'>Femei</span>
+									<Link to={'/products/men'}    className='nav_menu_link'>Barbati</Link>
+									<Link to={'/products/womans'} className='nav_menu_link'>Femei</Link>
 									<span className='nav_menu_link'>Noutati</span>
 									<span className='nav_menu_link'>Custom</span>
 									<span className='nav_menu_link'>Contact</span>
@@ -225,6 +254,18 @@ openMedSizeSearch() {
 								</div>
 							</div>
 						</div>	
+						{/* Mobile drop menu*/}
+						{this.state.openMobileMenu && (
+						<div className='row'>
+							<div className='head_mob_menu col-12'>
+								<Link to={'/products/men'}       className='h_mob_menu_btn' onClick={()=>this.handleMobileMenu()}>Barbati</Link>
+								<Link to={'/products/womans'}    className='h_mob_menu_btn' onClick={()=>this.handleMobileMenu()}>Femei</Link>
+								<Link to={'/products/childrens'} className='h_mob_menu_btn' onClick={()=>this.handleMobileMenu()}>Copii</Link>
+								<Link to={'/products/customize'} className='h_mob_menu_btn' onClick={()=>this.handleMobileMenu()}>Customize</Link>
+								<Link to={'/products/contact'}   className='h_mob_menu_btn' style={{borderBottom:'1px solid transparent'}} onClick={()=>this.handleMobileMenu()}>Contact</Link>
+							</div>
+						</div>
+						)}
 
 					</div> {/* End of Header container */}
 				</div>  {/* End of Header container row */}

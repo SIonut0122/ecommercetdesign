@@ -6,7 +6,7 @@ const objectProducts = [
 		"price": 55.0,
 		"img": "link here",
 		"category": "t-shirt",
-		"color": "black",
+		"color": ["black"],
 		"gender": "boy",
 		"material": [
 			"modal",

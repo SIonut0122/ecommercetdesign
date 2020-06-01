@@ -1,14 +1,14 @@
 
-import objectProducts from '../data/products';
+import objectProducts from './data/products';
 import { SET_SEARCH_PRODUCTS }  from "./constants/action-types";
 import { SEARCH_INPUT }  from "./constants/action-types";
 import { OPEN_MOBILE_SEARCH }  from "./constants/action-types";
 import { OPEN_MED_SEARCH }  from "./constants/action-types";
-
+import { SET_SELECTED_PRODUCTS }  from "./constants/action-types";
  
  
     const initialState = {
-         objectProducts:  objectProducts, 
+         selectedProducts:  null, 
          searchResults: null,
          searchInput: '',
          openMobileSearch: false,
@@ -21,6 +21,11 @@ import { OPEN_MED_SEARCH }  from "./constants/action-types";
 
     
       switch(action.type) {
+        case SET_SELECTED_PRODUCTS: 
+           return Object.assign({}, state, {
+          selectedProducts: action.payload.selectedProducts
+        });
+        break;
         case SET_SEARCH_PRODUCTS: 
            return Object.assign({}, state, {
           searchResults: action.payload.searchResults
