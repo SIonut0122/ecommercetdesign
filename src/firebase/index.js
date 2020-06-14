@@ -1,6 +1,6 @@
 
   var config = {
-    apiKey: "AIzaSyDDlKYBMYUgw5Th_s3TKAjgzlfIr4VLizQ",
+    apiKey: process.env.REACT_APP_FIREBASE_KEY,
     authDomain: "ecommtshirt.firebaseapp.com",
     databaseURL: "https://ecommtshirt.firebaseio.com",
     projectId: "ecommtshirt",
