@@ -640,6 +640,7 @@ float: left;
 	min-height: 30px;
 	border-bottom:1px solid $grayColorBorder;
 	justify-content: center;
+	padding-top:3px;
 
 }
 .wr_chk_sum_total_lab {
@@ -810,6 +811,14 @@ float: left;
 	background-color: red;
 	border:1px solid $grayColorBorder;
 }
+ .chks_wdprod_boxd_sub_quant {
+ 	font-size: 10px;
+
+ 	span {
+ 		font-size: 16px;
+ 		margin-left:2px;
+ 	}
+ }
 .chks_wdprod_boxd_price {
 	width: 100%;
 	text-align: right;

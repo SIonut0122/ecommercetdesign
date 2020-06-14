@@ -92,16 +92,18 @@ $redColor: #FF3E3E;
 	min-height: 400px;
 	display: inline-block;
  	padding-top:30px;
+ 	border-bottom:1px solid $grayColorBorder;
+ 
 
 }
 .wish_product_box {
  	position: relative;
-	float: left;
 	width: 50%;
 	max-width: 250px;
 	max-height: auto;
 	margin-top:10px;
-
+	transition: 0.2s;
+ 
 }
  
 .wish_product_box img {
@@ -135,7 +137,7 @@ $redColor: #FF3E3E;
  
 .wish_remove_prod {
 	position: absolute;
-	font-size: 24px;
+	font-size: 20px;
 	cursor: pointer;
 	top:3%;
 	left:10%;
@@ -209,6 +211,9 @@ $redColor: #FF3E3E;
 
 .wishlist_login_button {
 	@include login-p-button;
+	&:hover {
+		text-decoration:none;
+	}
 }
 .wshl_subpoint_sectwo {
 	font-size: 13.5px;
@@ -226,6 +231,7 @@ $redColor: #FF3E3E;
 	&:hover {
 		background-color:$blackColor;
 		color: #fff;
+		text-decoration: none;
 	}
 }
 /* Google plus button */

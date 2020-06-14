@@ -81,7 +81,7 @@ $greenColor: #289b38;
 }
 .cart_title_no_items {
 	font-size: 18px;
-	margin:8px 0 0 8px;
+	margin:8px 15px 0 8px;
 	color: $grayColorInside;
   
 }
@@ -90,7 +90,7 @@ $greenColor: #289b38;
 
 	font-size: 12px;
 	color: $redColor;
-	margin:13px 0 0 6px;
+	margin:13px 0 0 0px;
 
 }
 
@@ -142,6 +142,7 @@ $greenColor: #289b38;
 	&:hover {
 		background-color: transparent;
 		color: #000;
+		text-decoration: none;
 	}
 	&:active {
 		box-shadow: 0 0 2px 0 #000;
@@ -235,14 +236,21 @@ $greenColor: #289b38;
 
 
 }
-.cprod_inf_quant select {
+.cprod_inf_quant input {
 	width: 60px;
-	display: inline-block;
+	height: 30px;
+	text-align: center;
+	border:1px solid $grayColorBorder;
 	margin-left:10px;
+	border-radius: 3px;
+	font-family: Arial;
+	color: $blackColor;
 }
-.cprod_inf_quant select:focus {
+.cprod_inf_quant input:focus {
 	box-shadow: none !important;
 }
+
+
 .cprod_inf_refresh span {
 	position: relative;
 	cursor: pointer;
@@ -327,13 +335,17 @@ $greenColor: #289b38;
 	&:hover {
 		text-decoration: underline;
 	}
+	.fa-heart {
+		color: $redColor;
+		pointer-events: none;
+	}
 }
 .cart_product_actions .card_prod_act i {
 		margin-right: 3px;
 }
 
  .card_prod_remove span {
- 	color: black;
+ 	color: $blackColor;
  }
 
 
@@ -360,6 +372,7 @@ $greenColor: #289b38;
   .cart_sbt {
   	margin-top:5px;
   	min-height: 30px;
+
   }
  
  .cart_sbt .cart_label {
@@ -382,11 +395,13 @@ $greenColor: #289b38;
  	font-size: 18px;
  }
  .cart_deliver  {
- 	color: $greenColor;
- 	 	font-weight: bold;
+ 	color: $blackColor;
+ 
  	 	border-bottom: 1px solid $grayColorBorder;
  	 	padding-bottom: 15px;
-
+ 	 .cart_value {
+ 	 	font-weight: normal;
+ 	 }
  }
  .cart_savings {
  	color: $redColor;
@@ -415,7 +430,9 @@ $greenColor: #289b38;
  	@include disable-select;
 
  	&:hover {
+ 		text-decoration: none;
  		background-color: #227F2F;
+ 		color: #fff;
  	}
  	&:active {
  		box-shadow: 0 0 5px 0 #000;

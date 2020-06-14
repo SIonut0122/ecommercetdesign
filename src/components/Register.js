@@ -1,10 +1,21 @@
 import React from 'react';
 import '../css/Register.css'
-import { Link               } from 'react-router-dom'
+import { connect }            from 'react-redux';
+import { Link, Redirect           } from 'react-router-dom'
+
+ import firebase from 'firebase/app';
+ 
+ 
+ 
 
 
+const mapStateToProps = state => {
+  return {  
+  		  userIsSignedIn   : state.userIsSignedIn
+        };
+};
 
-class Register extends React.Component {
+class connectedRegister extends React.Component {
 
 		state = {
 			regEmail: '',
@@ -25,6 +36,7 @@ class Register extends React.Component {
 			regAcceptTermsErrMsg:false,
 
 			regNewAccountLoad: false,
+			registerEmailAlreadyInUse: false
 		}
 
 
@@ -100,7 +112,6 @@ handleRegPassword(e) {
 	    }
 }
 
-
 showHidePassword(e) {
 	let regInputPassword = document.querySelector('.reg_txt_input_pass'),
 	    checkAttribute   = regInputPassword.getAttribute('type');
@@ -123,7 +134,7 @@ handleRegSex(e) {
 }
 
 onRegFocus(e) {
-		// Animate label input (Email,Password etc.) and change input border on focus
+	// Animate label input (Email,Password etc.) and change input border on focus
 	e.target.parentElement.firstElementChild.setAttribute('style','transform:translateY(-162%);font-size:13px;color:#4B4B4B;');
 	e.target.setAttribute('style','border:1px solid #000');
 }
@@ -161,16 +172,68 @@ handleRegisterBtn() {
  		this.setState({ regAcceptTermsErrMsg: true })
  		break;
  		default:
- 		// If all register inputs are valid, display loading effect
- 		this.setState({ regNewAccountLoad: true })
- 		// Hide register loading effect after 2 sec
- 		setTimeout(() => { this.setState({ regNewAccountLoad: false })},2000);
+ 
+ 		
+ 		this.createAccount();
  	}
+}
+
+
+/* Create normal account */
+
+createAccount() {
+	// Display loading effect
+	this.setState({ regNewAccountLoad: true})
+
+	  firebase.auth().createUserWithEmailAndPassword(this.state.regEmail, this.state.regPassword)
+      .then(() => {
+        // Call function to update user info (username)
+        this.updateNewAccountInfo();
+        // If 'email already is use' message is displayed, hide it
+        this.setState({ registerEmailAlreadyInUse: false })
+        console.log('USER WAS CREATED');
+      
+      }).catch((error) => {
+        if (error.code === 'auth/email-already-in-use') {
+        	console.log('email alrdeay in use');
+        	// Hide loading effect is error
+           this.setState({ registerEmailAlreadyInUse: true, regNewAccountLoad: false })
+        }
+    })
+}
+
+updateNewAccountInfo() {
+	let user = firebase.auth().currentUser;
+	user.updateProfile({
+      // Use displayName to store the Username
+      displayName: this.state.regLastName +' '+this.state.regName
+    }).then(() => {
+      window.location.reload();
+    })
+}
+
+/* Register with Google+ */
+
+googlePlusConnect() {
+	// Create google auth provider
+	let provider = new firebase.auth.GoogleAuthProvider();
+		// Open popup window to signin Google+
+		firebase.auth().signInWithPopup(provider).then((result) => {
+		 // Console.log results if you need info about user
+		 window.location.reload();
+		}).catch(function(error) {
+			console.log(error);
+		});
 }
 
 
 
 	render() {
+
+		if(this.props.userIsSignedIn) {
+			return (<Redirect to={'/account'}/>)
+		}
+
 		return (
 			<div>
 
@@ -211,7 +274,7 @@ handleRegisterBtn() {
 
 						{/* Register with google+ */}
 						<div className='row justify-content-center'>
-							<span className='reg_with_google_plus_btn'>
+							<span className='reg_with_google_plus_btn' onClick={() => this.googlePlusConnect()}>
 								<i className='fab fa-google-plus-g'></i>
 								Google+ connect
 							</span>
@@ -236,6 +299,9 @@ handleRegisterBtn() {
 								</span>
 								{this.state.regEmailErrMsg && (
 							 	<span className='reg_err_msg'>Email invalid</span>
+							 	)}
+							 	{this.state.registerEmailAlreadyInUse && (
+							 	<span className='reg_err_msg'>Acest email este deja inregistrat</span>
 							 	)}
 
 
@@ -340,4 +406,6 @@ handleRegisterBtn() {
 	}
 }
 
+
+const Register = connect(mapStateToProps,null)(connectedRegister);
 export default Register;

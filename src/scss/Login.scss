@@ -45,7 +45,15 @@ $redColor: #FF3E3E;
 	max-width: 1800px !important;
 }
 
-
+.login_cont_loading {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	left:0;
+	top:0;
+	background-color: #fff;
+	z-index: 2;
+}
 /* Sections */
 
 .login_sect_box {
@@ -63,6 +71,7 @@ $redColor: #FF3E3E;
 	background-color: #fff;
 	text-align: center;
 	padding: 10px;
+
 }
 
 .login_newmember_wrap {
@@ -84,7 +93,6 @@ $redColor: #FF3E3E;
 .log_subtitle_font {
 	font-weight: normal;
 	font-size: 17px;
-	margin-left: 5px;
 }
 
 
@@ -122,6 +130,7 @@ $redColor: #FF3E3E;
 	padding: 0 10px 0 10px;
 	border-radius: 3px;
 	transition: 0.2s;
+	font-size: 14px;
 }
 
 .log_txt_input_pass {
@@ -140,6 +149,7 @@ $redColor: #FF3E3E;
 	background-color: #fff;
 	transition: 0.2s ease-out;
 	border-radius: 3px;
+	font-size: 14px;
 }
 
 .log_showhide_icon {
@@ -218,6 +228,7 @@ $redColor: #FF3E3E;
 	&:hover {
 	background-color: #fff;
 	color: #000;
+	text-decoration: none;
 }
 }
 
@@ -365,6 +376,7 @@ $redColor: #FF3E3E;
 	top: 0;
 	padding: 0 10px 0 10px;
 	border-radius: 3px;
+	font-size: 14px;
 }
 
 .send_newpass_btn {

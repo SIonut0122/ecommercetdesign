@@ -1,6 +1,7 @@
 
 body {
 	scroll-behavior: smooth;
+	  font-family: 'Playfair Display', serif;
 }
 
 .main_container {
@@ -15,10 +16,10 @@ body {
 
 .nav_path_cont {
 	height: 30px;
-	margin:20px 0 10px 0;
-	padding-left:0;
+	margin:25px 0 20px 0;
+	padding:10px 10px 30px 0;
 	font-size: 14px;
-	padding-top:3px;
+ 
 }
 .nav_path_cont a {
 	text-decoration: none;

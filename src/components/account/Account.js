@@ -1,25 +1,47 @@
 import React from 'react';
 import '../../css/Account.css';
-import { Link               } from 'react-router-dom'
 import AccountMenu from './AccountMenu';
+import { Link, Redirect               } from 'react-router-dom';
+ import { setUserDbInfo } from '../../actions';
+import { connect }            from "react-redux";
 
 
 
+const mapStateToProps = state => {
+  return {  
+  		  userIsSignedIn    : state.userIsSignedIn,
+  		  userInfo          : state.userInfo,
+  		  signedWithGoogle  : state.signedWithGoogle,
+  		  userDbInfo        : state.userDbInfo
 
-class Account extends React.Component {
+        };
+};
+
+
+function mapDispatchToProps(dispatch) {
+  return {
+            setUserDbInfo       : userDB      => dispatch(setUserDbInfo(userDB))
+        };
+}
+
+
+class connectedAccount extends React.Component {
 
 	state = {
-			componentIsLoading: true,
+			componentIsLoading: false,
 
-			emailAddress: 'sionut0122@yahoo.com',
+			signedWithGoogle: true,
+			userDbInfo: this.props.userDbInfo,
+
+			emailAddress: '',
 			emailAddressValid: true,
 			emailAddressErrMsg: false,
 
-			lastNameAddress: 'Ionut',
+			lastNameAddress: '',
 			lastNameAddressValid: true,
 			lastNameAddressErrMsg: false,
 
-			nameAddress: 'Stan',
+			nameAddress: '',
 			nameAddressValid: true,
 			nameAddressErrMsg: false,
 
@@ -33,6 +55,9 @@ class Account extends React.Component {
 			updatePasswordValid: true,
 			updatePasswordErrMsg: false,
 
+			changePassMinSixChar: false,
+			changePassReauthentication: false,
+
 			updateConfPass: '',
 			updateConfPassValid: true,
 			updateConfPassErrMsg: false,
@@ -40,16 +65,60 @@ class Account extends React.Component {
 			passwordMatchErrMsg: false,
 
 			confirmProfileUpdates: false,
-			confirmProfileUpdatesError: false
+			confirmProfileUpdatesError: false,
 
 	}
 
 
 componentDidMount() {
-	document.title = 'Profilul meu - Tshirt Design';
-	setTimeout(() => { this.setState({ componentIsLoading: false })},1000)
+	setTimeout(() => {    // Hide loading effect
+	      this.setState({ componentIsLoading: false })},1000);
+
+
 }
 
+componentDidUpdate(prevProps) {
+/*	// Update signedwith google state if was not updated
+	if(prevProps.signedWithGoogle !== this.props.signedWithGoogle) { 
+		this.setState({ signedWithGoogle: this.props.signedWithGoogle})
+	}*/
+	
+
+
+}
+
+
+updateStateWithUserDbInfo(userDbInfo) {
+	// Update state from userDbInfo to be used
+	this.setState({
+		lastNameAddress : userDbInfo.myprofile.lastname,
+		nameAddress     : userDbInfo.myprofile.name,
+		sexProfile      : userDbInfo.myprofile.gender,
+		phoneAddress    : userDbInfo.myprofile.phone
+	})
+}
+
+getUserData(userData) {
+	
+
+}
+
+
+createNewDbUser(userData) {
+	let newUserData = {
+	  user         : userData.email,
+	  cart         : null,
+	  wishlist     : null,
+	  myprofile    : [{lastname:'',name:'',gender:'',phone:''}],
+	  myorders     : null,
+	  shippingdata : [{lastname:'',name:'',street:'',postalCode:'',city:'',addInfo:''}]
+	};
+
+}
+
+
+
+ 
 updateEmailAddress(e) {
 	  let mailformat = /^\w+([-]?\w+)*@\w+([-]?\w+)*(\.\w{2,3})+$/,
           emailValue = e.target.value;
@@ -57,14 +126,14 @@ updateEmailAddress(e) {
       // If input mail match, setstate value
       if(emailValue.length > 0 && !emailValue.match(mailformat)) {
       	this.setState({emailAddress: emailValue, emailAddressValid: false})
-    } else if(emailValue.match(mailformat)) {
-        this.setState({emailAddress: emailValue, emailAddressValid: true, emailAddressErrMsg: false})
-    } else if(emailValue.length === 0) {
-      // If input is empty, reset value input
-        this.setState({emailAddress: '', emailAddressValid: false})
-    } else {
-        this.setState({emailAddress: '', emailAddressValid: false})
-    }
+	    } else if(emailValue.match(mailformat)) {
+	        this.setState({emailAddress: emailValue, emailAddressValid: true, emailAddressErrMsg: false})
+	    } else if(emailValue.length === 0) {
+	      // If input is empty, reset value input
+	        this.setState({emailAddress: '', emailAddressValid: false})
+	    } else {
+	        this.setState({emailAddress: '', emailAddressValid: false})
+	    }
 }
 
 updateLastNameAddress(e) {
@@ -193,7 +262,6 @@ handleSaveUpdatesBtn() {
  		default:
  			// If there is no errors, check if both passwords match
  			if(this.state.updatePassword === this.state.updateConfPass) {
-				this.setState({ confirmProfileUpdates: true, passwordMatchErrMsg: false })
 				this.updateAccountProfile();
 		  	} else {
 				this.setState({ confirmProfileUpdates: false, passwordMatchErrMsg: true })
@@ -204,12 +272,76 @@ handleSaveUpdatesBtn() {
 }
 
 updateAccountProfile() {
-	 
+
+	// UPDATE PASSWORD //
+
+	 var user = firebase.auth().currentUser;
+
+	 // If passwords values are the same, check if the length to proceed
+	 if(this.state.updatePassword.length > 0 && this.state.updateConfPass.length > 0) {
+		 user.updatePassword(this.state.updateConfPass)
+		 	.then(() => {
+		    // If password match, hide all errors
+		    this.setState({ changePassReauthentication: false,changePassMinSixChar:false,passwordMatchErrMsg:false })
+			})
+			.catch((error) => {
+			  if(error.code === 'auth/weak-password') {
+			  	// Display 'Password must have at least 6 char' and hide the rest of messages
+			  	this.setState({ changePassMinSixChar: true, changePassReauthentication: false, passwordMatchErrMsg: false })
+			  } else if(error.code === 'auth/requires-recent-login') {
+			  	// Display 'Please reauthenticate to update password' message
+			  	this.setState({ changePassReauthentication: true })
+			  }
+		});
+	}
+
+	// UPDATE PROFILE INFO //
+
+	// If password was unchanged or was changed without errors, proceed with account info change
+	if(!this.state.changePassReauthentication && !this.state.changePassMinSixChar && !this.state.passwordMatchErrMsg) {
+		// Update user account info
+		let userDbInfo = this.props.userDbInfo,
+			userInfo   = this.props.userInfo,
+		    { lastNameAddress,nameAddress,sexProfile,phoneAddress} = this.state;
+
+		let myprofileUpdated = {
+			lastname : lastNameAddress !== userDbInfo.myprofile.lastname ? lastNameAddress : userDbInfo.myprofile.lastname,
+			name     : nameAddress     !== userDbInfo.myprofile.name     ? nameAddress     : userDbInfo.myprofile.name,
+			gender   : sexProfile      !== userDbInfo.myprofile.gender   ? sexProfile      : userDbInfo.myprofile.gender,
+			phone    : phoneAddress    !== userDbInfo.myprofile.phone    ? phoneAddress    : userDbInfo.myprofile.phone  
+		}
+
+	 	this.setState({ confirmProfileUpdates: true })
+	}
+
 }
 
 
+handleSignOut() {
+ 	firebase.auth().signOut().then(() => {
+	  window.location.reload();
+	}).catch(function(error) {
+	  console.log('An error occurred while signing out');
+	});
+}
 
 	render() {
+
+	/*	// If user is not signed in, redirect to login page
+		if(this.props.userIsSignedIn === null) {
+			return (<div className='account_loading_modal'>
+						<div className='row justify-content-center h-100'>
+							<div className='acc_load_mod my-auto'><div></div><div></div><div></div><div></div></div>
+						</div>
+					</div>)
+		} else if(!this.props.userIsSignedIn) {
+			return ( <Redirect to={'/login'}/>)
+		}*/
+
+
+		document.title = 'Profilul meu - Tshirt Design';
+		
+		let disableEnable = this.state.signedWithGoogle ? {disabled: 'disabled'} : {};
 		return (
 				<div>
 					{/* Navigation */}
@@ -231,13 +363,19 @@ updateAccountProfile() {
 							{/* Account title */}
 							<div className='row justify-content-center'>
 								<span className='account_title col-11'>
-									Contul meu
+									<span>Contul meu</span>
+									<span className='acc_title_signout_btn' onClick={()=>this.handleSignOut()}>
+										Iesi din cont <i className="fas fa-sign-out-alt"></i>
+									</span>
 								</span>
 							</div>
 
+							{/* RIGHT ACCOUNT MENU */}
 							<div className='row justify-content-center'>
 								<div className='account_sec acc_sec_menu_right col-12 col-lg-4'>
-										<AccountMenu location='myprofile' name='Profilul meu'/>
+										<AccountMenu 
+											location     ='myprofile' 
+											name         ='Profilul meu'/>
 								</div>
 								<div className='account_sec col-12 col-lg-8'>
 									{/* Account loading modal */}
@@ -257,9 +395,10 @@ updateAccountProfile() {
 											<span className='acc_profinputs_title'>Adresa de email (Logare in Magazin)</span>
 											<span className='acc_profinput_wrap'>
 												<input type='text'
+													   disabled
 													   className='acc_profinp_emailaddress'
 													   onChange={(e) => this.updateEmailAddress(e)}
-													   value={this.state.emailAddress}/>
+													   value={this.props.userInfo !== null && this.props.userInfo.email}/>
 											</span>
 											{this.state.emailAddressErrMsg && (
 											<span className='acc_profinputs_err_msg'>Adresa de email invalida</span>
@@ -322,13 +461,17 @@ updateAccountProfile() {
 												<input type='password'
 													   className='acc_profinp_password'
 													   onChange={(e) => this.updatePassword(e)}
-													   value={this.state.updatePassword}/>
+													   value={this.state.updatePassword}
+													   {...disableEnable}/>
 											</span>
 											{this.state.updatePasswordErrMsg && (
 											<span className='acc_profinputs_err_msg'>Parola invalida</span>
 											)}
 											{this.state.passwordMatchErrMsg && (
 											<span className='acc_profinputs_err_msg'>Parolele nu coincid</span>
+											)}
+											{this.state.changePassReauthentication && (
+											<span className='acc_profinputs_err_msg'>Pentru a actualiza parola, relogheaza-te</span>
 											)}
 
 
@@ -338,13 +481,17 @@ updateAccountProfile() {
 												<input type='password'
 													   className='acc_profinp_password'
 													   onChange={(e) => this.updateConfirmPassword(e)}
-													   value={this.state.updateConfPass}/>
+													   value={this.state.updateConfPass}
+													   {...disableEnable}/>
 											</span>
 											{this.state.updateConfPassErrMsg && (
 											<span className='acc_profinputs_err_msg'>Parola nu este identica</span>
 											)}
 											{this.state.passwordMatchErrMsg && (
 											<span className='acc_profinputs_err_msg'>Parolele nu coincid</span>
+											)}
+											{this.state.changePassMinSixChar && (
+											<span className='acc_profinputs_err_msg'>Parola trebuie sa aiba minimum 6 caractere</span>
 											)}
 
 
@@ -377,4 +524,9 @@ updateAccountProfile() {
 	}
 }
 
+
+ 
+const Account = connect(mapStateToProps,mapDispatchToProps)(connectedAccount);
 export default Account;
+
+ 

@@ -1,12 +1,23 @@
 import React from 'react';
 import '../css/Checkout.css';
-import { Link               } from 'react-router-dom';
+import { Link, Redirect               } from 'react-router-dom';
 import cashOnDeliveryIcon from '../images/cash-on-delivery.png';
 import expressDelivery from '../images/express_delivery.png';
- 
+import { connect }            from "react-redux";
 import logo2 from '../images/pants2.jpg';
+import { v4 as uuidv4 } from 'uuid';
 
-class Checkout extends React.Component {
+const mapStateToProps = state => {
+  return {  
+          cart : state.cart,
+          totalCartAmount: state.totalCartAmount,
+          cartIsLoaded: state.cartIsLoaded
+        };
+};
+
+
+
+class connectedCheckout extends React.Component {
 
 
 	state ={
@@ -17,6 +28,7 @@ class Checkout extends React.Component {
 		courierPrice: '',
 
 		chkAddressLoading: false,
+
 		addressName: '',
 		addressNameValid: false,
 		invalidNameMsg: false,
@@ -45,6 +57,9 @@ class Checkout extends React.Component {
 		addressAndPaymentFinished: false,
 		completedOrderDate: null,
 		completedOrderHour: null,
+
+		totalCartAmount: this.props.totalCartAmount,
+		totalCartAmountWithDelivery: this.props.totalCartAmount, 
 	
 	}
 
@@ -52,19 +67,25 @@ class Checkout extends React.Component {
 
  
 componentDidMount() {
-
+ 
 	// Check if delivery is not selected already and display loading effect
 	if(!this.state.deliveryChecked) {
 		this.setState({ deliveryMethodLoading: true})
 		//  Hide select delivery method payment after 1 sec
 		setTimeout(() => this.setState({ deliveryMethodLoading: false }),1000);
 	}
-}
-handleDeliverySelect(e,courierType,courierPrice) {
 
+}
+
+handleDeliverySelect(e,courierType,courierPrice) {
 	this.setState({ deliveryChecked: e.target.checked, courierType: courierType, courierPrice: courierPrice })
 	this.scrollToTop();
+	// Call function after selecting delivery method to recalculate total price
+	this.checkDeliveryMethodPrice(courierPrice);
+	// Complete address inputs with info from 'delivery info' from account panel
+	this.fillAddressDelivery();
 }
+
 scrollToTop() {
 	// Scroll to top (user checkout steps as a target)
  	document.querySelector('.checkout_wrap_steps').scrollIntoView({behavior: "auto", block: "center"});
@@ -170,7 +191,6 @@ handleAddressSubCity(e) {
 }
 
 
-
 onAddressFocus(e) {
 	// Animate label input (Email,Password) and change input border on focus
 	e.target.parentElement.firstElementChild.setAttribute('style','transform:translateY(-175%);font-size:12.5px;color:#7D7D7D;');
@@ -189,8 +209,8 @@ onAddressBlur() {
 	});
 }
 
-
-handleAddrProceedBtn =()=> {  				
+handleAddrProceedBtn = () => {  	
+	// Check all address delivery inputs			
  	// Reset all address error messages
  	this.setState({ invalidLastNameMsg: false,invalidNameMsg: false, invalidPhoneMsg: false, invalidStreetMsg: false, invalidCityMsg: false, invalidSubCityMsg: false})
  	// Check for invalid inputs and display error message
@@ -231,15 +251,18 @@ addressBackBtn() {
 	// Scroll to top
 	this.scrollToTop();
 	// Go back to delivery checkbox page and clear all address inputs
+	// Reset all from 'select delivery method'
 	this.setState({ 
-		deliveryChecked : false, 
+		deliveryChecked : false, courierPrice         : '',    courierType        : '',
 		addressName     : '',    addressNameValid     : false, invalidNameMsg     : false,
 	    addressLastName : '',    addressLastNameValid : false, invalidLastNameMsg : false,
 	    addressPhone    : '',    addressPhoneValid    : false, invalidPhoneMsg    : false,
 	    addressStreet   : '',    addressStreetValid   : false, invalidStreetMsg   : false,
 	    addressCity     : '',    addressCityValid     : false, invalidCityMsg     : false,
 	    addressSubCity  : '',    addressSubCityValid  : false, invalidSubCityMsg  : false,
-	    addressAdditionalInfo:''
+	    addressAdditionalInfo       :'',
+	    totalCartAmountWithDelivery : this.props.totalCartAmount
+
 	})
 }
 
@@ -289,8 +312,17 @@ handleFinishOrderBtn() {
 			 
 		
 		this.scrollToTop();
+
+		// Generate random uuid and get string numbers from position 24 to the end (12 numbers)
+		let generateUuid = uuidv4(),
+			transId = generateUuid.substring(24,generateUuid.length);
 		// Payment method selected & payment loading modal on
-		this.setState({chkPaymentLoading: true, paymentMsgError: false, completedOrderDate: todayDate, completedOrderHour: hour})
+		this.setState({ chkPaymentLoading : true, 
+						paymentMsgError    : false, 
+						completedOrderDate : todayDate, 
+						completedOrderHour : hour,
+						transactionId      : transId
+					})
 		// Payment loading modal off & confirm state (addressAndPaymentFinished) validated
 		setTimeout(() => { this.setState({chkPaymentLoading: false, addressAndPaymentFinished: true }) },2500);
 	} else {
@@ -307,8 +339,54 @@ backBtnFromSumar() {
 }
 
 
+/* __ Actions after delivery method select __ */
+
+checkDeliveryMethodPrice(courierPrice) {
+	// Return price recalculated after selecting delivery method
+	let totalCartAmount  = this.props.totalCartAmount,
+		addDeliveryPrice = totalCartAmount + parseFloat(courierPrice);
+		this.setState({ totalCartAmountWithDelivery: addDeliveryPrice })
+}
+
+fillAddressDelivery() {
+	// Check account user if has completed 'Address delivery' from user account 
+	let lastName = 'John',
+	    name     = 'Doe',
+	    phone    = '0786756564',
+	    fulladdress = 'John Doe No.12 255062';
+
+	setTimeout(() => {
+		this.setState({
+		addressLastName: lastName,
+		addressLastNameValid: true,
+		addressName: name,
+		addressNameValid: true,
+		addressPhone: phone,
+		addressPhoneValid: true,
+		addressStreet: fulladdress,
+		addressStreetValid: true
+		})
+
+		// Animate input label name to top to view the input value
+		let addressInputs = document.querySelectorAll('.chk_addr_input');
+			addressInputs.forEach((el) => {
+				// If input value is not empty, animate input name label to top
+				if(el.value.length > 0) {
+					el.previousElementSibling.setAttribute('style','transform:translateY(-175%);font-size:12.5px;color:#7D7D7D;');
+					el.setAttribute('style','border:1px solid #000');
+				}  
+			});
+	},500);
+}
+
+ 
 
 	render() {
+
+		// If user doesn't come from the Cart using 'Go to checkout' button, redirect.
+		if(!this.props.cartIsLoaded) {
+			return (<Redirect to='/cart'/>)
+		}
 		// Style for checkout header steps
 		const stepCheckedIcon        = {color:'#fff',backgroundColor:'#289b38'},
 			  stepUncheckedIcon      = {color:'#000',backgroundColor:'#fff'},
@@ -645,51 +723,43 @@ backBtnFromSumar() {
 															<span className='wr_chk_green mb-5'>Multumim!</span>
 															<div className='wr_chk_sum'>
 																<span className='wr_chk_sum_label'>ID Tranzactie:</span>
-																<span className='wr_chk_sum_value'>f45455i3367888</span>
+																<span className='wr_chk_sum_value'>{this.state.transactionId}</span>
 															</div>
 															<div className='wr_chk_sum'>
 																<span className='wr_chk_sum_label'>Data/ora:</span>
 																<span className='wr_chk_sum_value'>{this.state.completedOrderDate}, {this.state.completedOrderHour}</span>
 															</div>
 															<div className='wr_chk_sum'>
-																<span className='wr_chk_sum_label'>Prenume</span>
-																<span className='wr_chk_sum_value'>Gigel</span>
-															</div>
-															<div className='wr_chk_sum'>
-																<span className='wr_chk_sum_label'>Nume:</span>
-																<span className='wr_chk_sum_value'>Gigel</span>
+																<span className='wr_chk_sum_label'>Destinatar</span>
+																<span className='wr_chk_sum_value'>{this.state.addressLastName} {this.state.addressName}</span>
 															</div>
 															<div className='wr_chk_sum'>
 																<span className='wr_chk_sum_label'>Telefon:</span>
-																<span className='wr_chk_sum_value'>0756476756</span>
-															</div>
-															<div className='wr_chk_sum'>
-																<span className='wr_chk_sum_label'>Email:</span>
-																<span className='wr_chk_sum_value'>gigelgheorghe@yahoo.com</span>
+																<span className='wr_chk_sum_value'>{this.state.addressPhone}</span>
 															</div>
 															<div className='wr_chk_sum'>
 																<span className='wr_chk_sum_label'>Adresa:</span>
-																<span className='wr_chk_sum_value'>Aleea Baicului nr.12 bl.c6 sc.A ap.12</span>
-															</div>
-															<div className='wr_chk_sum'>
-																<span className='wr_chk_sum_label'>Judet:</span>
-																<span className='wr_chk_sum_value'>Constanta</span>
+																<span className='wr_chk_sum_value'>{this.state.addressStreet} {this.state.addressCity}</span>
 															</div>
 															<div className='wr_chk_sum'>
 																<span className='wr_chk_sum_label'>Comuna/oras/sat</span>
-																<span className='wr_chk_sum_value'>Constanta</span>
+																<span className='wr_chk_sum_value'>{this.state.addressSubCity}</span>
 															</div>
 															<div className='wr_chk_sum'>
 																<span className='wr_chk_sum_label'>Alte informatii</span>
-																<span className='wr_chk_sum_value'>-</span>
+																<span className='wr_chk_sum_value'>{this.state.addressAdditionalInfo.length > 0 ? this.state.addressAdditionalInfo : '-'}</span>
 															</div>
 															<div className='wr_chk_sum'>
 																<span className='wr_chk_sum_label'>Metoda livrare</span>
-																<span className='wr_chk_sum_value'>Curier express ( 1-3 zile lucratoare )</span>
+																<span className='wr_chk_sum_value'>{this.state.courierType === 'Curier clasic' ? 'Curier clasic ( 2-5 zile lucratoare )' : 'Curier express ( 1-3 zile lucratoare )'}</span>
+															</div>
+															<div className='wr_chk_sum'>
+																<span className='wr_chk_sum_label'>Metoda plata</span>
+																<span className='wr_chk_sum_value'>Ramburs</span>
 															</div>
 															<div className='wr_chk_sum wr_chk_sum_total_lab'>
 																<span className='wr_chk_sum_label'>Total plata</span>
-																<span className='wr_chk_sum_value'>239 RON</span>
+																<span className='wr_chk_sum_value'><strong>{this.state.totalCartAmountWithDelivery} lei</strong></span>
 															</div>
 														</div>
 
@@ -721,51 +791,45 @@ backBtnFromSumar() {
 												</div>
 											</div>
 										</div>
+
+										{/* Right container - display products / amount */}
 										<div className='chk_sect_display_products chk_sect col-12 order-first order-lg-0 col-lg-5 col-xl-4'>
 											<div className='row justify-content-center'>
 												<div className='checkout_sec_display_cart_prod'>
 													{/* Total products sum */}
 													<div className='chk_sec_displayprod'>
-														<span className='chk_sec_dprod_label'>Total produse</span>
-														<span className='chk_sec_dprod_val'>45.55 RON</span>
+														<span className='chk_sec_dprod_label'>Total</span>
+														<span className='chk_sec_dprod_val'>{this.state.totalCartAmount} lei</span>
 													</div>
 													{/* Delivery cost */}
 													<div className='chk_sec_displayprod'>
-														<span className='chk_sec_dprod_label'>Livrare (Express)</span>
-														<span className='chk_sec_dprod_val'>14.99 RON</span>
+														<span className='chk_sec_dprod_label'>{!this.state.courierType.length > 0 ? 'Livrare' : this.state.courierType}</span>
+														<span className='chk_sec_dprod_val'>{!this.state.courierPrice.length > 0 ? 'de la 9.99 lei' : this.state.courierPrice+' lei'}</span>
 													</div>
 													{/* Total with TVA */}
 													<div className='chk_sec_displayprod chk_sec_totaltva'>
 														<span className='chk_sec_dprod_label'><strong>Total</strong> cu TVA</span>
-														<span className='chk_sec_dprod_val'><strong>{45.55 + 14.99} RON</strong></span>
+														<span className='chk_sec_dprod_val'><strong>{this.state.totalCartAmountWithDelivery} lei</strong></span>
 													</div>
 													
 													{/* Display products */}
-													<span className='chk_sec_dprod_title'>Comanda ta <span>2 articole</span></span>
+													<span className='chk_sec_dprod_title'>Comanda ta <span>{this.props.cart.length} {this.props.cart.length === 1 ? 'articol' : 'articole'}</span></span>
 
 													<div className='chk_wrap_display_products'>
-														<div className='chk_wrap_dprod_box'>
+														{this.props.cart.length > 0 && this.props.cart.map((prod,ind) =>
+														<div key={ind} className='chk_wrap_dprod_box'>
 															<span className='chk_wrap_dprod_box_img'>
-															<img src={logo2} alt='' className='chkwrap_prodbox_img'/>
+															<img src={prod.img} alt='' className='chkwrap_prodbox_img'/>
 															</span>
 															<span className='chk_wrap_dprod_box_data'>
-																<span className='chks_wdprod_boxd_title'>POLO Tshirt Blue</span>
-																<span className='chks_wdprod_boxd_subtitle'>Marime: XL</span>
-																<span className='chks_wdprod_boxd_subtitle chkswp_bsub_color'>Culoare: <span></span></span>
-																<span className='chks_wdprod_boxd_price'>15.99 RON</span>
+																<span className='chks_wdprod_boxd_title'>{prod.name}</span>
+																<span className='chks_wdprod_boxd_subtitle'>Marime: {prod.selectedSize}</span>
+																<span className='chks_wdprod_boxd_subtitle chkswp_bsub_color'>Culoare: <span style={{backgroundColor: prod.color}}></span></span>
+																<span className='chks_wdprod_boxd_sub_quant'>x<span>{prod.quantity}</span></span>
+																<span className='chks_wdprod_boxd_price'>{prod.totalAmount} lei</span>
 															</span>
 														</div>
-														<div className='chk_wrap_dprod_box'>
-															<span className='chk_wrap_dprod_box_img'>
-															<img src={logo2} alt='' className='chkwrap_prodbox_img'/>
-															</span>
-															<span className='chk_wrap_dprod_box_data'>
-																<span className='chks_wdprod_boxd_title'>POLO Tshirt Blue</span>
-																<span className='chks_wdprod_boxd_subtitle'>Marime: XL</span>
-																<span className='chks_wdprod_boxd_subtitle chkswp_bsub_color'>Culoare: <span></span></span>
-																<span className='chks_wdprod_boxd_price'>15.99 RON</span>
-															</span>
-														</div>
+														)}
 													</div>
 												</div>
 
@@ -783,4 +847,5 @@ backBtnFromSumar() {
 	}
 }
 
+const Checkout = connect(mapStateToProps,null)(connectedCheckout);
 export default Checkout;

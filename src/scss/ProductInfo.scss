@@ -115,12 +115,14 @@ $greenColor: #188604;
  	max-height: 500px;
  	position: relative;
  	margin:0 30px 0 30px;
+ 	padding: 5px;
  }
 
  /* Prod info gallery */
 
  .prodinfo_sec_img_gallery {
- 	width: 90%;
+ 	min-width: 80%;
+ 	max-width: 90%;
  	min-height: 60px;
  	border:1px solid $grayColorBorder;
  	margin:10px;
@@ -172,7 +174,7 @@ $greenColor: #188604;
  		min-width: 103%;
  		font-size: 25px;
  		font-weight: bold;
- 
+ 		color: #c00;
  		padding-right: 65px;
 
  		svg {
@@ -186,7 +188,7 @@ $greenColor: #188604;
  		}
  		.bi-heart {
  			&:hover {
- 				color:red;
+ 				color:$redColor;
  			}
  		}
  	}
@@ -195,12 +197,60 @@ $greenColor: #188604;
  		margin-top:5px;
  	}
  	.prodinfo_prod_price {
+ 		display: flex;
+ 		flex-wrap: wrap;
  		font-size: 23px;
+ 		margin-top:5px;
+ 
+ 		height: 35px;
+ 		line-height: 36px;
+ 		 
+
+ 		 .prodinfo_prod_old_price {
+ 		 	font-size: 19px;
+ 		 	margin-left:10px;
+ 		 	text-decoration: line-through;
+ 		 	color: #c00;
+ 		 }
  	}
+ 	.prodinfo_prod_saveupto {
+ 		 	margin-top:8px;
+ 		 	font-size: 13px;
+ 		 	padding:0 10px 3px 10px;
+ 		 	border:1px solid #188604;
+ 		 	color: #188604;
+ 		 	border-radius: 3px;
+ 		 
+
+ 		 	span {
+ 		 		font-size: 16px;
+ 		 	}
+ 		 }
  	.prodinfo_prod_color_title {
  		font-weight: bold;
- 		margin-top:30px;
+ 		margin-top:20px;
 
+ 	}
+ 	.prodinfo_prod_prodcolor {
+ 		position: relative;
+ 		display: flex;
+ 		flex-wrap: wrap;
+ 		margin-top:20px;
+ 		min-width: 100%;
+ 		min-height: 30px;
+ 		font-weight: bold;
+
+ 		span:nth-child(1) {
+ 			margin:0 10px 10px 0;
+ 		}
+ 		span:nth-child(2) {
+ 			position: relative;
+ 			height: 30px;
+ 			width: 30px;
+ 			border:2px solid $grayColorBorder;
+ 			border-radius: 3px;
+ 
+ 		}
  	}
  	.prodinfo_prod_wrap_colors {
  		display: flex;
@@ -208,11 +258,11 @@ $greenColor: #188604;
  		min-width: 100%;
  		border-bottom: 1px solid $grayColorBorder;
  		min-height: 35px;
- 		padding-bottom: 30px;
+ 		padding-bottom: 20px;
  
  
 
- 		span {
+ 		.prodinfo_color_value {
  			position: relative;
  			height: 30px;
  			width: 30px;

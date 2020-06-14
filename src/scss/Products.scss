@@ -21,7 +21,7 @@ $greenColor: #289b38;
 body {
   height: 100%;
   overflow-x: hidden;
-  font-family: 'Playfair Display', serif;
+ 
 }
 
 .products_container {
@@ -80,6 +80,7 @@ body {
   flex-direction: column;
   align-items: center;
   overflow: hidden;
+ 
 }
 
 .mob_prodcont_filters_close {
@@ -216,6 +217,13 @@ body {
   }
 }
 
+@media screen and (min-width: 1200px) and (max-width: 1300px) {
+  .d_prodcont_filter_panel,
+  .d_prodcont_active_filters {
+    width: 250px;
+  }
+}
+
 .dprodcont_wrap_filter_names {
   display: flex;
   flex-direction: column;
@@ -308,8 +316,9 @@ body {
 .d_prodcont_displayproducts {
   width: 100%;
   max-width: 1335px;
-  padding: 0;
+
   position: relative;
+ 
 }
 
 .dp_wrap_prod_wrapper {
@@ -334,10 +343,35 @@ body {
   height: auto;
   padding: 8px;
   margin-top: 5px;
+  transition: 0.2s;
+
+  .prod_wishlist_btn {
+    position: absolute;
+    top:10px;
+    left:10px;
+ 
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    border-radius: 50%;
+    text-align: center;
+    font-size: 19px;
+    cursor: pointer;
+    transition: 0.2s;
+    &:hover {
+      font-size:22px;
+      color: $redColor;
+
+    }
+  }
+  .dprod_removefromwishlist_btn {
+    color: $redColor;
+  }
   img {
     width: 100%;
     height: auto;
     max-height: 250px;
+
   }
   .dprod_c_name {
     width: 100%;
@@ -387,6 +421,9 @@ body {
 }
 
 @media screen and (max-width: 400px) {
+  .d_prodcont_displayproducts { 
+    padding: 0;
+  }
   .d_product_card {
     .dprod_c_price {
       font-size: 15px;
@@ -432,11 +469,6 @@ body {
   }
 }
 
-@media screen and (min-width: 1200px) and (max-width: 1300px) {
-  .d_prodcont_filter_panel {
-    width: 250px;
-  }
-}
 
 @media screen and (min-width: 1250px) {
   .d_product_card {
@@ -609,3 +641,27 @@ body {
   transition: 0.2s;
 }
 
+
+
+
+/* __ SEARCH PRODUCTS __ */
+
+
+.search_loading_eff {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top:50px;
+  min-height: 350px;
+  margin-top:50px;
+
+  .slef_search_title {
+    font-weight: bold;
+    font-size: 18px;
+    margin-top:15px;
+  }
+  .slef_search_key {
+    font-size: 17px;
+    font-style: italic;
+  }
+}

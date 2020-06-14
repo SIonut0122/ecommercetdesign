@@ -6,7 +6,7 @@ import './css/Main.css';
 
 import ProductInfo                   from './components/ProductInfo';
 import menProducts                   from './components/products/menProducts';
-import womanProducts                   from './components/products/womanProducts';
+import womenProducts                   from './components/products/womenProducts';
 import Account                    from './components/account/Account';
 import MyOrders                 from './components/account/MyOrders';
 import ShippingData                 from './components/account/ShippingData';
@@ -17,12 +17,13 @@ import Cart                     from './components/Cart';
 import Checkout                 from './components/Checkout';
 import TermsAndConditions       from './components/TermsAndConditions';
 import Register                 from './components/Register';
-
-
+import searchProducts                 from './components/searchProducts';
  
 
-class Main extends React.Component {
 
+
+
+class Main extends React.Component {
 
   render() { 
     return (
@@ -37,13 +38,14 @@ class Main extends React.Component {
                  
                     <Switch>    
                       <Route  exact path='/'                component={Login} />
+                      <Route  path='/search/:id'            component={searchProducts} />
                       <Route  path='/products/men'          component={menProducts} />
-                      <Route  path='/products/womans'       component={womanProducts} />
-                      <Route  path='/productinfo/:id'           component={ProductInfo} />
+                      <Route  path='/products/women'        component={womenProducts} />
+                      <Route  path='/productinfo/:id'       component={ProductInfo} />
                       <Route  path='/login'                 component={Login} />
-                       <Route exact path='/account'         component={Account} />
-                       <Route path='/account/myorders'      component={MyOrders} />
-                       <Route path='/account/shippingdata'  component={ShippingData} />
+                       <Route exact path='/account'               component={Account} />
+                       <Route exact path='/account/myorders'      component={MyOrders} />
+                       <Route exact path='/account/shippingdata'  component={ShippingData} />
                        <Route path='/register'              component={Register}/>
                        <Route path='/wishlist'              component={Wishlist} />
                        <Route path='/cart'                  component={Cart} />

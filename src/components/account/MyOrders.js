@@ -1,12 +1,21 @@
 import React from 'react';
 import '../../css/Account.css';
-import { Link               } from 'react-router-dom'
+import { Link,Redirect               } from 'react-router-dom'
 import AccountMenu from './AccountMenu';
 import logo2 from '../../images/pants2.jpg';
+import { connect }            from "react-redux";
 
 
 
-class MyOrders extends React.Component {
+
+
+const mapStateToProps = state => {
+  return {  
+  		  userIsSignedIn   : state.userIsSignedIn
+        };
+};
+
+class connectedMyOrders extends React.Component {
 
 	state = {
 			componentIsLoading: true,
@@ -20,6 +29,18 @@ componentDidMount() {
 }
 
 	render() {
+		
+		// If user is not signed in, redirect to login page
+		if(this.props.userIsSignedIn === null) {
+			return (<div className='account_loading_modal'>
+						<div className='row justify-content-center h-100'>
+							<div className='acc_load_mod my-auto'><div></div><div></div><div></div><div></div></div>
+						</div>
+					</div>)
+		} else if(!this.props.userIsSignedIn) {
+			return ( <Redirect to={'/login'}/>)
+		}
+
 		return (
 				<div>
 					{/* Navigation */}
@@ -98,4 +119,6 @@ componentDidMount() {
 	}
 }
 
+
+const MyOrders = connect(mapStateToProps,null)(connectedMyOrders);
 export default MyOrders;

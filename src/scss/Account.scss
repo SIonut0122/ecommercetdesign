@@ -4,6 +4,7 @@ $blackColor: #202020;
 $logGrayColor: #4B4B4B;
 $redColor: #FF3E3E;
 $greenColor: #289b38;
+$blueLightColor: #007bff;
 
 @mixin disable-select {
 	-webkit-user-select: none;
@@ -53,15 +54,43 @@ $greenColor: #289b38;
 /* Wishlist title */
 
 .account_title {
-
+	display: flex;
+	flex-direction: column;
 	border-bottom:1px solid $grayColorBorder;
 	font-weight: bold;
 	font-size: 30px;
+	min-width: 100%;
 	position: relative;
-	padding-bottom: 15px;
+	padding-bottom: 10px;
 	margin-top:20px;
+ 
+ 
+	.acc_title_signout_btn {
+		font-size: 15px;
+ 
+	height: 35px;
+	margin-left:3px;
+		font-weight: normal;
+		color: $blueLightColor;
+			cursor: pointer;
+			transition: 0.1s;
+
+			&:hover {
+				opacity:0.8;
+			}
+
+	}
 }
 
+@media screen and (max-width: 400px) {
+	.account_title {
+		font-size: 25px;
+		.acc_title_signout_btn {
+			font-size: 14px;
+			margin-top:4px;
+		}
+	}
+}
 /* Acc sections */
 
 .account_sec {
@@ -302,6 +331,7 @@ $greenColor: #289b38;
  	}
 
  }
+
 .acc_select_sex {
 	margin-top:15px;
 }

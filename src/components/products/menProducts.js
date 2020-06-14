@@ -9,9 +9,9 @@ class menProducts extends React.Component {
 		return (
 				<div>	
 					  <Products 
-					  	selectedProductsProps={menProductsData} 
-					  	totalSelProducts={menProductsData}
-					  	pathName='Tricouri barbati'
+					  	selectedProductsProps = {menProductsData} 
+					  	totalSelProducts      = {menProductsData}
+					  	pathName              = 'Tricouri barbati'
 					  />
 				</div>
 		)

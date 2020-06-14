@@ -1,36 +1,51 @@
 import React from 'react';
 import '../css/Login.css';
-import { Link               } from 'react-router-dom';
+import { Link, Redirect               } from 'react-router-dom';
+import { connect }            from "react-redux";
+ 
+ 
+
+const mapStateToProps = state => {
+  return {  
+  		  userIsSignedIn   : state.userIsSignedIn,
+
+        };
+};
 
 
-class Login extends React.Component {
+
+class connectedLogin extends React.Component {
 
 	state = {
+			loginLoadingEffect: true,
 			openForgotPassCont: false,
-
 			loginEmail: '',
 			loginEmailValid: false,
 			invalidLoginEmailMsg: false,
 			loginPassword: '',
 			loginPasswordValid: false,
-			invalidLoginPassMsg: false
+			invalidLoginPassMsg: false,
+			forgotPassEmailInput: '',
+			forgotPassErrMsg: false,
+			forgotPassConfirmMsg: false,
 
 	}
 
 componentDidMount() {
-	 
+
+	 setTimeout(() => { this.setState({ loginLoadingEffect: false }) },1000);
 }
 
 /* Login section */
 
 handleLoginEmail(e) {
-	 let loginEmailValue = e.target.value,
-    // Check loginEmailValue length to be higher than 0
+  let loginEmailValue = e.target.value,
+      // Check loginEmailValue length to be higher than 0
       checkValueLength = loginEmailValue.length > 0,
-    // Check for blank spaces
+      // Check for blank spaces
       checkWhiteSpaces = loginEmailValue.trim().length === loginEmailValue.length;
 
-        // if email value match, setstate value 
+    // if email value match, setstate value 
     if(checkValueLength && checkWhiteSpaces) {
         this.setState({loginEmail: loginEmailValue, loginEmailValid: true})
     } else if(loginEmailValue.length === 0) {
@@ -57,10 +72,7 @@ handleLoginPassword(e) {
 	    } else {
 	        this.setState({loginPassword: loginPasswordValue, loginPasswordValid: false})
 	    }
-
 }
-
-
 
 onLoginFocus(e) {
 	// Animate label input (Email,Password) and change input border on focus
@@ -95,6 +107,12 @@ showHidePassword(e) {
 	loginInputPassword.focus();
 }
 
+handleLoginInputKey(e) {
+	if(e.key === 'Enter' || e.keyCode === 13) {
+		this.handleLoginBtn();
+	}
+}
+
 handleLoginBtn() {
 	if(!this.state.loginEmailValid && this.state.loginPasswordValid) {
 		this.setState({ invalidLoginEmailMsg: true, invalidLoginPassMsg: false})
@@ -104,14 +122,100 @@ handleLoginBtn() {
 		this.setState({ invalidLoginEmailMsg: true, invalidLoginPassMsg: true})
 	} else {
 		this.setState({ invalidLoginEmailMsg: false, invalidLoginPassMsg: false})
-		console.log('Everything legal');
+		// Login user
+		this.signIn();
 	}
 }
 
-/* Forgot password */
+
+
+/* FORGOT PASSWORD */
+
+handleForgotPassInput(e) {
+   let mailformat = /^\w+([-]?\w+)*@\w+([-]?\w+)*(\.\w{2,3})+$/,
+       emailValue = e.target.value;
+
+      // If input mail match, setstate value
+    if(emailValue.match(mailformat)) {
+        this.setState({forgotPassEmailInput: emailValue, forgotPassEmailInputValid: true})
+    } else if(emailValue.length === 0) {
+      // If input is empty, reset value input
+        this.setState({forgotPassEmailInput: '', forgotPassEmailInputValid: false})
+    } else {
+        this.setState({forgotPassEmailInput: '', forgotPassEmailInputValid: false})
+    }
+}
+
+handleForgotPassInputKey(e) {
+   // If user press enter on forgotpass input, call function
+  if(e.key === 'Enter' || e.keyCode === 13) {
+    this.handleResetPasswordBtn();
+  }
+}
+
+handleResetPasswordBtn() {
+	// If forgot pass input value is not invalid, proceed
+	if(this.state.forgotPassEmailInputValid) {
+        firebase.auth().sendPasswordResetEmail(this.state.forgotPassEmailInput)
+      .then(() => {
+  		// Display 'email sent' message and clear all forgotpass inpu
+  		this.setState({ forgotPassConfirmMsg: true, forgotPassErrMsg: false,forgotPassEmailInput: '',forgotPassEmailInputValid: false })
+  	   })
+      .catch((err) => {
+        // If email was not found inside database, display message
+        if(err.code === 'auth/user-not-found') {
+          this.setState({ forgotPassConfirmMsg: false, forgotPassErrMsg: true  })
+        }
+      })
+  	} else {
+  		this.setState({ forgotPassConfirmMsg: false, forgotPassErrMsg: true })
+  	}
+}
+
+
+
+/* Sign in methods */
+
+signIn() {
+   	 // Sign in with normal method
+	 firebase.auth().signInWithEmailAndPassword(this.state.loginEmail, this.state.loginPassword)
+    .then(() => {
+    	/*window.location.reload();*/
+    	console.log('USER IS SIGNED IN');
+     }).catch((error) => {
+      console.log('Error while trying to sign in: '+error);
+  });  
+}
+
+googlePlusConnect() {
+	// Create google auth provider
+let provider = new firebase.auth.GoogleAuthProvider();
+	// Open popup window to signin Google+
+	firebase.auth().signInWithPopup(provider).then((result) => {
+	 // Console.log results if you need info about user
+	/* window.location.reload();*/
+	console.log('USER IS SIGNED IN');
+	}).catch(function(error) {
+		console.log(error);
+	});
+}
 
 
 	render() {
+
+	    // If user is not signed in, redirect to login page
+		if(this.props.userIsSignedIn === null) {
+			return (<div className='account_loading_modal'>
+						<div className='row justify-content-center h-100'>
+							<div className='acc_load_mod my-auto'><div></div><div></div><div></div><div></div></div>
+						</div>
+					</div>)
+		} else if(this.props.userIsSignedIn) {
+			return ( <Redirect to={'/account'}/> )
+		}
+
+
+		document.title = 'Conectare - Tshirt Design';
 		return (
 			<div>
 			  {/* Navigation */}
@@ -129,6 +233,15 @@ handleLoginBtn() {
 
 				<div className='row justify-content-center'> 
 					<div className='login_container col-11'>
+
+						{/* Loading effect */}
+						{this.state.loginLoadingEffect && (
+							<div className='login_cont_loading'>
+								<div className='row justify-content-center h-100'>
+									<div className='acc_load_mod my-auto'><div></div><div></div><div></div><div></div></div>
+								</div>
+							</div>
+						)}
 						<div className='row justify-content-center'>
 							<div className='login_cont_sect login_sect_box col-12 col-md-6 col-lg-6'>
 								<div className='row'>
@@ -151,7 +264,8 @@ handleLoginBtn() {
 															   value        = {this.state.loginEmail}
 															   onChange     = {(e) => this.handleLoginEmail(e)}
 															   onFocus      = {(e) => this.onLoginFocus(e)} 
-															   onBlur       = {(e) => this.onLoginBlur(e)}>
+															   onBlur       = {(e) => this.onLoginBlur(e)}
+															   onKeyDown   = {(e) => this.handleLoginInputKey(e)}>
 														</input>
 													</span>
 												</div>
@@ -173,7 +287,8 @@ handleLoginBtn() {
 															   value        = {this.state.loginPassword}
 															   onChange     = {(e) => this.handleLoginPassword(e)}
 															   onFocus 		= {(e) => this.onLoginFocus(e)} 
-															   onBlur       = {(e) => this.onLoginBlur(e)}>
+															   onBlur       = {(e) => this.onLoginBlur(e)}
+															   onKeyDown   = {(e) => this.handleLoginInputKey(e)}>
 														</input>
 														
 														<i className='far fa-eye log_showhide_icon' title='Show / Hide password' onClick={(e) => this.showHidePassword(e)}></i>
@@ -199,7 +314,10 @@ handleLoginBtn() {
 												</div>
 												{/* Google plus button */ }
 												<div className='row justify-content-center'>
-													<span className='log_with_google_plus_button'><i className='fab fa-google-plus-g'></i>Google+</span>
+													<span className='log_with_google_plus_button' onClick={()=>this.googlePlusConnect()}>
+														<i className='fab fa-google-plus-g'></i>
+														Google+
+													</span>
 												</div>
 
 											</div>
@@ -217,7 +335,7 @@ handleLoginBtn() {
 											<span className='log_title_font'>Prima ta vizita ?</span>
 										</div>
 										<div className='row justify-content-center'>
-											<span className='log_register_button'>Inregistreaza-te</span>
+											<Link to={'/register'} className='log_register_button'>Inregistreaza-te</Link>
 										</div>
 										<div className='row justify-content-center'>
 											<span className='log_regtitle_benefits col-11'>Si vei beneficia de:</span>
@@ -242,7 +360,7 @@ handleLoginBtn() {
 						<div className='forgot_pass_box col-12 col-sm-10 col-md-7 col-lg-5 col-xl-4' onClick={(e)=>{e.stopPropagation()}}>
 							
 						 
-							<svg className="bi bi-x close_forgotpass_cont" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg" onClick={() => { this.setState({openForgotPassCont:false})}}>
+							<svg className="bi bi-x close_forgotpass_cont" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg" onClick={() => { this.setState({openForgotPassCont:false,forgotPassErrMsg:false,forgotPassConfirmMsg:false})}}>
 							  <path fill-rule="evenodd" d="M11.854 4.146a.5.5 0 010 .708l-7 7a.5.5 0 01-.708-.708l7-7a.5.5 0 01.708 0z" clip-rule="evenodd"/>
 							  <path fill-rule="evenodd" d="M4.146 4.146a.5.5 0 000 .708l7 7a.5.5 0 00.708-.708l-7-7a.5.5 0 00-.708 0z" clip-rule="evenodd"/>
 							</svg>
@@ -258,17 +376,24 @@ handleLoginBtn() {
 							</div>
 							<div className='row'>
 								<span className='forgotpass_input_wrap'>
-									<input type='text' placeholder='Email'></input>
+									<input type='text' 
+										   placeholder='Email' 
+										   onChange={(e)=>this.handleForgotPassInput(e)}
+										   onKeyDown={(e)=>this.handleForgotPassInputKey(e)}></input>
 								</span>
 							</div>
+							{this.state.forgotPassErrMsg && (
 							<div className='row'>
-								<span className='forgotpass_err_msg'>Email invalid.</span>
+								<span className='forgotpass_err_msg'>Email inexistent sau invalid.</span>
 							</div>
+							)}
+							{this.state.forgotPassConfirmMsg && (
 							<div className='row'>
 								<span className='forgotpass_snet_msg'>Noua parola a fost trimisa la e-mailul indicat.</span>
 							</div>
+							)}
 							<div className='row'>
-								<span className='send_newpass_btn'>Trimite</span>
+								<span className='send_newpass_btn' onClick={()=>this.handleResetPasswordBtn()}>Trimite</span>
 							</div>
 						</div>
 					</div>
@@ -279,4 +404,8 @@ handleLoginBtn() {
 	}
 }
 
+ 
+const Login = connect(mapStateToProps,null)(connectedLogin);
 export default Login;
+
+ 

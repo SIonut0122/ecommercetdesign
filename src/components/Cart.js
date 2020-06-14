@@ -1,19 +1,202 @@
 import React from 'react';
 import '../css/Cart.css';
 import { Link               } from 'react-router-dom';
+import { connect }            from "react-redux";
+import { setCart,setWishList,setTotalCartAmount,setCartIsLoaded } from '../actions';
 
-import logo2 from '../images/pants2.jpg';
+const mapStateToProps = state => {
+  return {  
+          cart       	  : state.cart,
+          wishList   	  : state.wishList,
+
+        };
+};
+
+function mapDispatchToProps(dispatch) {
+  return {
+          setCart            : cart     => dispatch(setCart(cart)),
+          setWishList        : wishlist => dispatch(setWishList(wishlist)),
+          setTotalCartAmount : amount => dispatch(setTotalCartAmount(amount)),
+          setCartIsLoaded    : bol => dispatch(setCartIsLoaded(bol))
+        };
+}
 
 
 
-class Cart extends React.Component {
-
+class connectedCart extends React.Component {
 
 	state ={
-		cartEmpty: false,
+		cart : this.props.cart
 	}
 
+
+
+componentDidMount() {
+	// On page load, check localstorage is contains 'cart' and set cart props
+	  if (window.localStorage.getItem('cart') !== null && !this.props.cart.length > 0 ) {
+	 	 let cartStorage = JSON.parse(localStorage.getItem('cart'));
+	 	  this.props.setCart({ cart: cartStorage })
+	 }  
+	 // Let time to check if localStorage is not null check wishlisty
+	setTimeout(() => {
+		// Check if products inside cart are found inside the wishlist
+		this.checkWishlist();
+	},1500);
+
+
+}
+
+
+checkWishlist() {
+	let cart           = [...this.props.cart],
+	    wishListIdList = this.props.wishList.map(el => el.id);
+
+	// Map through cart and check if any product is found inside wishlist
+	for(let c in cart) {
+		if(wishListIdList.includes(cart[c].id)) {
+			// If cart product's id match with any wishlist id, set addtowish to true
+			cart[c].addedToWishlistFromCart = true;
+		} else {
+			cart[c].addedToWishlistFromCart = false;
+		}
+	}
+	this.props.setCart({ cart: cart })
+	localStorage.setItem('cart', JSON.stringify(cart));
+}
+
+cartAddToWishlist(e,product) {
+	let cart     = [...this.props.cart],
+		wishList = [...this.props.wishList];
+
+	 const elementsIndex  = cart.findIndex(element => element.id === product.id),
+	       wishListIdList = wishList.map(el => el.id);
+
+	// If product was already added to the wishlist
+	if(wishListIdList.includes(product.id)) {
+		// Find product by index, and change addedtocart prop to false
+	 	cart[elementsIndex] = {...cart[elementsIndex], addedToWishlistFromCart: false};
+	 	this.props.setCart({ cart: cart })
+
+		// Remove product from wishlist
+		let removeProduct = wishList.filter((prod) => prod.id !== product.id);
+		this.props.setWishList({ wishList: removeProduct })
+		
+		// Set cart & wishlist localstorage
+		localStorage.setItem('cart', JSON.stringify(cart));
+		localStorage.setItem('wishList', JSON.stringify(removeProduct));
+	 
+	} else {
+		// Add product to wishlist
+		// Find product by index, and change addedtocart prop to true
+		cart[elementsIndex] = {...cart[elementsIndex], addedToWishlistFromCart: true};	 
+		this.props.setCart({ cart: cart })
+
+		// Add product to wishlist
+		wishList.push(product);
+ 		this.props.setWishList({ wishList })
+
+		// Set cart & wishlist localstorage
+		localStorage.setItem('cart', JSON.stringify(cart));
+		localStorage.setItem('wishList', JSON.stringify(wishList));
+	}
+}
+
+cartRemoveProduct(e,productId) {
+	let cartproduct = document.querySelectorAll('.cart_product_b');
+	// Map through all the cart DOM products
+	cartproduct.forEach((modelNo) => {
+		// If cart DOM product -> model id innerHTML is equal with the selected product id, set style while removing
+		if(modelNo.querySelector('.cart_prod_id_no').innerHTML.substring(7,modelNo.length) === productId) {
+			// Set style while removing/loading
+			modelNo.setAttribute('style','opacity:0.6;pointer-events:none');
+			// Remove product from cart/localstorage after 1.5 sec
+			setTimeout(() => {
+				let cart = [...this.props.cart];
+					// Filter cart to remove the selected product from it
+					let removeProduct = cart.filter((el) => el.id !== productId);
+					this.props.setCart({ cart: removeProduct })
+					// Change localstorage after removing the product
+					localStorage.setItem('cart', JSON.stringify(removeProduct));
+					// Remove attribute style from all the cart products
+					modelNo.removeAttribute('style');
+ 
+			},2500);
+		} 
+	})		
+}
+
+handleProductQuantityChange(e,cartProductId) {
+	let cart = [...this.props.cart];
+	 // Map through existing cart products for the changed input type
+	 for(let c in cart) {
+		if(cart[c].id === cartProductId) {
+			// If changed quantity input value is a number and higher than 0 
+			if(e.target.value.split('').every(x => x.match(/[0-9]+/g)) && e.target.value.length > 0) {
+				// If changed quantity value starts with 0, get only the second number
+				if(e.target.value.length > 1 && e.target.value[0] === '0') {
+					// Set quantity converted to number
+					cart[c].quantity = parseFloat(e.target.value[1]);
+					this.setState({ cart })
+				} else {
+					// If quantity number match, change quant
+					cart[c].quantity = parseFloat(e.target.value);
+					this.props.setCart({ cart })
+				}
+			} else {
+			// If changed quantity is not a number, set it to default 1
+			cart[c].quantity = 1;
+			this.props.setCart({ cart })
+			}
+		}
+	}
+}
+
+handleBlurInputQuantity(e,cartProductId) {
+	let cart = [...this.props.cart];
+	// When user clicks outside the quantity input, recheck changes 
+	// of quantity of all cart products and multiply it to its own price to get total amount price / delay 1.5sec
+	setTimeout(() => {
+		// Get blur out target index product
+	 	 const elementsIndex = cart.findIndex(element => element.id == cartProductId );
+	 	 // Find product by index, and change totalAmount
+	 	 cart[elementsIndex] = {...cart[elementsIndex], totalAmount: cart[elementsIndex].quantity * cart[elementsIndex].price};
+
+	 	this.props.setCart({ cart: cart })
+		// Push cart to localstorage to be used on every mount
+		localStorage.setItem('cart', JSON.stringify(cart));
+	},1500);
+}
+
+getTotalCartAmount() {
+	// Calculate cart total amount
+	let allCartProductsTotalAmount = this.props.cart.map(prod => prod.totalAmount);
+	let totalCartAmount            = allCartProductsTotalAmount.reduce((a,b) => a+b,0);
+	// If totalCartAmount !== null, set it as props
+	if(totalCartAmount) {
+		this.props.setTotalCartAmount({ totalCartAmount })
+	}
+	return totalCartAmount;
+}
+
+getTotalCartSaveUpPercent() {
+	let cart = [...this.props.cart],
+		// Collect all discounts amounts to be displayed
+		totalCartSaveUpAmount = []; 
+	// Map through cart, if oldPrice => calculate oldprice - price and push result to totalCartSaveUpAmount
+	for(let c in cart) {
+		if(cart[c].oldPrice !== null) {
+			let saveUp  = cart[c].oldPrice - cart[c].price;
+			totalCartSaveUpAmount.push(parseFloat(saveUp.toFixed(2)));
+		}
+	}
+	// Return total save up amount
+	return totalCartSaveUpAmount.reduce((a,b) => a+b,0);
+}
+
+
+
 	render() {
+ 
 
 		return (
 				<div>
@@ -37,13 +220,13 @@ class Cart extends React.Component {
 							<div className='row justify-content-center'>
 								<span className='cart_title col-11'>
 									Coșul tău
-									<span className='cart_title_no_items'>(2 produse)</span>
-									<span className='cart_title_info'> Nu mai amâna comanda - adăugarea produselor în coș nu înseamnă rezervare.</span>
+									<span className='cart_title_no_items'>({this.props.cart.length} {this.props.cart.length === 1 ? 'articol' : 'articole'})</span>
+									<span className='cart_title_info'>{this.props.cart.length > 0 ? 'Nu mai amâna comanda - adăugarea produselor în coș nu înseamnă rezervare.' : ''}</span>
 								</span>
 							</div>
 
 							{/* Empty Cart wrap */}
-							{this.state.cartEmpty ? (
+							{!this.props.cart.length > 0 ? (
 							<div className='row justify-content-center'>
 								<div className='empty_cart_container col-11'>
 									{/* Empty cart box message */}
@@ -51,7 +234,7 @@ class Cart extends React.Component {
 										<div className='empty_cart_msg_box'>
 											<span className='cart_title_font'><i className='fas fa-shopping-bag'></i>Coșul tau esti gol</span>
 											<span className='cart_subtitle_font'>Vizualizează oferta noastră si vezi ce iti place :)</span>
-											<span className='cart_back_btn'>Pagina principală</span>
+											<Link to={'/'} className='cart_back_btn'>Pagina principală</Link>
 										</div>
 									</div>
 									{/* Down info */}
@@ -70,54 +253,64 @@ class Cart extends React.Component {
 								<div className='row justify-content-center'>
 									<div className='cart_products_wrap col-11'>
 										<div className='row justify-content-center'>
-											<div className='cart_product_b col-12'>
-												<div className='row'>
-													{/* Cart product image */}
-													<div className='cart_produdct_image col-12 col-md-3 col-lg-2'>
-														<img src={logo2} alt=''/>
-													</div>
-													{/* Cart product info */}
-													<div className='cart_product_info col-12 col-md-9 col-lg-8'>
-														<span className='cart_prodinfo_title'>Tenisi Vans V2.6 TY-666 Blue White S Size Season 9</span>
-														<span className='cart_prodinfo_subdetails'>Id: 2555666, CLS.5</span>
-														<div className='row'>
-															{/* Cart product info row two */}
-															<div className='cart_prod_info_secrow col-12'>
-																<div className='cprod_inf_quant'>
-																	Cantitate:
-																	<select className='form-control cprod_form_quant'>
-																		<option>1</option>
-																		<option>2</option>
-																		<option>3</option>
-																		<option>4</option>
-																	</select>
+											{this.props.cart.map((cartProduct) =>
+												<div className='cart_product_b col-12'>
+													<div className='row'>
+														{/* Cart product image */}
+														<div className='cart_produdct_image col-12 col-md-3 col-lg-2'>
+															<img src={cartProduct.img} alt=''/>
+														</div>
+														{/* Cart product info */}
+														<div className='cart_product_info col-12 col-md-9 col-lg-8'>
+															<span className='cart_prodinfo_title'>{cartProduct.name}</span>
+															<span className='cart_prodinfo_subdetails cart_prod_id_no'>Model: {cartProduct.id}</span>
+															<div className='row'>
+																{/* Cart product info row two */}
+																<div className='cart_prod_info_secrow col-12'>
+																	<div className='cprod_inf_quant'>
+																		Cantitate:
+																		<input type='text'
+																			   value={cartProduct.quantity}
+																			   onBlur={(e) => this.handleBlurInputQuantity(e,cartProduct.id)}
+																			   onChange={(e) => this.handleProductQuantityChange(e,cartProduct.id)}
+																			   maxLength='2'/>
+																	</div>
+																	<span className='cprod_inf_refresh'><span>Actualizeaza</span></span>
+																	<span className='cprod_inf_available'><i className='far fa-check-circle'></i> Produs disponsibil</span>
+																	<span className='cprod_inf_size'>Marime: <span>{cartProduct.selectedSize}</span></span>
+																	<span className='cprod_inf_color'>Culoare: <span style={{"backgroundColor": cartProduct.color}}></span></span>
 																</div>
-																<span className='cprod_inf_refresh'><span>Actualizeaza</span></span>
-																<span className='cprod_inf_available'><i className='far fa-check-circle'></i> Produs disponsibil</span>
-																<span className='cprod_inf_size'>Marime: <span>XL</span></span>
-																<span className='cprod_inf_color'>Culoare: <span style={{"backgroundColor":"red"}}  ></span></span>
 															</div>
 														</div>
+														{/* Cart product right */}
+														<div className='cart_product_right col-12 col-lg-2'>
+															{cartProduct.oldPrice !== null && (
+															<span className='cart_prod_oldprice'>{cartProduct.oldPrice} lei</span>
+															)}
+															<span className='cart_prod_price'>{cartProduct.totalAmount.toFixed(2)} lei</span>
+															<span className='cart_prod_discount ml-auto'>-{cartProduct.saveUpPercent}%</span>
+														</div>	
 													</div>
-													{/* Cart product right */}
-													<div className='cart_product_right col-12 col-lg-2'>
-														<span className='cart_prod_oldprice'>335,00 lei</span>
-														<span className='cart_prod_price'>269,00 lei</span>
-														<span className='cart_prod_discount ml-auto'>-20%</span>
-													</div>	
-												</div>
-													{/* Cart product actions */}
-												<div className='row'>
-													<div className='d-xs-none col-sm-block col-md-3 col-lg-2 col_act_one'></div>
-													<div className='cart_product_actions col-12 col-md-8'>
-														<span className='card_prod_act card_prod_act_wishbtn'><i className='far fa-heart'></i>Adauga la wishlist</span>
-														<span className='card_prod_act card_prod_remove'>
-														 	<i className='far fa-times-circle'></i>
-															Sterge
-														</span>
+														{/* Cart product actions */}
+													<div className='row'>
+														<div className='d-xs-none col-sm-block col-md-3 col-lg-2 col_act_one'></div>
+														<div className='cart_product_actions col-12 col-md-8'>
+															<span className='card_prod_act card_prod_act_wishbtn' onClick={(e)=>this.cartAddToWishlist(e,cartProduct)}>
+																{cartProduct.addedToWishlistFromCart ? (
+																	<i className='fas fa-heart'></i>
+																):(
+																	<i className='far fa-heart'></i>
+																)}
+																Adauga la wishlist
+															</span>
+															<span className='card_prod_act card_prod_remove' onClick={(e)=>this.cartRemoveProduct(e,cartProduct.id)}>
+															 	<i className='far fa-times-circle'></i>
+																Sterge
+															</span>
+														</div>
 													</div>
-												</div>
 											</div>
+											)}
 										</div>
 									</div>
 								</div>
@@ -157,21 +350,21 @@ class Cart extends React.Component {
 													<div className='cart_bottom_totals'>
 															<div className='cart_subtotal cart_sbt'>
 																<span className='cart_label'>Suma</span>
-																<span className='cart_value'>267,99 lei</span>
+																<span className='cart_value'>{this.getTotalCartAmount()}</span>
 															</div>
 															<div className='cart_deliver cart_sbt'>
-																<span className='cart_label'>Livrare gratuita</span>
-																<span className='cart_value'>0,00 lei</span>
+																<span className='cart_label'>Livrare</span>
+																<span className='cart_value'>de la 14.99 lei</span>
 															</div>
 															<div className='cart_total cart_sbt'>
 																<span className='cart_label'>Total</span>
-																<span className='cart_value'>267,99 lei</span>
+																<span className='cart_value'>{this.getTotalCartAmount()}</span>
 															</div>
 															<div className='cart_savings cart_sbt'>
 																<span className='cart_label'>Economisesti</span>
-																<span className='cart_value'>67,00 lei</span>
+																<span className='cart_value'>{this.getTotalCartSaveUpPercent()} lei</span>
 															</div>
-															<span className='cart_totals_proceed_btn'>Mergi la casa</span>
+															<Link to={'/checkout'} className='cart_totals_proceed_btn' onClick={() => { this.props.setCartIsLoaded({ cartIsLoaded: true }) }}>Mergi la casa</Link>
 															<span className='cart_totals_underbtn_note'>* 30 de zile pentru returnare gratuită</span>
 													</div>
 												</div>
@@ -200,4 +393,7 @@ class Cart extends React.Component {
 	}
 }
 
+const Cart = connect(mapStateToProps,mapDispatchToProps)(connectedCart);
 export default Cart;
+
+ 

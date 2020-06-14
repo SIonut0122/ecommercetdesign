@@ -1,54 +1,63 @@
 import React from 'react';
-import '../css/DisplayProductsContainer.css';
+import '../css/Products.css';
 import RenderProducts from './renderProducts';
 import { connect }            from "react-redux";
-import { Link               } from 'react-router-dom';
-import { setOpenMediumSearch,setSelectedProducts } from '../actions';
+import { Link  ,useLocation             } from 'react-router-dom';
+import { setOpenMediumSearch,setSelectedProducts,setFilteredTerms,setPassingTags } from '../actions';
 import filterArrow from '../images/filter_arrow.png';
  
+
+
+
 const mapStateToProps = state => {
   return {  
-          searchInput      : state.searchInput,
-          openMobileSearch : state.openMobileSearch
+          propsPassingTags   : state.propsPassingTags,
+          propsFilteredTerms : state.propsFilteredTerms,
+          openMobileSearch   : state.openMobileSearch,
+          searchResults      : state.searchResults,
+          searchInput        : state.searchInput
         };
 };
 
 function mapDispatchToProps(dispatch) {
   return {
-          setOpenMediumSearch : bol  => dispatch(setOpenMediumSearch(bol)),
-          setSelectedProducts : prod => dispatch(setSelectedProducts(prod))
+          setOpenMediumSearch : bol      => dispatch(setOpenMediumSearch(bol)),
+          setSelectedProducts : prod     => dispatch(setSelectedProducts(prod)),
+          setFilteredTerms    : terms    => dispatch(setFilteredTerms(terms)),
+          setPassingTags      : passTags => dispatch(setPassingTags(passTags))
         };
 }
 
 class connectedProducts extends React.Component {
   constructor(props) {
     super(props)
-      
       this.state = {
-         filterColors   :   [{colorRo:'Alb',colorEng:'white'},{colorRo:'Negru',colorEng:'black'},{colorRo:'Albastru',colorEng:'blue'},{colorRo:'Rosu',colorEng:'red'},{colorRo:'Verde',colorEng:'green'},{colorRo:'Galben',colorEng:'yellow'},{colorRo:'Maro',colorEng:'brown'},{colorRo:'Mov',colorEng:'purple'},{colorRo:'Roz',colorEng:'pink'}],
-         filterSize     :   ['XS','S','M','L','XL','XXL','3XL'],
-         filterMaterial :   [{matEng: 'cotton',matRo: 'Bumbac'},{matEng: 'polyester',matRo: 'Poliester'},{matEng: 'organic',matRo: 'Organic'}],
+         filterCategory : [{catRo: 'Barbati',catEng: 'men'},{catRo: 'Femei',catEng: 'women'},{catRo: 'Copii',catEng: 'children'}],
+         filterColors   : [{colorRo:'Alb',colorEng:'white'},{colorRo:'Negru',colorEng:'black'},{colorRo:'Albastru',colorEng:'blue'},{colorRo:'Rosu',colorEng:'red'},{colorRo:'Verde',colorEng:'green'},{colorRo:'Galben',colorEng:'yellow'},{colorRo:'Maro',colorEng:'brown'},{colorRo:'Mov',colorEng:'purple'},{colorRo:'Roz',colorEng:'pink'}],
+         filterSize     : ['XS','S','M','L','XL','XXL','3XL'],
+         filterMaterial : [{matEng: 'cotton',matRo: 'Bumbac'},{matEng: 'polyester',matRo: 'Poliester'},{matEng: 'organic',matRo: 'Organic'}],
          filterNeckType : [{neckTypeEng: 'roundneck', neckTypeRo: 'Guler rotund'},{neckTypeEng: 'vneck', neckTypeRo: 'decolteu in V'},{neckTypeEng: 'withcollar', neckTypeRo: 'Cu guler'},{neckTypeEng: 'hooded', neckTypeRo: 'Cu glugă'}],
          filterPrint    : [{printEng: 'message', printRo: 'Cu mesaj'},{printEng: 'grafic', printRo: 'Grafic'}],
 
-         filteredTerms: [],
-         sortByPrice: null, 
-         sortByNewer: false,
+         filteredTerms : [],
+         sortByPrice   : null, 
+         sortByNewer   : false,
 
-         selectedProducts: props.selectedProductsProps,
-         totalSelProducts: props.totalSelProducts,
-         propsPathName: " "+props.pathName,
-
+         selectedProducts : props.selectedProductsProps,
+         totalSelProducts : props.totalSelProducts,
+         propsPathName    : " "+props.pathName,
+         searchResulted: this.props.searchResulted, // If returns true, searchProducts component is rendered
 
          passingTags: {
+           category: { men: false, women: false, children: false },
            price:    { lowHigh: false, highLow: false },
            newer:    { newer: false},
            color:    { white: false, black: false,brown: false,yellow: false,pink: false,purple: false,red: false, green: false },
            gender:   { girl: false, boy: false },
            material: { cotton: false, polyester: false, organic: false },
-           size:     { S: false, M: false, L: false, XL: false, XXL: false, '3XL': false },
-           necktype: {roundneck: false, withcollar: false, vneck: false, hooded: false},
-           print:    {messsage: false, grafic: false}
+           size:     { XS: false, S: false, M: false, L: false, XL: false, XXL: false, '3XL': false },
+           necktype: { roundneck: false, withcollar: false, vneck: false, hooded: false},
+           print:    { messsage: false, grafic: false}
          },
          collectedTrueKeys: null
       }
@@ -56,20 +65,62 @@ class connectedProducts extends React.Component {
  
 
 
-componentDidMount() {
 
+componentDidUpdate(prevProps) {
+ 
+}
+
+
+componentDidMount() {
+  // Use this to restyle page on mobile/normal size
   window.addEventListener('resize', () => this.handleWindowResize());
+  // Use this to recheck active filters panel inputs. Leaving the page cause unchecking all filters inputs.
+  this.recheckCheckboxFilterInputs();
 
 }
 
+
+
+recheckCheckboxFilterInputs() {
+   // When page is mounted, check if previous filters length is higher that the state filters length
+      // Filters boxes are unchecked when page unmounts; So, this helps to recheck active filters when user leaves the products main page 
+  if(this.props.propsFilteredTerms.length > this.state.filteredTerms.length) {
+      // Set new state if filtered terms props is higher than the actual state to be used on displaying filtered products
+      this.setState({ passingTags: this.props.propsPassingTags, filteredTerms: this.props.propsFilteredTerms })
+        // Select all filters checkboxes
+        let checkboxes           = document.querySelectorAll('.dprod_filter_label');
+         // Map through active filtered props terms and create an array with the romanian words filters
+         let collectedFilterTerms = this.props.propsFilteredTerms.map((el) => el.filPropRoValue); 
+         // Map through all filters checkboxes input
+         checkboxes.forEach((checkbox) => {
+            // If collected active filter terms contains checkbox input name and checkbox !== undefined, check it.
+           if(collectedFilterTerms.includes(checkbox.childNodes[1].firstChild.innerHTML)) {
+               if(checkbox.childNodes !== undefined) {
+                  checkbox.childNodes[0].checked = true;
+               }
+              
+           }
+        })
+  }
+}
 
 displayProductFilterNumber(e,type) {
   // Check which product contains multiple colors and return colors length
     // to be displayed along with the filter name colors
   let products = this.state.selectedProducts,
       n        = 0;
-  
-  if(type === 'color') {
+
+
+  // Return total category products number 
+  if(type === 'category') {
+     for(let c in products) {
+        if(products[c].category === e) {
+          n++;
+        }
+    }
+    return n > 0 ? '('+n+')' : '';
+   // Return total colors products number
+  } else if(type === 'color') {
       for(let c in products) {
       for(let z in products[c].colors) {
         if(products[c].colors[z] === e) {
@@ -78,6 +129,7 @@ displayProductFilterNumber(e,type) {
       }
     }
     return n > 0 ? '('+n+')' : '';
+    // Return total size products number
   } else if(type === 'size') {
      for(let c in products) {
       for(let z in products[c].size) {
@@ -87,6 +139,7 @@ displayProductFilterNumber(e,type) {
       }
     }
     return n > 0 ? '('+n+')' : '';
+    // Return total material products number
   } else if(type === 'material') {
     for(let c in products) {
       for(let z in products[c].size) {
@@ -96,6 +149,7 @@ displayProductFilterNumber(e,type) {
       }
     }
     return n > 0 ? '('+n+')' : '';
+    // Return total necktype products number
   } else if(type === 'necktype') {
     for(let c in products) {
       for(let z in products[c].necktype) {
@@ -105,6 +159,7 @@ displayProductFilterNumber(e,type) {
       }
     }
     return n > 0 ? '('+n+')' : '';
+    // Return total print products number
   } else if(type === 'print') {
     for(let c in products) {
         if(products[c].print === e) {
@@ -126,14 +181,16 @@ setFilter(value, filterProp, roValueName) {
           filteredTerms  = removeExisting;
     } else {
     // Else, create new object with "filProp" as filter title and "filPropValue" as value
+    // FilProp = english word type = '.blue/xs/withcollar';
+    // FilPropValue = 'color/paint/size'; 
+    // FillPropRoValue = romanian word type => to be displayed on active search filters
       let newFilObj                   = {};
           newFilObj["filProp"]        = filterProp;
           newFilObj["filPropValue"]   = value;
           newFilObj["filPropRoValue"] = roValueName;
           filteredTerms.push(newFilObj);
     }
-
-
+    // Enable filters (set to true) clicked filter
     this.setState( prevState => ({
        filteredTerms,
        passingTags: {
@@ -145,23 +202,34 @@ setFilter(value, filterProp, roValueName) {
        }
       })
     )
+     // Keep filtered terms and passing filter tags in redux store
+     // Those are used when component mount; If user come back on main page from a product info, restore checked filters
+     setTimeout(() => {
+      // Set with delay to leave time to update
+      this.props.setFilteredTerms({ propsFilteredTerms: filteredTerms }) 
+      this.props.setPassingTags({ propsPassingTags: this.state.passingTags })
+    },300);  
 }
 
 
 
 filteredCollected = () => {
     const collectedTrueKeys = {
+      category  : [],
       colors    : [],
-      material : [],
-      size     : [],
-      necktype : [],
-      print    : []
+      material  : [],
+      size      : [],
+      necktype  : [],
+      print     : []
     };
 
       // Loop through clicked boolean filters and add to collectedTrueKeys object any true value
 
-      const { color, material, size, necktype, print } = this.state.passingTags;
+      const { category, color, material, size, necktype, print } = this.state.passingTags;
 
+      for (let categoryKey in category) {
+        if (category[categoryKey]) collectedTrueKeys.category.push(categoryKey);
+      }
       for (let colorKey in color) {
         if (color[colorKey]) collectedTrueKeys.colors.push(colorKey);
       }
@@ -182,7 +250,6 @@ filteredCollected = () => {
 }
 
 multiPropsFilter = (products, filters) => {
-  
     // Get object keys from collectedTrueKeys (['color','gender'...])
     const filterKeys = Object.keys(filters);
     // Filter products
@@ -202,21 +269,15 @@ multiPropsFilter = (products, filters) => {
 
 searchProducts = () => {
    
-        // Takes in all product list and filter to return the filtered product list.
-      const filteredProducts = this.multiPropsFilter(
-        this.state.selectedProducts,
-        this.filteredCollected()
-      );
+      // Takes in all product list and filter to return the filtered product list.
+      const filteredProducts = this.multiPropsFilter(this.state.selectedProducts,this.filteredCollected());
 
     // Return product by name; If the search input is not empty, use it and see if
        // resulted product includes the input text
       return filteredProducts.filter(product => {
         // Return product name which includes value from search input
-        return product.name
-          .toLowerCase()
-          .includes(this.props.searchInput);
+        return product.name;
       });
-    
 }
 
 
@@ -248,8 +309,6 @@ clearFilterTag(term) {
       }
     }
   }
-
-
 }
 
 
@@ -342,10 +401,12 @@ handleWindowResize() {
   // If window size > 767 when mobile filter style is not active anymore, remove all mobile filter style
     // to restore filters to normal style
   if(window.innerWidth > 767.5) {
-     document.querySelector('.display_products_container').classList.remove('col-12');
-     document.querySelector('.d_prodcont_filters').classList.remove('active_mob_filter');
-     document.querySelector('.d_prodcont_right_filterswrap').classList.remove('right_filwrap_mob_display');
-     document.querySelector('body').style.overflowY = 'auto';
+     if(document.contains(document.querySelector('.display_products_container'))) {
+      document.querySelector('.display_products_container').classList.remove('col-12');
+      document.querySelector('.d_prodcont_filters').classList.remove('active_mob_filter');
+      document.querySelector('.d_prodcont_right_filterswrap').classList.remove('right_filwrap_mob_display');
+      document.querySelector('body').style.overflowY = 'auto';
+   }
   }
 }
 
@@ -440,8 +501,11 @@ sortProducts = sortArgument => {
 
   render() { 
 
+    // Dispay received data to be displayed within renderproducts
     let filteredResultedProducts = this.searchProducts();
     this.props.setSelectedProducts({ selectedProducts: filteredResultedProducts })
+    // Set document title
+    document.title = this.state.propsPathName+' | Tshirtdesign';
 
     return (
         <div>
@@ -458,9 +522,7 @@ sortProducts = sortArgument => {
                       <Link to={'/'} className='nav_path_home'>
                         Acasa 
                         </Link>
-                        / 
-                        Articole
-                        / 
+                        /  
                         {this.state.propsPathName}
                       </span>
                     </div>    
@@ -581,6 +643,28 @@ sortProducts = sortArgument => {
                             )}
                           </div>
                         )}
+
+
+                          {/* Category filter panel */}
+                          {this.state.searchResulted && (
+                          <div className='d_prodcont_filter_panel'>
+                            <span className='d_prodcont_filter_title'>Categorie <img src={filterArrow} alt='' onClick={(e)=>this.toggleDisplayFilter(e,'Culoare')}/></span>
+                              <div className='dprodcont_wrap_filter_names dprodc_wfiltname_colors'>
+                               {this.state.filterCategory.map((el,ind) =>
+                                  <span className='d_prodcont_filter_box'>
+                                    <label key={ind}  className='custom-checkbox dprod_filter_label' onChange={(e) => this.setFilter(el.catEng,'category',el.catRo)}>
+                                      <input className='custom-control-input d_prodcont_filter_checkbox' type='checkbox'/>
+                                      <span className='custom-control-label'>
+                                          <span>{el.catRo}</span>
+                                          <span className='prod_fil_no'>{this.displayProductFilterNumber(el.catEng,'category')}</span>
+                                      </span>
+                                    </label>
+                                  </span>
+                                )}
+                              </div>
+                          </div>
+                          )}
+
 
                           {/* Color filter panel */}
                           <div className='d_prodcont_filter_panel'>

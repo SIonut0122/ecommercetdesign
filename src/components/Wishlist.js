@@ -1,15 +1,78 @@
 import React from 'react';
 import '../css/Wishlist.css';
 import { Link               } from 'react-router-dom';
-
+import { setWishList } from '../actions';
 import logo2 from '../images/pants2.jpg';
+import { connect }            from "react-redux";
+import firebase from 'firebase/app';
 
-class Wishlist extends React.Component {
+
+const mapStateToProps = state => {
+  return {  
+  		  wishList : state.wishList
+        };
+};
 
 
-	state ={
-		wishlistEmpty: true,
+function mapDispatchToProps(dispatch) {
+  return {
+  		  setWishList : products    => dispatch(setWishList(products))
+        };
+}
+
+
+class connectedWishlist extends React.Component {
+
+
+	state = {
+		wishlistEmpty : true,
+		wishList      : this.props.wishList
 	}
+
+
+componentDidMount() {
+	// Check if wishList localStorage is not empty and wishList props was set; If not, set it.
+    if (window.localStorage.getItem('wishList') !== null && !this.state.wishList.length > 0 ) {
+          let wishList = JSON.parse(localStorage.getItem('wishList'));
+          this.props.setWishList({ wishList })
+          this.setState({ wishList })
+    }	
+}
+
+removeFromWishlistBtn(e,id) {
+	// Opacity 0.6 for clicked product / disable call to action from product
+	e.target.parentElement.setAttribute('style','opacity:0.6;pointer-events:none;');
+	// Restore default style after 500 milisec
+	setTimeout(() => {
+		// Remove style /\ from all the wishbox products
+		  // Because e.target is not triggered anymore, remove style from all products to restore default style
+		let wishboxes = document.querySelectorAll('.wish_product_box');
+			wishboxes.forEach((wbox) => wbox.removeAttribute('style'));
+		// Remove product from wishlist
+		let wishList      = [...this.state.wishList],
+			removeProduct = wishList.filter((prod) => prod.id !== id);
+			this.setState({ wishList: removeProduct })
+			this.props.setWishList({ wishList: removeProduct })	
+			// Push wishlist to localstorage to be used on every mount
+			localStorage.setItem('wishList', JSON.stringify(removeProduct));		
+	},500);
+}
+
+
+/* Google+ connect */
+
+googlePlusConnect() {
+	// Create google auth provider
+let provider = new firebase.auth.GoogleAuthProvider();
+	// Open popup window to signin Google+
+	firebase.auth().signInWithPopup(provider).then((result) => {
+	 // Console.log results if you need info about user
+	 window.location.reload();
+	}).catch(function(error) {
+		console.log(error);
+	});
+}
+
 
 	render() {
 
@@ -35,42 +98,36 @@ class Wishlist extends React.Component {
 							<div className='row justify-content-center'>
 								<span className='wishlist_title col-11'>
 									Wishlist
-									<span className='wishlist_title_no_items'>- 2 produse</span>
+									<span className='wishlist_title_no_items'>({this.props.wishList.length} {this.props.wishList.length === 1 ? 'articol' : 'articole'})</span>
 								</span>
 							</div>
 							{/* Items container */}
-							{!this.state.wishlistEmpty ? (
+							{this.state.wishList.length > 0 ? (
 							<div className='row justify-content-center'>
 								<div className='wishlist_wrap col-11'>
-									<div className='row justify-content-center'>
-										<div className='wish_product_box'> 
-											<i className='fa fa-heart wish_remove_prod'></i>
+									<div className='row'>
+										{this.state.wishList.map((prod,ind) => 
+										<div key={ind} className='wish_product_box'>
+											{/* Wishlist remove btn */} 
+											<i className='fa fa-heart wish_remove_prod' onClick={(e)=>this.removeFromWishlistBtn(e,prod.id)}></i>
+											{/* Wishlist product image */}
+											<Link to={'/productinfo/'+prod.id}>
 											<div className='row justify-content-center'>
-											<img src={logo2} alt=''/>
+											<img src={prod.img} alt=''/>
 											</div>
+											</Link>
+											{/* Wishlist product name */}
 											<div className='row justify-content-center'>
-												<span className='wishprod_title'>Polo YT-5 Cotton Blue Size And Fellows</span>
+												<span className='wishprod_title'>{prod.name}</span>
 											</div>
+											{/* Wishlist product price /old price */}
 											<div className='row justify-content-center'>
-												<span className='wishprod_price'>59.99 lei
-													<span className='wishprod_old_price'>79.99 lei</span>
+												<span className='wishprod_price'>{prod.price} lei
+													<span className='wishprod_old_price'>{prod.oldPrice} lei</span>
 												</span>
 											</div>
 										</div>
-										<div className='wish_product_box'>
-											<i className='fa fa-heart wish_remove_prod'></i>
-											<div className='row justify-content-center'>
-												<img src={logo2} alt=''/>
-											</div>
-											<div className='row justify-content-center'>
-												<span className='wishprod_title'>Polo YT-5 Cotton Blue Size And Fellows</span>
-											</div>
-											<div className='row justify-content-center'>
-												<span className='wishprod_price'>49.99 lei
-													<span className='wishprod_old_price'>59.99 lei</span>
-												</span>
-											</div>
-										</div>
+										)}
 
 									</div>
 								</div>
@@ -103,7 +160,7 @@ class Wishlist extends React.Component {
 														<span className='wshl_subpoint_sectwo'>Conectează-te pentru a sincroniza conținutul coșului între device-uri</span>
 													</div>
 													<div className='row justify-content-center'>
-														<span className='wishlist_login_button'>Conecteaza-te</span>
+														<Link to={'/login'} className='wishlist_login_button'>Conecteaza-te</Link>
 													</div>
 													{/* Register button */}
 													<div className='row justify-content-center'>
@@ -113,7 +170,7 @@ class Wishlist extends React.Component {
 														<span className='wshl_subpoint_sectwo'>Inregistreaza-te pentru a beneficia de multe oferte</span>
 													</div>
 													<div className='row justify-content-center'>
-														<span className='wishlist_login_button wsh_register_btn'>Inregistreaza-te</span>
+														<Link to={'/register'} className='wishlist_login_button wsh_register_btn'>Inregistreaza-te</Link>
 													</div>
 													{/* Google plus button */ }
 													<div className='row justify-content-center'>
@@ -123,7 +180,9 @@ class Wishlist extends React.Component {
 														<span className='wshl_subpoint_sectwo'>Conecteaza-te rapid cu</span>
 													</div>
 													<div className='row justify-content-center'>
-														<span className='wishlist_google_plus_button'><i className='fab fa-google-plus-g'></i>Google+</span>
+														<span className='wishlist_google_plus_button' onClick={()=>this.googlePlusConnect()}>
+															<i className='fab fa-google-plus-g'></i>Google+
+														</span>
 													</div>
 												</div>
 											</div>
@@ -142,4 +201,5 @@ class Wishlist extends React.Component {
 	}
 }
 
+const Wishlist = connect(mapStateToProps,mapDispatchToProps)(connectedWishlist);
 export default Wishlist;
