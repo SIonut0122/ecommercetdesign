@@ -77,6 +77,8 @@ componentDidMount() {
 	if(this.props.signedWithGoogle !== null) {
 		// Call here getuser info
 	}
+
+	 this.getz();
 }
 
 
@@ -87,12 +89,11 @@ componentDidUpdate(prevProps) {
 	// Update signedwith google state if was not updated
 	if(prevProps.signedWithGoogle !== this.props.signedWithGoogle) { 
 		this.setState({ signedWithGoogle: this.props.signedWithGoogle})
-			this.getz(this.props.userInfo);
 	}
 }
 
 
- async getz() {
+ getz() {
  
 /* 	// Create collection
 	client.query(
@@ -113,10 +114,10 @@ componentDidUpdate(prevProps) {
  }*/
 
 let newUserData = {
-	  title        : this.props.userInfo.email,
-	  email        : this.props.userInfo.email,
-	  uid          : this.props.userInfo.uid,
-	  displayName  : this.props.userInfo.displayName,
+	  title        : 'caca',
+	  email        : 'caca',
+	  uid          : 'caca',
+	  displayName  : 'caca',
 	  cart         : null,
 	  wishlist     : null,
 	  myprofile    : [{lastname:'',name:'',gender:'',phone:''}],
