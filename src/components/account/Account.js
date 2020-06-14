@@ -4,8 +4,8 @@ import AccountMenu from './AccountMenu';
 import { Link, Redirect               } from 'react-router-dom';
  import { setUserDbInfo } from '../../actions';
 import { connect }            from "react-redux";
-
-
+ import getAllProducts from '../../fauna/getAllProducts.js'
+ import { client, q } from '../../fauna/db';
 
 const mapStateToProps = state => {
   return {  
@@ -74,16 +74,70 @@ componentDidMount() {
 	setTimeout(() => {    // Hide loading effect
 	      this.setState({ componentIsLoading: false })},1000);
 
-
+	if(this.props.signedWithGoogle !== null) {
+		// Call here getuser info
+	}
 }
 
+
+
+
+
 componentDidUpdate(prevProps) {
-/*	// Update signedwith google state if was not updated
+	// Update signedwith google state if was not updated
 	if(prevProps.signedWithGoogle !== this.props.signedWithGoogle) { 
 		this.setState({ signedWithGoogle: this.props.signedWithGoogle})
-	}*/
-	
+			this.getz(this.props.userInfo);
+	}
+}
 
+
+ async getz() {
+ 
+/* 	// Create collection
+	client.query(
+		q.CreateCollection({ name: 'users' })
+	 )
+	.then((ret) => console.log(ret)).then((e) => {
+			console.log('created');
+		})
+	.catch((e) => {
+		console.log(e);
+	})*/
+
+
+/* let cl = await client;
+
+ if(cl !== null) {
+ 	console.log(cl);
+ }*/
+
+let newUserData = {
+	  title        : this.props.userInfo.email,
+	  email        : this.props.userInfo.email,
+	  uid          : this.props.userInfo.uid,
+	  displayName  : this.props.userInfo.displayName,
+	  cart         : null,
+	  wishlist     : null,
+	  myprofile    : [{lastname:'',name:'',gender:'',phone:''}],
+	  myorders     : null,
+	  shippingdata : [{lastname:'',name:'',street:'',postalCode:'',city:'',addInfo:''}]
+	};
+
+
+	client.query(
+  q.Create(
+    q.Collection('users'),
+    { data: newUserData },
+  )
+)
+.then((ret) => console.log(ret))
+	.catch((err) => {
+		console.log(err);
+	})
+
+
+  
 
 }
 
@@ -105,14 +159,7 @@ getUserData(userData) {
 
 
 createNewDbUser(userData) {
-	let newUserData = {
-	  user         : userData.email,
-	  cart         : null,
-	  wishlist     : null,
-	  myprofile    : [{lastname:'',name:'',gender:'',phone:''}],
-	  myorders     : null,
-	  shippingdata : [{lastname:'',name:'',street:'',postalCode:'',city:'',addInfo:''}]
-	};
+	
 
 }
 

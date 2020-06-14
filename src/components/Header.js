@@ -10,7 +10,11 @@ import { setSearchInput,setOpenMobileSearch,
 
 import menProductsData from '../data/men';
 import womenProductsData from '../data/women';
+
  
+ 
+
+
 
 
 const mapStateToProps = state => {
@@ -77,7 +81,6 @@ componentDidMount() {
 	 this.authListener();
  
 }
-
 
  
 authListener() {
@@ -224,10 +227,6 @@ handleSetSearchInputKey(e) {
  	}
 }
 
-req() {
-	const newUser = firebase.functions().httpsCallable('addUser');
-	newUser();
-}
 
 	render() {
 
@@ -294,7 +293,7 @@ req() {
 									<div className='hsc_col_logo col-12 col-sm-3 col-lg-2 col-xl-2 hsc_one_col'>
 										<div className='row'>
 											<span className='hsc_col_logo_hambmenu' onClick={() => this.handleMobileMenu()}><i className='fas fa-bars'></i></span>
-											<span className='hsc_col_logo_img' onClick={()=>this.req()}>
+											<span className='hsc_col_logo_img'>
 												T-SHIRT
 											</span>
 											<i className='d-block d-sm-none fas fa-search hsc_col_search_mobile' onClick={() => this.openMobileSearch()}></i>
