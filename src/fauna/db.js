@@ -1,12 +1,12 @@
 
 const faunadb = require('faunadb');
 
-
+ 
 
 const q = faunadb.query
  
   var client = new faunadb.Client({
-    secret: 'fnADuTWXOFACB0Wtij1_Y3PX0yd7ynQqDp-tzV-p',
+    secret: process.env.REACT_APP_FBD_KEY,
     domain: 'db.fauna.com',
     scheme: 'https',
   })

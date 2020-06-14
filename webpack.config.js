@@ -1,7 +1,7 @@
 var webpack           = require('webpack');
 var path              = require('path');
 var htmlWebpackPlugin = require('html-webpack-plugin');
- 
+ const Dotenv = require('dotenv-webpack');
 
 var BUILD_DIR = path.join(__dirname, 'dist');
 var APP_DIR   = path.join(__dirname, 'src');
@@ -71,7 +71,8 @@ var config = {
 		new webpack.HotModuleReplacementPlugin(), // See changes faster without refresh. No full refresh.
 		new webpack.DefinePlugin({
 	       'process.env.NODE_ENV': JSON.stringify('production')
-	    })
+	    }),
+	    new Dotenv()
 	],
 	// splitChunks checks for common files between bundle and vendor files
 	  // 'Splits' files into smaller pieces for greater optimization
