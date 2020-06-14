@@ -94,6 +94,8 @@ componentDidUpdate(prevProps) {
 
 
  getz() {
+
+ 	console.log('GETZ WAS CALLED');
  
 /* 	// Create collection
 	client.query(
