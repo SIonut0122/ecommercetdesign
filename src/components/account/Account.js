@@ -4,8 +4,7 @@ import AccountMenu from './AccountMenu';
 import { Link, Redirect               } from 'react-router-dom';
  import { setUserDbInfo } from '../../actions';
 import { connect }            from "react-redux";
- import getAllProducts from '../../fauna/getAllProducts.js'
- import { client, q } from '../../fauna/db';
+
 
 const mapStateToProps = state => {
   return {  
@@ -71,78 +70,17 @@ class connectedAccount extends React.Component {
 
 
 componentDidMount() {
-	setTimeout(() => {    // Hide loading effect
-	      this.setState({ componentIsLoading: false })},1000);
-
-	if(this.props.signedWithGoogle !== null) {
-		// Call here getuser info
-	}
-
-	 this.getz();
+	 
 }
-
-
-
 
 
 componentDidUpdate(prevProps) {
 	// Update signedwith google state if was not updated
 	if(prevProps.signedWithGoogle !== this.props.signedWithGoogle) { 
-		this.setState({ signedWithGoogle: this.props.signedWithGoogle})
+		this.setState({ signedWithGoogle: this.props.signedWithGoogle, componentIsLoading: false})
 	}
 }
 
-
- getz() {
-
- 	console.log('GETZ WAS CALLED');
- 
-/* 	// Create collection
-	client.query(
-		q.CreateCollection({ name: 'users' })
-	 )
-	.then((ret) => console.log(ret)).then((e) => {
-			console.log('created');
-		})
-	.catch((e) => {
-		console.log(e);
-	})*/
-
-
-/* let cl = await client;
-
- if(cl !== null) {
- 	console.log(cl);
- }*/
-
-let newUserData = {
-	  title        : 'caca',
-	  email        : 'caca',
-	  uid          : 'caca',
-	  displayName  : 'caca',
-	  cart         : null,
-	  wishlist     : null,
-	  myprofile    : [{lastname:'',name:'',gender:'',phone:''}],
-	  myorders     : null,
-	  shippingdata : [{lastname:'',name:'',street:'',postalCode:'',city:'',addInfo:''}]
-	};
-
-
-	client.query(
-  q.Create(
-    q.Collection('users'),
-    { data: newUserData },
-  )
-)
-.then((ret) => console.log(ret))
-	.catch((err) => {
-		console.log(err);
-	})
-
-
-  
-
-}
 
 
 updateStateWithUserDbInfo(userDbInfo) {
@@ -155,20 +93,9 @@ updateStateWithUserDbInfo(userDbInfo) {
 	})
 }
 
-getUserData(userData) {
-	
-
-}
-
-
-createNewDbUser(userData) {
-	
-
-}
 
 
 
- 
 updateEmailAddress(e) {
 	  let mailformat = /^\w+([-]?\w+)*@\w+([-]?\w+)*(\.\w{2,3})+$/,
           emailValue = e.target.value;
@@ -377,8 +304,8 @@ handleSignOut() {
 
 	render() {
 
-	/*	// If user is not signed in, redirect to login page
-		if(this.props.userIsSignedIn === null) {
+		// If user is not signed in, redirect to login page
+		if(this.props.userIsSignedIn === null && this.props.userInfo !== null) {
 			return (<div className='account_loading_modal'>
 						<div className='row justify-content-center h-100'>
 							<div className='acc_load_mod my-auto'><div></div><div></div><div></div><div></div></div>
@@ -386,7 +313,8 @@ handleSignOut() {
 					</div>)
 		} else if(!this.props.userIsSignedIn) {
 			return ( <Redirect to={'/login'}/>)
-		}*/
+		}
+
 
 
 		document.title = 'Profilul meu - Tshirt Design';

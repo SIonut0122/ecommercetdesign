@@ -6,10 +6,12 @@
     projectId: "ecommtshirt",
     storageBucket: "ecommtshirt.appspot.com",
     messagingSenderId: "864013817888",
-    appId: "1:864013817888:web:46da64c5c86d4c0ac44445"
+    appId: "1:864013817888:web:46da64c5c86d4c0ac44445",
+    measurementId: "G-KVT07EBY5P"
   };
 
 let fire = firebase.initializeApp(config)
+firebase.analytics();
 
 export {fire as default}
  

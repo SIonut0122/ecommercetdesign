@@ -10,17 +10,16 @@ import { setSearchInput,setOpenMobileSearch,
 
 import menProductsData from '../data/men';
 import womenProductsData from '../data/women';
+ import getAllUsers from '../fauna/getAllUsers.js'
+ import { client, q } from '../fauna/db';
 
  
- 
-
-
-
 
 const mapStateToProps = state => {
   return {  
   		  userIsSignedIn   : state.userIsSignedIn,
   		  userInfo         : state.userInfo,
+  		  userDbInfo       : state.userDbInfo,
   		  wishList         : state.wishList,
   		  cart             : state.cart,
   		  selectedProducts : state.selectedProducts,
@@ -54,6 +53,7 @@ class connectedHeader extends React.Component {
 	 
 	this.state = {
 		userIsSignedIn   : null,
+		userDbInfo       : null,
 		displayUserDropdownMenu: false,
 		hoveringAccountIcon: false,
 		hoveringDropdownMenu: false,
@@ -66,21 +66,20 @@ class connectedHeader extends React.Component {
 componentDidMount() {
 	window.addEventListener('resize', (e) =>this.handleHeaderResize(e));
 
-	/*// Check when pageloads in localStorage for stored wishlist and set it as props
-    if (window.localStorage.getItem('wishList') !== null) {
-          let wishList = JSON.parse(localStorage.getItem('wishList'));
-          this.props.setWishList({ wishList })
-    }
-    // Check when pageloads in localStorage for stored cart and set it as props
-     if (window.localStorage.getItem('cart') !== null && !this.props.cart.length > 0 ) {
-	 	 let cartStorage = JSON.parse(localStorage.getItem('cart'));
-	 	  this.props.setCart({ cart: cartStorage })
-	 } */
-	
+	this.authListener();
 
-	 this.authListener();
- 
+
+	// Recheck if userDbinfo was fetched, if not, call again to fetch;
+	setTimeout(() => {
+		if(this.props.userInfo !== null && this.props.userIsSignedIn && this.props.userDbInfo === null) {
+			window.location.reload();
+			console.log('DATABASE USER FETCH FAILED, CALLED AGAIN');
+		} else {
+			console.log('EVERYTHING LOOKS GOOD HERE, DB EXISTS OR USER IS OFFLINE');
+		}
+	},5000);
 }
+
 
  
 authListener() {
@@ -92,7 +91,7 @@ authListener() {
         	this.props.setUserIsSignedIn({ userIsSignedIn: true })
             this.props.setSignedWithGoogle({ signedWithGoogle: user.emailVerified})
  			console.log('User is  signed in');
- 
+ 			this.fetchDbUser(user);
 
 	     } else {	
 	    	console.log('User is not signed in');
@@ -110,6 +109,91 @@ authSignOut() {
 	}).catch(function(error) {
 	  console.log('An error occurred while signing out');
 	});
+}
+
+
+
+async fetchDbUser(userAuth) {
+
+	 
+/* // Getting the refs with a first query
+    let refs = await client.query(q.Paginate(q.Match(q.Index('all_users'))))
+    // Forging a second query with the retrieved refs
+    const bigQuery = refs.data.map((ref) => q.Get(ref))
+    // Sending over that second query
+    let allDocuments = await client.query(bigQuery)
+    // All my documents are here!
+   for(let c in allDocuments) { 
+   			if(allDocuments[c].ref.value.id === '268327532061786630') { 
+   		console.log(allDocuments[c].data);
+   	}
+
+*/
+	
+	const get = await getAllUsers
+		.then((users) => {
+		let usersDB = users;
+		let userExists = false;
+
+		for(let c in usersDB) {
+			if(usersDB[c].data.email === userAuth.email && usersDB[c].data.uid === userAuth.uid) {
+				userExists = true;
+				console.log('User exists, userdb set');
+				// Set userDb props info and state to render
+				this.props.setUserDbInfo({ userDbInfo: usersDB[c] })
+				this.setState({ userDbInfo: usersDB[c] })
+
+				console.log('Header: wishlistDB, cartDB pouplated');
+				  this.props.setWishList({ wishList: usersDB[c].data.wishlist !== undefined ? usersDB[c].data.wishlist : [] })
+				  this.props.setCart({ cart: usersDB[c].data.cart !== undefined ? usersDB[c].data.cart : [] })
+			}
+		}
+
+		if(!userExists) {
+			console.log('Creating user...');
+			this.createNewDbUser(userAuth);
+
+			// UPDATE WISHLIST FROM USERDB		
+			console.log('Header: wishlist/cart localstoraged and populated');
+			if (window.localStorage.getItem('wishList') !== null) {
+	          let wishlistLS = JSON.parse(localStorage.getItem('wishList'));
+	          this.props.setWishList({ wishList: wishlistLS })
+	    	}
+	    	// UPDATE CART FROM USERDB
+			if (window.localStorage.getItem('cart') !== null && !this.props.cart.length > 0 ) {
+		 	  let cartStorage = JSON.parse(localStorage.getItem('cart'));
+		 	  this.props.setCart({ cart: cartStorage })
+			 }
+		}
+	   
+	})
+ 
+}
+
+
+createNewDbUser(userAuth) {
+	let newUserData = {
+	  email        : userAuth.email,
+	  uid          : userAuth.uid,
+	  displayName  : userAuth.displayName,
+	  cart         : null,
+	  wishlist     : null,
+	  myprofile    : [{lastname:'',name:'',gender:'',phone:''}],
+	  myorders     : null,
+	  shippingdata : [{lastname:'',name:'',street:'',postalCode:'',city:'',addInfo:''}]
+	};
+
+	client.query(
+	  q.Create(
+	    q.Collection('users'),
+	    { data: newUserData },
+	  )
+	)
+	.then((ret) => console.log('New user created'))
+	.catch((err) => {
+		console.log('Something went wrong while creatint new user');
+	})
+
 }
 
 
@@ -216,6 +300,7 @@ dropDownMenuHoverOut() {
 }
 
 handleAccDropdownClick() {
+
 	this.setState({ displayUserDropdownMenu:false, hoveringAccountIcon: false, hoveringDropdownMenu: false})
 }
 
@@ -228,7 +313,10 @@ handleSetSearchInputKey(e) {
 }
 
 
+
+
 	render() {
+ 
 
 	// If wishlist number increase, animate wishlist header number
 	if(this.props.wishList.length > this.state.wishList.length) {

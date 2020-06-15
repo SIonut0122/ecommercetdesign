@@ -3,11 +3,17 @@ import '../css/Cart.css';
 import { Link               } from 'react-router-dom';
 import { connect }            from "react-redux";
 import { setCart,setWishList,setTotalCartAmount,setCartIsLoaded } from '../actions';
+ import { client, q } from '../fauna/db';
+import { addProdToDB } from './addProdToDB';
+
+
 
 const mapStateToProps = state => {
   return {  
           cart       	  : state.cart,
           wishList   	  : state.wishList,
+          userIsSignedIn  : state.userIsSignedIn,
+          userDbInfo	  : state.userDbInfo
 
         };
 };
@@ -32,26 +38,42 @@ class connectedCart extends React.Component {
 
 
 componentDidMount() {
-	// On page load, check localstorage is contains 'cart' and set cart props
-	  if (window.localStorage.getItem('cart') !== null && !this.props.cart.length > 0 ) {
-	 	 let cartStorage = JSON.parse(localStorage.getItem('cart'));
-	 	  this.props.setCart({ cart: cartStorage })
-	 }  
-	 // Let time to check if localStorage is not null check wishlisty
-	setTimeout(() => {
-		// Check if products inside cart are found inside the wishlist
-		this.checkWishlist();
-	},1500);
-
-
+	 if(this.props.userIsSignedIn !== null && this.props.userDbInfo === null) {
+		this.populateCart();
+	}
 }
 
+populateCart() {
+
+	// When page loads, if user is connected & user data was fetched from userDbInfo, set userDbInfo cart
+    if(this.props.userIsSignedIn && this.props.userDbInfo !== null) {
+    	console.log('cart: SIGNED cart');
+    		  let cartDb = this.props.userDbInfo.cart !== undefined ? this.props.userDbInfo.cart : [];
+	          this.props.setCart({ cart: cartDb })
+	          this.setState({ cart: cartDb })
+	          // Check if inside cart are products that were added to the wishlist, and set prop to true
+	          setTimeout(() => { this.checkWishlist(); },1500);
+	          
+	// If user is not connected, check cart on the localStorage
+    } else {
+    	// Check if wishList localStorage is not empty and wishList props was set; If not, set it.
+	    if (window.localStorage.getItem('cart') !== null && !this.state.cart.length > 0 ) {
+	          let cartLS = JSON.parse(localStorage.getItem('cart'));
+	          this.props.setCart({ cart: cartLS })
+	          this.setState({ cart: cartLS })
+	          console.log('cart: LOCALSTORAGE cart');
+	          // Check if inside cart are products that were added to the wishlist, and set prop to true
+	          setTimeout(() => { this.checkWishlist(); },1500);
+	    } 
+    }
+}
 
 checkWishlist() {
 	let cart           = [...this.props.cart],
 	    wishListIdList = this.props.wishList.map(el => el.id);
 
 	// Map through cart and check if any product is found inside wishlist
+		// If product was found, set 'addedtowishlist' to true, to hightlight the 'Add to wishlist' button
 	for(let c in cart) {
 		if(wishListIdList.includes(cart[c].id)) {
 			// If cart product's id match with any wishlist id, set addtowish to true
@@ -81,9 +103,14 @@ cartAddToWishlist(e,product) {
 		let removeProduct = wishList.filter((prod) => prod.id !== product.id);
 		this.props.setWishList({ wishList: removeProduct })
 		
+		// If user is signed in, update userDB wishlist info
+		if(this.props.userIsSignedIn && this.props.userDbInfo !== null) {
+ 			this.addRemoveWishlistedCartProd(removeProduct, removeProduct)
+ 		} else {
 		// Set cart & wishlist localstorage
 		localStorage.setItem('cart', JSON.stringify(cart));
 		localStorage.setItem('wishList', JSON.stringify(removeProduct));
+		}
 	 
 	} else {
 		// Add product to wishlist
@@ -95,11 +122,31 @@ cartAddToWishlist(e,product) {
 		wishList.push(product);
  		this.props.setWishList({ wishList })
 
+ 		// If user is signed in, update userDB wishlist info
+ 		if(this.props.userIsSignedIn && this.props.userDbInfo !== null) {
+ 			this.addRemoveWishlistedCartProd(cart,wishList)
+ 		} else {
 		// Set cart & wishlist localstorage
 		localStorage.setItem('cart', JSON.stringify(cart));
 		localStorage.setItem('wishList', JSON.stringify(wishList));
+ 		}
 	}
 }
+
+addRemoveWishlistedCartProd(updatedCart,updatedWishlist) {
+	// Here, we have to update wishlist and cart (addedToWishlist: false/true)
+	// Get user id to target userDb on db
+	let id = this.props.userDbId.ref.value.id;
+	  	client.query(
+		  q.Update(
+		    q.Ref(q.Collection('users'), id),
+		    { data: { cart: !updatedCart.length > 0 ? null : updatedCart,
+		    		  wishlist: !updatedWishlist.length > 0 ? null : updatedWishlist} },
+		  )
+		)
+		.then((ret) => console.log('Add/Remove wishlisted cart product'))
+}
+
 
 cartRemoveProduct(e,productId) {
 	let cartproduct = document.querySelectorAll('.cart_product_b');
@@ -115,8 +162,17 @@ cartRemoveProduct(e,productId) {
 					// Filter cart to remove the selected product from it
 					let removeProduct = cart.filter((el) => el.id !== productId);
 					this.props.setCart({ cart: removeProduct })
+
+					if(this.props.userIsSignedIn && this.props.userDbInfo !== null) {
+						 let id          = this.props.userDbInfo.ref.value.id,
+		     				 updatedCart = {id: id, cart: removeProduct};
+		     			     // Send new data to function
+		     			     addProdToDB(updatedCart);
+					} else {
 					// Change localstorage after removing the product
 					localStorage.setItem('cart', JSON.stringify(removeProduct));
+					}
+
 					// Remove attribute style from all the cart products
 					modelNo.removeAttribute('style');
  
@@ -124,6 +180,7 @@ cartRemoveProduct(e,productId) {
 		} 
 	})		
 }
+
 
 handleProductQuantityChange(e,cartProductId) {
 	let cart = [...this.props.cart];
@@ -196,7 +253,10 @@ getTotalCartSaveUpPercent() {
 
 
 	render() {
- 
+ 		
+ 		if(this.props.userIsSignedIn && this.props.userDbInfo === null) {
+ 			return (<span>Loading...</span>)
+ 		}
 
 		return (
 				<div>

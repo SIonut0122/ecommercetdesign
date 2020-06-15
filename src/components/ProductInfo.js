@@ -8,14 +8,17 @@ import   womenProductsData from '../data/women';
 import PageNotFound             from './Pagenotfound';
 import { connect }            from "react-redux";
 import { setWishList, setCart } from '../actions';
-
+import { client, q } from '../fauna/db';
+import { addProdToDB } from './addProdToDB';
 
 
 
 const mapStateToProps = state => {
   return {  
           wishList   : state.wishList,
-          cart       : state.cart
+          cart       : state.cart,
+          userIsSignedIn : state.userIsSignedIn,
+          userDbInfo: state.userDbInfo
         };
 };
 
@@ -50,6 +53,8 @@ class connectedProductInfo extends React.Component {
 componentDidMount() {
 	// Search a product with the desired url id
 	 this.displayProductInfo();
+
+
 }
 
 componentDidUpdate(prevProps) {
@@ -84,8 +89,7 @@ displayProductInfo() {
  		}
  	}
 
- 	// Scroll to top on every change
- 	document.querySelector('.nav_path_cont').scrollIntoView({behavior: "auto", block: "center"});
+
 }
 
 handleProdInfoMoreImg(e,img) {
@@ -110,7 +114,7 @@ handleSelectColor(e) {
 }
 
 handleSelectSize(e) {
-		  // Highlight clicked size box
+	// Highlight clicked size box
 	const productSizes = document.querySelectorAll('.prodinfo_wrsizes_sizevalue');
 		  productSizes.forEach((size) => { size.style.border = '2px solid #C6C6C6';size.style.color = 'inherit'; });
 		  e.target.style.border = '2px solid #007bff';
@@ -135,9 +139,17 @@ prodInfoAddToWishlistBtn(e,bol) {
  		  // Push this product inside wishlist
  		  let wishList = [...this.props.wishList];
  		   	  wishList.push(this.state.productInfo);
- 		  this.props.setWishList({ wishList })
- 		  // Push wishlist to localstorage to be used on every mount
-		  localStorage.setItem('wishList', JSON.stringify(wishList));
+	 		  
+		    // Set new props wishlist
+			this.props.setWishList({ wishList })
+
+			if(this.props.userIsSignedIn && this.props.userDbInfo !== null) {
+		    // Call function to update userDb  is user is signed in
+		    this.updateDbWishlist(wishList);
+			} else {
+ 		    // Push wishlist to localstorage if user is not signed in
+		    localStorage.setItem('wishList', JSON.stringify(wishList));
+		 	}
 
 	} else {
 		  // Same thing as above /\ but reversed
@@ -150,15 +162,36 @@ prodInfoAddToWishlistBtn(e,bol) {
 		  // Remove from wishlist
 		  let removeProduct = [...this.props.wishList].filter((prod) => prod.id !== this.props.match.params.id);
 		  this.props.setWishList({ wishList: removeProduct })
-		  // Push wishlist to localstorage to be used on every mount
-		  localStorage.setItem('wishList', JSON.stringify(removeProduct));
-	}
+		  
+		    if(this.props.userIsSignedIn && this.props.userDbInfo !== null) {
+		    // Call function to update userDb  is user is signed in
+		  	this.updateDbWishlist(removeProduct);
+			} else {
+			// Push wishlist to localstorage if user is not signed in
+		    localStorage.setItem('wishList', JSON.stringify(removeProduct));
+		 	}
+		}
 
 		  // Hide 'added to wishlist/remove from wishlist' every time after 3 sec
  		  setTimeout(() => { addedToWishlistMsg.style.width = '0'},3000);
 }
 
+
+updateDbWishlist(updatedWishlist) {
+	// Get user db id to target user db info and update database
+  	let id = this.props.userDbInfo.ref.value.id;
+  	  client.query(
+	  q.Update(
+	    q.Ref(q.Collection('users'), id),
+	    { data: { wishlist: !updatedWishlist.length > 0 ? null : updatedWishlist} },
+	  )
+	)
+	.then((ret) => console.log('added/removed to/from dbinfo wishlist'))
+}
+
+
 prodInfoAddToCart(e,product) {
+	// Check is size was selected and animate button. After this, call function to addtocart
 	if(this.state.selectedSize.length > 0) {
 		// If 'Please select size' error message is displayed, hide it.
 		this.setState({ selectSizeErrMsg: false })
@@ -197,7 +230,7 @@ addProductToCart(product) {
 		// Collect all product id's
 		let idList = cart.map((el) => el.id);
 		// Check if clicked product is found inside the idList  
-	 	if(idList.includes(product.id)) {
+	if(idList.includes(product.id)) {
 	 	// Get product index
 	 	 const elementsIndex = cart.findIndex(element => element.id == product.id )
 	 	 // If quantity number is lower than 99, increase product quantity by one
@@ -206,16 +239,41 @@ addProductToCart(product) {
 	 	 cart[elementsIndex] = {...cart[elementsIndex], totalAmount: cart[elementsIndex].quantity * cart[elementsIndex].price};
 
 	 	 this.props.setCart({ cart: cart })
+
+	 	 // After setting new props, call function to update user db or localstorage
+		 if(this.props.userIsSignedIn && this.props.userDbInfo !== null) {
+		 // Send user id and updated cart param to function 
+		 let id          = this.props.userDbInfo.ref.value.id,
+		     updatedCart = {id: id, cart: cart};
+		 // Set DB cart
+		 addProdToDB(updatedCart)
+		 } else {	
+		 	console.log('add prod to localstorage');
 		 // Push cart to localstorage to be used on every mount
 		 localStorage.setItem('cart', JSON.stringify(cart));
-	 	} else {
-	 	// If product was not found inside Cart, push it, with quantity propriety/totalAmount = product.price and selectedSize
- 		cart.push(newProduct);
-		this.props.setCart({ cart: cart })
-		// Push cart to localstorage to be used on every mount
-		localStorage.setItem('cart', JSON.stringify(cart));
-	 	}		  
+		}
+
+	} else {
+	 	 // If product was not found inside Cart, push it, with quantity propriety/totalAmount = product.price and selectedSize
+ 		 cart.push(newProduct);
+ 		 // Set props with new added cart products
+		 this.props.setCart({ cart: cart })
+
+		 // After setting new props, call function to update user db or localstorage
+		 if(this.props.userIsSignedIn && this.props.userDbInfo !== null) {
+		 // Set DB cart
+		 let id          = this.props.userDbInfo.ref.value.id,
+		     updatedCart = {id, cart};
+		 // Set DB cart
+		 addProdToDB(updatedCart)
+		 } else {	
+		 // Push cart to localstorage to be used on every mount
+		 localStorage.setItem('cart', JSON.stringify(cart));
+		 }
+	 }		  
 }
+
+
 
 
 setPathName() {
@@ -235,6 +293,10 @@ setPathName() {
 				return;
 		} 
 	}
+	// Scroll to top on every change
+	if(document.contains(document.querySelector('.nav_path_cont'))) {
+ 		document.querySelector('.nav_path_cont').scrollIntoView({behavior: "auto", block: "center"});
+ 	}
 }
 
 
@@ -246,7 +308,12 @@ saveUpTo() {
 	return save;
 }
 	render() {
- 
+ 		
+ 		if(this.props.userIsSignedIn && this.props.userDbInfo === null) {
+ 			return (<span>Loading...</span>)
+ 		}
+ 		
+
 		return (
 				<div>
 					{/* Navigation */}

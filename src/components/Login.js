@@ -212,7 +212,7 @@ let provider = new firebase.auth.GoogleAuthProvider();
 					</div>)
 		} else if(this.props.userIsSignedIn) {
 			return ( <Redirect to={'/account'}/> )
-		}
+		} 
 
 
 		document.title = 'Conectare - Tshirt Design';

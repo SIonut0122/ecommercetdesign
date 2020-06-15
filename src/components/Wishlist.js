@@ -4,12 +4,14 @@ import { Link               } from 'react-router-dom';
 import { setWishList } from '../actions';
 import logo2 from '../images/pants2.jpg';
 import { connect }            from "react-redux";
-import firebase from 'firebase/app';
+ 
 
 
 const mapStateToProps = state => {
   return {  
-  		  wishList : state.wishList
+  		  wishList : state.wishList,
+  		  userDbInfo: state.userDbInfo,
+  		  userIsSignedIn: state.userIsSignedIn
         };
 };
 
@@ -26,18 +28,35 @@ class connectedWishlist extends React.Component {
 
 	state = {
 		wishlistEmpty : true,
-		wishList      : this.props.wishList
+		wishList      : this.props.wishList,
+
 	}
 
-
-componentDidMount() {
-	// Check if wishList localStorage is not empty and wishList props was set; If not, set it.
-    if (window.localStorage.getItem('wishList') !== null && !this.state.wishList.length > 0 ) {
-          let wishList = JSON.parse(localStorage.getItem('wishList'));
-          this.props.setWishList({ wishList })
-          this.setState({ wishList })
-    }	
+ componentDidMount() {
+ 	this.populateWishlist();
 }
+
+
+populateWishlist() {
+	// When page loads, if user is connected & user data was fetched from userDbInfo, set userDbInfo wishlist
+    if(this.props.userIsSignedIn && this.props.userDbInfo !== null) {
+    	console.log('Wishlist: SIGNED WISHLIST');
+    		  let wishListDb = this.props.userDbInfo.wishlist !== undefined ? this.props.userDbInfo.wishlist : [];
+	          this.props.setWishList({ wishList: wishListDb })
+	          this.setState({ wishList: wishListDb })
+	          
+	// If user is not connected, check wishlist on the localStorage
+    } else {
+    	// Check if wishList localStorage is not empty and wishList props was set; If not, set it.
+	    if (window.localStorage.getItem('wishList') !== null && !this.state.wishList.length > 0 ) {
+	          let wishListLS = JSON.parse(localStorage.getItem('wishList'));
+	          this.props.setWishList({ wishList: wishListLS })
+	          this.setState({ wishList: wishListLS })
+	          console.log('Wishlist: LOCALSTORAGE WISHLIST');
+	    } 
+    }
+}
+
 
 removeFromWishlistBtn(e,id) {
 	// Opacity 0.6 for clicked product / disable call to action from product
@@ -63,7 +82,7 @@ removeFromWishlistBtn(e,id) {
 
 googlePlusConnect() {
 	// Create google auth provider
-let provider = new firebase.auth.GoogleAuthProvider();
+    let provider = new firebase.auth.GoogleAuthProvider();
 	// Open popup window to signin Google+
 	firebase.auth().signInWithPopup(provider).then((result) => {
 	 // Console.log results if you need info about user
@@ -75,7 +94,10 @@ let provider = new firebase.auth.GoogleAuthProvider();
 
 
 	render() {
-
+		// If user is signed in and userDbInfo props is still null, display 'loading effect'.
+		if(this.props.userIsSignedIn && this.props.userDbInfo === null) {
+			return(<span>Loading...</span>)
+		}
 		return (
 				<div>
 
