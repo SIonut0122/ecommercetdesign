@@ -4,7 +4,7 @@ import Main from './Main';
 import { Provider } 							  from 'react-redux';
 import store  									  from './store';
 import './firebase';
- 
+import newProducts from './components/products/newProducts';
 
 
 ReactDOM.render(

@@ -2,17 +2,30 @@ import React from 'react';
 import '../../css/Account.css';
 import { Link,Redirect              } from 'react-router-dom'
 import AccountMenu from './AccountMenu';
+ import { setUserDbInfo } from '../../actions';
 import { connect }            from "react-redux";
+ import { client, q } from '../../fauna/db';
+
 
 
 const mapStateToProps = state => {
   return {  
-  		  userIsSignedIn   : state.userIsSignedIn
+  		  userIsSignedIn   : state.userIsSignedIn,
+  		  userDbInfo        : state.userDbInfo
         };
 };
 
+function mapDispatchToProps(dispatch) {
+  return {
+            setUserDbInfo       : userDB      => dispatch(setUserDbInfo(userDB))
+        };
+}
+
+
+
 class connectedShippingData extends React.Component {
 	state = {
+			city: ['Județ *','Alba','Arad','Argeș','Bacău','Bihor','Bistrița-Năsăud','Botoșani','Brașov','Brăila','Buzău','Caraș-Severin','Călărași','Cluj', 'Constanța','Covasna','Dâmbovița','Dolj','Galați','Giurgiu','Gorj','Harghita','Hunedoara','Ialomița','Iași','Ilfov','Maramureș', 'Mehedinți','Mureș','Neamț','Olt','Prahova','Satu Mare','Sălaj','Sibiu','Suceava','Teleorman','Timiș','Tulcea','Vaslui','Vâlcea', 'Vrancea'],
 			componentIsLoading: true,
 
 			shippLastName: '',
@@ -35,6 +48,10 @@ class connectedShippingData extends React.Component {
 			shippCityValid: true,
 			shippCityErrMsg: false,
 
+			shippVillage: '',
+			shippVillageValid: true,
+			shippVillageErrMsg: false,
+
 			shippAdditionalInfo: '',
 			confirmShippingUpdates: false,
 			confirmShippingUpdatesError: false,
@@ -43,8 +60,38 @@ class connectedShippingData extends React.Component {
 
 
 componentDidMount() {
-	document.title = 'Date de livrare - Tshirt Design';
-	setTimeout(() => { this.setState({ componentIsLoading: false })},1000)
+	// Get userDbinfo shipping data on every mount
+ 	if(this.props.userDbInfo !== null) {
+		this.updateStateWithUserDbInfo(this.props.userDbInfo.data);
+	}
+}
+
+componentDidUpdate(prevProps) {
+	// If user has inserted manually the URL, watch changes and update user state inputs info
+	if(prevProps.userDbInfo !== this.props.userDbInfo) {
+		this.updateStateWithUserDbInfo(this.props.userDbInfo.data);
+	}
+}
+
+updateStateWithUserDbInfo(userDbInfo) {
+	// Update state from userDbInfo to be used
+	this.setState({
+		shippLastName       : userDbInfo.shippingdata.lastname,
+		shippName           : userDbInfo.shippingdata.name,
+		shippStreetAddr     : userDbInfo.shippingdata.street,
+		shippPostalCode     : userDbInfo.shippingdata.postalCode,
+		shippCity           : userDbInfo.shippingdata.city,
+		shippVillage        : userDbInfo.shippingdata.village,
+		shippAdditionalInfo : userDbInfo.shippingdata.addInfo
+	})
+
+	let selCityOpt = document.querySelectorAll('.acc_shpdat_city_opt_sel');
+		selCityOpt.forEach((city) => {
+			if(city.value === userDbInfo.shippingdata.city) {
+				console.log('gasit:'+userDbInfo.city);
+				city.setAttribute('selected','selected');
+			}
+		})
 }
 
 updateShippLastName(e) {
@@ -55,7 +102,6 @@ updateShippLastName(e) {
          onlyBlankSpaces     =  lastName.split('').every(x => x.match(/[ ]+/g)),
            // Check last name length to be at least 2
          checkLastNameLength = lastName.length >= 2;
-
 
 	    if(checkLastName && checkLastNameLength && !onlyBlankSpaces) {
 	        this.setState({ shippLastName: lastName, shippLastNameValid: true, shippLastNameErrMsg: false })
@@ -76,9 +122,8 @@ updateShippName(e) {
            // Check shipp name length to be at least 2
          checkNameLength = nameValue.length >= 2;
 
-
 	    if(checkName && checkNameLength && !onlyBlankSpaces) {
-	        this.setState({ shippName: nameValue, shippNameValid: false, shippNameErrMsg: false })
+	        this.setState({ shippName: nameValue, shippNameValid: true, shippNameErrMsg: false })
 	    } else if(nameValue.length === 0) {
 	      // If input is empty, reset value input
 	        this.setState({ shippName: '', shippNameValid: true })
@@ -90,12 +135,11 @@ updateShippName(e) {
 updateShippStreetAddr(e) {
 	 let streetAddr         = e.target.value,
            // Check address name characters
-         checkAddr          =  streetAddr.split('').every(x => x.match(/[a-zA-Z0-9-._ ]+/g)),
+         checkAddr          =  streetAddr.split('').every(x => x.match(/[a-zA-Z0-9-.,()_ ]+/g)),
            // Check for input not to be only blank spaces
          onlyBlankSpaces    =  streetAddr.split('').every(x => x.match(/[ ]+/g)),
            // Check shipp address name length to be at least 2
          checkAddressLength = streetAddr.length >= 2;
-
 
 	    if(checkAddr && checkAddressLength && !onlyBlankSpaces) {
 	        this.setState({ shippStreetAddr: streetAddr, shippStreetAddrValid: true, shippStreetAddrErrMsg: false })
@@ -116,7 +160,6 @@ updateShippPostalCode(e) {
            // Check for blank spaces
         checkWhiteSpaces = postalCode.trim().length === postalCode.length;
 
-
     if(checkPostalCode && checkPostalCodeLength && checkWhiteSpaces) {
         this.setState({shippPostalCode: postalCode, shippPostalCodeValid: true, shippPostalCodeErrMsg: false})
       } else if(postalCode.length === 0) {
@@ -128,22 +171,29 @@ updateShippPostalCode(e) {
 }
 
 updateShippCity(e) {
-	 let cityValue       = e.target.value,
+	if(e.target.value !== 'Județ *') {
+		 this.setState({shippCity: e.target.value, shippCityValid: true, shippCityErrMsg: false})
+	} else {
+		this.setState({shippCity: '', shippCityValid: false})
+	}
+}
+
+updateShippVillage(e) {
+	let villageValue       = e.target.value,
            // Check city name characters
-         checkCityValue  =  cityValue.split('').every(x => x.match(/[a-zA-Z]+/g)),
+        checkVillageValue  =  villageValue.split('').every(x => x.match(/[a-zA-Z]+/g)),
            // Check for input not to be only blank spaces
-         onlyBlankSpaces =  cityValue.split('').every(x => x.match(/[ ]+/g)),
+        onlyBlankSpaces    =  villageValue.split('').every(x => x.match(/[ ]+/g)),
            // Check city name length to be at least 2
-         checkCityLength = cityValue.length >= 2;
+        checkVillageLength =  villageValue.length >= 2;
 
-
-	    if(checkCityValue && checkCityLength && !onlyBlankSpaces) {
-	        this.setState({ shippCity: cityValue, shippCityValid: true, shippCityErrMsg: false })
-	    } else if(cityValue.length === 0) {
+	    if(checkVillageValue && checkVillageLength && !onlyBlankSpaces) {
+	        this.setState({ shippVillage: villageValue, shippVillageValid: true, shippVillageErrMsg: false })
+	    } else if(villageValue.length === 0) {
 	      // If input is empty, reset value input
-	        this.setState({ shippCity: '', shippCityValid: true })
+	        this.setState({ shippVillage: '', shippVillageValid: true })
 	    } else {
-	        this.setState({ shippCity: cityValue, shippCityValid: false })
+	        this.setState({ shippVillage: villageValue, shippVillageValid: false })
 	    }
 }
 
@@ -172,15 +222,56 @@ updateShippingDataBtn() {
  		this.setState({ shippCityErrMsg: true })
  		break;
  		default:
- 			this.setState({ confirmShippingUpdates: true })
+ 			this.updateShippingdDataDb();
 	}
 }
 
+updateShippingdDataDb() {
+	
+	// Update user account info
+	let userDbInfo = this.props.userDbInfo.data,
+	    { shippLastName,shippName,shippStreetAddr,shippPostalCode,shippCity,shippVillage, shippAdditionalInfo } = this.state;
+
+	let newShippingData = {
+		lastname   : shippLastName       !== userDbInfo.myprofile.lastname   ? shippLastName       : userDbInfo.myprofile.lastname,
+		name       : shippName           !== userDbInfo.myprofile.name       ? shippName           : userDbInfo.myprofile.name,
+		street     : shippStreetAddr     !== userDbInfo.myprofile.street     ? shippStreetAddr     : userDbInfo.myprofile.street,
+		postalCode : shippPostalCode     !== userDbInfo.myprofile.postalCode ? shippPostalCode     : userDbInfo.myprofile.postalCode, 
+		city       : shippCity           !== userDbInfo.myprofile.city       ? shippCity           : userDbInfo.myprofile.city,
+		village    : shippVillage        !== userDbInfo.myprofile.village    ? shippVillage        : userDbInfo.myprofile.village,
+		addInfo    : shippAdditionalInfo !== userDbInfo.myprofile.addInfo    ? shippAdditionalInfo : userDbInfo.myprofile.addInfo
+	}
+
+ 	this.updateUserDbShippData(newShippingData, this.props.userDbInfo.ref.value.id);
+}
+
+updateUserDbShippData(newShippingData,id) {
+	// Target id inside database and update user shippingdata info
+	client.query(
+	  q.Update(
+	    q.Ref(q.Collection('users'), id),
+	    { data: { shippingdata: newShippingData} },
+	  )
+	)
+	.then((resp) => { 
+		this.props.setUserDbInfo({ userDbInfo: resp })
+		// Display confirm message
+		this.setState({ confirmShippingUpdates: true, confirmShippingUpdatesError: false })
+		// Hide confirm msg after 4 sec
+		setTimeout(() => {
+			this.setState({ confirmShippingUpdates: false })
+		},4000);
+		console.log('SHIPPING DATA WAS UPDATED') 
+	})
+	.catch(() => {
+		this.setState({ confirmShippingUpdatesError: true,})
+	})
+}
 
 	render() {
 
 		// If user is not signed in, redirect to login page
-		if(this.props.userIsSignedIn === null) {
+		if(this.props.userIsSignedIn === null && this.props.userDbInfo !== null) {
 			return (<div className='account_loading_modal'>
 						<div className='row justify-content-center h-100'>
 							<div className='acc_load_mod my-auto'><div></div><div></div><div></div><div></div></div>
@@ -189,6 +280,9 @@ updateShippingDataBtn() {
 		} else if(!this.props.userIsSignedIn) {
 			return ( <Redirect to={'/login'}/> )
 		}
+
+		// Set document title if user is logged in
+		document.title = 'Date de livrare - Tshirt Design';
 
 		return (
 				<div>
@@ -221,14 +315,7 @@ updateShippingDataBtn() {
 								</div>
 								<div className='account_sec shipping_sec col-12 col-lg-8'>
 
-									{/* Account loading modal */}
-									{this.state.componentIsLoading && (
-									<div className='account_loading_modal'>
-										<div className='row justify-content-center h-100'>
-											<div className='acc_load_mod my-auto'><div></div><div></div><div></div><div></div></div>
-										</div>
-									</div>
-									)}
+								 
 
 									{/* Account profile content */}
 									<div className='row'>
@@ -287,16 +374,31 @@ updateShippingDataBtn() {
 											)}
 											<a target='_blank' rel='noopener noreferrer' href='https://www.posta-romana.ro/cauta-cod-postal.html' className='check_postal_code'>Cauta cod postal <i className='fas fa-angle-right'></i></a>
 
+
 											{/* Shipp city */}
 											<span className='acc_profinputs_title'>Oras</span>
 											<span className='acc_profinput_wrap'>
-												<input type='text'
-													   className='acc_profinp_shippcity'
-													   onChange={(e) => this.updateShippCity(e)}
-													   value={this.state.shippCity}/>
+												 <select className="custom-select form-control acc_profinp_shippcity" onChange={(e)=>this.updateShippCity(e)}>
+												    {this.state.city.map((el,ind) =>
+												    	<option className='acc_shpdat_city_opt_sel' key={ind}>{el}</option>
+												    )}
+												</select>
 											</span>
+										 
 											{this.state.shippCityErrMsg && (
 											<span className='acc_profinputs_err_msg'>Oras invalid</span>
+											)}
+
+										{/* Shipp village */}
+											<span className='acc_profinputs_title'>Sat / comuna / sat</span>
+											<span className='acc_profinput_wrap'>
+												<input type='text'
+													   className='acc_profinp_shippvillage'
+													   onChange={(e) => this.updateShippVillage(e)}
+													   value={this.state.shippVillage}/>
+											</span>
+											{this.state.shippVillageErrMsg && (
+											<span className='acc_profinputs_err_msg'>Camp invalid</span>
 											)}
 
 										 	{/* Shipp additional info */}
@@ -338,5 +440,5 @@ updateShippingDataBtn() {
 	}
 }
 
-const ShippingData = connect(mapStateToProps,null)(connectedShippingData);
+const ShippingData = connect(mapStateToProps,mapDispatchToProps)(connectedShippingData);
 export default ShippingData;

@@ -11,7 +11,8 @@ import { connect }            from "react-redux";
 
 const mapStateToProps = state => {
   return {  
-  		  userIsSignedIn   : state.userIsSignedIn
+  		  userIsSignedIn   : state.userIsSignedIn,
+  		  userDbInfo:  state.userDbInfo 
         };
 };
 
@@ -24,14 +25,14 @@ class connectedMyOrders extends React.Component {
 
 
 componentDidMount() {
-	document.title = 'Comenzile mele - Tshirt Design';
+	
 	setTimeout(() => { this.setState({ componentIsLoading: false })},1000)
 }
 
 	render() {
 		
 		// If user is not signed in, redirect to login page
-		if(this.props.userIsSignedIn === null) {
+		if(this.props.userIsSignedIn === null && this.props.userDbInfo !== null) {
 			return (<div className='account_loading_modal'>
 						<div className='row justify-content-center h-100'>
 							<div className='acc_load_mod my-auto'><div></div><div></div><div></div><div></div></div>
@@ -41,6 +42,8 @@ componentDidMount() {
 			return ( <Redirect to={'/login'}/>)
 		}
 
+		// Set document title if user is logged in
+		document.title = 'Comenzile mele - Tshirt Design';
 		return (
 				<div>
 					{/* Navigation */}
@@ -62,7 +65,8 @@ componentDidMount() {
 							{/* Account title */}
 							<div className='row justify-content-center'>
 								<span className='account_title col-11'>
-									Contul meu
+								<span>Contul meu</span>
+									
 								</span>
 							</div>
 
@@ -85,21 +89,26 @@ componentDidMount() {
 									<div className='row justify-content-center'>
 										<div className='acc_myorders_container col-12'>
 											<div className='row'>
-												{this.state.ordersEmpty ? (
+												{this.props.userDbInfo.data.myorders === undefined || !this.props.userDbInfo.data.myorders.length > 0 ? (
 												<div className='acc_myorders_empty col-12'>
-													<span className='acc_myorders_empty_title'>Nu ai plasat nici o comandă</span>
+													<span className='acc_myorders_empty_title'>Nu ai plasat nicio comandă</span>
 													<Link to={'/'}>Continuati cumparaturile</Link>
 												</div>
 												) : (
 												<div className='acc_myorders_wrap col-12'>
-													<div className='acc_ordered_prod'>
-														<img src={logo2} alt=''/>
-														<span className='acc_ordered_prod_info'>
-															<span className='acc_ord_prodinfo_title'>TShirt Pants V2.5 Blue Color Blue ColorBlue Color</span> 
-															<span className='acc_ord_prodinfo_delivered'>Comandat pe: 25.05.2020</span>
-															<span className='acc_ord_prodinfo_price'>29.99 ron <span>( x1 )</span></span>
-														</span>
-													</div>
+													{this.props.userDbInfo.data.myorders.map((order,ind) =>
+														<div key={ind} className='acc_ordered_prod'>
+															<Link to={`/productinfo/${order.productId}`}><img src={order.img} alt=''/></Link>
+															<span className='acc_ordered_prod_info'>
+															<span className='acc_ord_prodinfo_delivered acc_o_pd_status'>Status:<span style={{color: order.status === 'In tranzit' ? 'orange' : order.status === 'Anulata' ? '#FF3E3E' : 'green'}}> {order.status}</span></span>
+																<Link to={`/productinfo/${order.productId}`} className='acc_ord_prodinfo_title'>{order.name}</Link> 
+																<span className='acc_ord_prodinfo_delivered'>Comandat pe: <span>{order.completedOrderDate}, ora: {order.completedOrderHour}</span></span>
+																<span className='acc_ord_prodinfo_delivered'>Id produs: <span>{order.productId}</span></span>
+																<span className='acc_ord_prodinfo_delivered'>Id tranzactie: <span>{order.transactionId}</span></span>
+																<span className='acc_ord_prodinfo_price'>{order.totalAmount} lei <span>( {order.quantity} articole )</span></span>
+															</span>
+														</div>
+														)}
 												</div>
 												)}
 											</div>

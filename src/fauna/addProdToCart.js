@@ -1,8 +1,8 @@
 
- import { client, q } from '../fauna/db';
+ import { client, q } from './db';
 
 
-export function addProdToDB(props) {
+export function addProdToCart(props) {
 	
 
   	client.query(

@@ -115,9 +115,7 @@ $redColor: #FF3E3E;
 	height: 40px;
 	margin: 10px;
 	border-radius: 4px;
-	&:hover {
-		border:1px solid $grayColorInside;
-	}
+	 
 }
 
 .log_input_wrapper input {
@@ -128,8 +126,8 @@ $redColor: #FF3E3E;
 	left: 0;
 	border: 1px solid $grayColorInside;
 	padding: 0 10px 0 10px;
-	border-radius: 3px;
-	transition: 0.2s;
+	border-radius: 4px;
+	transition: 0.1s;
 	font-size: 14px;
 }
 

@@ -23,9 +23,8 @@ export const USER_SIGNED_IN = 'USER_SIGNED_IN';
  export const SIGNED_WITH_GOOGLE = 'SIGNED_WITH_GOOGLE';
  export const USER_DB_INFO = 'USER_DB_INFO';
 
- 
- 
- 
- 
+  export const MEN_PRODUCTS_DB = 'MEN_PRODUCTS_DB';
+  export const WOMEN_PRODUCTS_DB = 'WOMEN_PRODUCTS_DB';
+   export const NEW_PRODUCTS_DB = 'NEW_PRODUCTS_DB';
  
  

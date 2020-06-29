@@ -4,6 +4,8 @@ import AccountMenu from './AccountMenu';
 import { Link, Redirect               } from 'react-router-dom';
  import { setUserDbInfo } from '../../actions';
 import { connect }            from "react-redux";
+ import { client, q } from '../../fauna/db';
+
 
 
 const mapStateToProps = state => {
@@ -68,16 +70,24 @@ class connectedAccount extends React.Component {
 
 	}
 
-
-componentDidMount() {
-	 
+ componentDidMount() {
+ 	// Get userDbinfo myprofile data on every mount
+ 	if(this.props.userDbInfo !== null) {
+		this.updateStateWithUserDbInfo(this.props.userDbInfo.data);
+		console.log('Account info: Called from didMount');
+	}
 }
 
 
 componentDidUpdate(prevProps) {
-	// Update signedwith google state if was not updated
+	// Update signedwith google state if was not updated when the page loads
 	if(prevProps.signedWithGoogle !== this.props.signedWithGoogle) { 
 		this.setState({ signedWithGoogle: this.props.signedWithGoogle, componentIsLoading: false})
+	}
+	// If user has inserted manually the URL, watch changes and update user state inputs info
+	if(prevProps.userDbInfo !== this.props.userDbInfo) {
+		this.updateStateWithUserDbInfo(this.props.userDbInfo.data);
+		console.log('Account info: Called from didUpdate');
 	}
 }
 
@@ -91,8 +101,18 @@ updateStateWithUserDbInfo(userDbInfo) {
 		sexProfile      : userDbInfo.myprofile.gender,
 		phoneAddress    : userDbInfo.myprofile.phone
 	})
-}
 
+
+	// Select all gender DOM options and set attribute 'selected' to option with 
+		// the userDbinfo gender value 
+	let selGenOpt = document.querySelectorAll('.acc_gend_opt');
+		selGenOpt.forEach((el) => {
+			if(el.value === userDbInfo.myprofile.gender) {
+				console.log('gasit:'+userDbInfo.myprofile.gender);
+				el.setAttribute('selected','selected');
+			}
+		})
+}
 
 
 
@@ -127,7 +147,7 @@ updateLastNameAddress(e) {
 	        this.setState({ lastNameAddress: lastNameValue, lastNameAddressValid: true, lastNameAddressErrMsg: false })
 	    } else if(lastNameValue.length === 0) {
 	      // If input is empty, reset value input
-	        this.setState({ lastNameAddress: '', lastNameAddressValid: false })
+	        this.setState({ lastNameAddress: '', lastNameAddressValid: true })
 	    } else {
 	        this.setState({ lastNameAddress: lastNameValue, lastNameAddressValid: false })
 	    }		
@@ -147,14 +167,14 @@ updateNameAddress(e) {
 	        this.setState({ nameAddress: nameValue, nameAddressValid: true, nameAddressErrMsg: false })
 	    } else if(nameValue.length === 0) {
 	      // If input is empty, reset value input
-	        this.setState({ nameAddress: '', nameAddressValid: false })
+	        this.setState({ nameAddress: '', nameAddressValid: true })
 	    } else {
 	        this.setState({ nameAddress: nameValue, nameAddressValid: false })
 	    }	
 }
 
 updateSex(e) {
-	 this.setState({ sexProfile: e.target.value })	
+	this.setState({ sexProfile: e.target.value })
 }
 
 updatePhoneAddress(e) {
@@ -176,6 +196,7 @@ updatePhoneAddress(e) {
         this.setState({phoneAddress: phoneValue, phoneAddressValid: false})
     }
 }
+
 updatePassword(e) {
 	let updatePassword   = e.target.value,
 	   		// Check updatePassword length to be higher than 2
@@ -277,8 +298,7 @@ updateAccountProfile() {
 	// If password was unchanged or was changed without errors, proceed with account info change
 	if(!this.state.changePassReauthentication && !this.state.changePassMinSixChar && !this.state.passwordMatchErrMsg) {
 		// Update user account info
-		let userDbInfo = this.props.userDbInfo,
-			userInfo   = this.props.userInfo,
+		let userDbInfo = this.props.userDbInfo.data,
 		    { lastNameAddress,nameAddress,sexProfile,phoneAddress} = this.state;
 
 		let myprofileUpdated = {
@@ -288,10 +308,33 @@ updateAccountProfile() {
 			phone    : phoneAddress    !== userDbInfo.myprofile.phone    ? phoneAddress    : userDbInfo.myprofile.phone  
 		}
 
-	 	this.setState({ confirmProfileUpdates: true })
+	 	this.updateUserDbProfile(myprofileUpdated, this.props.userDbInfo.ref.value.id);
 	}
 
 }
+
+updateUserDbProfile(updateUserDBProfile,id) {
+
+  	client.query(
+	  q.Update(
+	    q.Ref(q.Collection('users'), id),
+	    { data: { myprofile: updateUserDBProfile} },
+	  )
+	)
+	.then((resp) => { 
+			this.props.setUserDbInfo({ userDbInfo: resp })
+			// Display confirm message
+			this.setState({ confirmProfileUpdates: true, confirmProfileUpdatesError: false })
+			setTimeout(() => {
+				this.setState({ confirmProfileUpdates: false })
+			},4000);
+			console.log('MY PROFILE WAS UPDATED')
+		})
+	.catch(() => {
+		this.setState({ confirmProfileUpdatesError: true, confirmProfileUpdates: false })
+	})
+}
+
 
 
 handleSignOut() {
@@ -302,10 +345,11 @@ handleSignOut() {
 	});
 }
 
-	render() {
 
+
+	render() {
 		// If user is not signed in, redirect to login page
-		if(this.props.userIsSignedIn === null && this.props.userInfo !== null) {
+		if(this.props.userIsSignedIn === null && this.props.userDbInfo !== null) {
 			return (<div className='account_loading_modal'>
 						<div className='row justify-content-center h-100'>
 							<div className='acc_load_mod my-auto'><div></div><div></div><div></div><div></div></div>
@@ -319,7 +363,7 @@ handleSignOut() {
 
 		document.title = 'Profilul meu - Tshirt Design';
 		
-		let disableEnable = this.state.signedWithGoogle ? {disabled: 'disabled'} : {};
+		let disableEnable = this.props.signedWithGoogle ? {disabled: 'disabled'} : {};
 		return (
 				<div>
 					{/* Navigation */}
@@ -413,9 +457,9 @@ handleSignOut() {
 											<span className='acc_profinputs_title'></span>
 										 	<span className='acc_profinput_wrap acc_select_sex'>
 												 <select className="custom-select form-control" onChange={(e)=>this.updateSex(e)}>
-												    	<option>Sex</option>
-												    	<option>Feminin</option>
-												    	<option>Masculin</option>
+												    	<option className='acc_gend_opt'>Sex</option>
+												    	<option className='acc_gend_opt'>Feminin</option>
+												    	<option className='acc_gend_opt'>Masculin</option>
 												</select>
 											</span>
 

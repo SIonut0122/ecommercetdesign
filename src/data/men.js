@@ -3,14 +3,13 @@ const menProductsData = [
 		"pNo": 1,
 		"id":'mtdtpb-bqM1SjyrG9KMOvQ',
 		"category": 'men',
-		"new": false,
+		"new": true,
 		"name": "Tricou pentru barbati",
-		
+		"availableProductNo": 99,
 		"price": 55.99,
-		"oldPrice": 45.99,
+		"oldPrice": 85.99,
 		"img": "https://cdn.designbyhumans.com/product_images/p/167700.65.df581S7YyNAAA-650x650-b-p-eee.jpg",
-		"moreImages": ['https://cdn.designbyhumans.com/product_images/p/167700.65.df581S7YyNAAA-650x650-b-p-eee.jpg',
-					   'https://cdn.designbyhumans.com/product_images/p/167700.a7.a9de6S7YyNAAA-650x650-b-p.jpg'],
+		"moreImages": ['https://cdn.designbyhumans.com/product_images/p/167700.65.df581S7YyNAAA-650x650-b-p-eee.jpg'],
 		"color": 'black',
 		"moreColors": [
 			{
@@ -23,13 +22,12 @@ const menProductsData = [
 		"material": ["polyester","cotton"],
 		"size": ["S","M","XL","XXL","3XL"],
 		"necktype": ["withcollar","vneck"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 100%',
-			'Descriere': 'Negru/rosu',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 2,
@@ -37,7 +35,7 @@ const menProductsData = [
 		"category": 'men',
 		"new": false,
 		"name": "Tricou pentru barbati",
-		
+		"availableProductNo": 99,
 		"price": 55.99,
 		"oldPrice": 65.99,
 		"img": "https://cdn.designbyhumans.com/product_images/p/1289425.65.3130dS7ayBAA-650x650-b-p-eee.jpg",
@@ -55,21 +53,20 @@ const menProductsData = [
 		"material": ["polyester","cotton"],
 		"size": ["S","M","3XL"],
 		"necktype": ["withcollar","vneck"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 100%',
-			'Descriere': 'Negru/rosu',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 3,
 		"id":'ZgHCv1LFkiFiSF7',
 		"category": 'men',
 		"new": false,
-		"name": "Tricou polo",
-		
+		"name": "Tricou barbati polo",
+		"availableProductNo": 99,
 		"price": 65.99,
 		"oldPrice": null,
 		"img": "https://cdn.designbyhumans.com/product_images/p/1197331.65.57a39S7ayBAA-650x650-b-p-eee.jpg",
@@ -82,13 +79,12 @@ const menProductsData = [
 		"material": ["cotton"],
 		"size": ["S","M","XL","XXL","3XL"],
 		"necktype": ["withcollar","vneck"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 100%',
-			'Descriere': 'Negru/rosu',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 4,
@@ -96,7 +92,7 @@ const menProductsData = [
 		"category": 'men',
 		"new": false,
 		"name": "Tricou polo barbati",
-		
+		"availableProductNo": 99,
 		"price": 75.99,
 		"oldPrice": 85.99,
 		"img": "https://cdn.designbyhumans.com/product_images/p/162804.65.30f6dS7ayMLIEAA-650x650-b-p-eee.jpg",
@@ -114,13 +110,12 @@ const menProductsData = [
 		"material": ["cotton"],
 		"size": ["S","M","XL","XXL","3XL"],
 		"necktype": ["withcollar"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 100%',
-			'Descriere': 'Negru/rosu',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 5,
@@ -128,7 +123,7 @@ const menProductsData = [
 		"category": 'men',
 		"new": false,
 		"name": "Tricou polo barbati",
-		
+		"availableProductNo": 99,
 		"price": 75.99,
 		"oldPrice": null,
 		"img": "https://cdn.designbyhumans.com/product_images/p/162804.65.079c0S7ayBAA-650x650-b-p-eee.jpg",
@@ -146,13 +141,12 @@ const menProductsData = [
 		"material": ["cotton"],
 		"size": ["XL","XXL","3XL"],
 		"necktype": ["withcollar"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 100%',
-			'Descriere': 'Negru/rosu',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 6,
@@ -160,7 +154,7 @@ const menProductsData = [
 		"category": 'men',
 		"new": false,
 		"name": "Tricou barbati",
-		
+		"availableProductNo": 99,
 		"price": 49.99,
 		"oldPrice": null,
 		"img": "https://cdn.designbyhumans.com/product_images/p/25233.65.d9908S7YyAgA-650x650-b-p-eee.jpg",
@@ -173,13 +167,12 @@ const menProductsData = [
 		"material": ["polyester","cotton"],
 		"size": ["S","M","XL"],
 		"necktype": ["vneck"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 85%, Poliester 15%',
-			'Descriere': 'Verde',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 7,
@@ -187,7 +180,7 @@ const menProductsData = [
 		"category": 'men',
 		"new": false,
 		"name": "Tricou barbati",
-		
+		"availableProductNo": 99,
 		"price": 54.99,
 		"oldPrice": 59.99,
 		"img": "https://cdn.designbyhumans.com/product_images/p/827876.65.b069cS7YyNAAA-650x650-b-p-eee.jpg",
@@ -200,13 +193,12 @@ const menProductsData = [
 		"material": ["cotton"],
 		"size": ["S","M","XL"],
 		"necktype": ["vneck"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 85%, Poliester 15%',
-			'Descriere': 'Verde',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 8,
@@ -214,7 +206,7 @@ const menProductsData = [
 		"category": 'men',
 		"new": false,
 		"name": "Tricou barbati",
-		
+		"availableProductNo": 99,
 		"price": 48.99,
 		"oldPrice": 54.99,
 		"img": "https://cdn.designbyhumans.com/product_images/p/153416.65.644c5S7YyAgA-650x650-b-p-eee.jpg",
@@ -227,13 +219,12 @@ const menProductsData = [
 		"material": ["polyester"],
 		"size": ["S","M","XL"],
 		"necktype": ["roundneck"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 85%, Poliester 15%',
-			'Descriere': 'Verde',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 9,
@@ -241,7 +232,7 @@ const menProductsData = [
 		"category": 'men',
 		"new": false,
 		"name": "Tricou barbati",
-		
+		"availableProductNo": 59,
 		"price": 49.99,
 		"oldPrice": 55.99,
 		"img": "https://cdn.designbyhumans.com/product_images/p/153416.65.976a3S7YyNAAA-650x650-b-p-eee.jpg",
@@ -254,13 +245,12 @@ const menProductsData = [
 		"material": ["cotton"],
 		"size": ["S","M","XL",'3XL'],
 		"necktype": ["roundneck"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 85%, Poliester 15%',
-			'Descriere': 'Verde',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 10,
@@ -268,7 +258,7 @@ const menProductsData = [
 		"category": 'men',
 		"new": false,
 		"name": "Tricou barbati",
-		
+		"availableProductNo": 19,
 		"price": 59.99,
 		"oldPrice": null,
 		"img": "https://cdn.designbyhumans.com/product_images/p/67846.65.cdc8eS7ayMLIEAA-650x650-b-p-eee.jpg",
@@ -290,13 +280,12 @@ const menProductsData = [
 		"material": ["cotton"],
 		"size": ["M","XL",'3XL'],
 		"necktype": ["withcollar"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 85%, Poliester 15%',
-			'Descriere': 'Verde',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 11,
@@ -304,7 +293,7 @@ const menProductsData = [
 		"category": 'men',
 		"new": false,
 		"name": "Tricou barbati",
-		
+		"availableProductNo": 299,
 		"price": 59.99,
 		"oldPrice": null,
 		"img": "https://cdn.designbyhumans.com/product_images/p/67846.65.65452S7YyAgA-650x650-b-p-eee.jpg",
@@ -326,13 +315,12 @@ const menProductsData = [
 		"material": ["cotton"],
 		"size": ["M","XL",'3XL'],
 		"necktype": ["withcollar"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 85%, Poliester 15%',
-			'Descriere': 'Verde',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 12,
@@ -340,7 +328,7 @@ const menProductsData = [
 		"category": 'men',
 		"new": false,
 		"name": "Tricou barbati",
-		
+		"availableProductNo": 59,
 		"price": 59.99,
 		"oldPrice": null,
 		"img": "https://cdn.designbyhumans.com/product_images/p/67846.65.2cf80S7YyNAAA-650x650-b-p-eee.jpg",
@@ -362,13 +350,12 @@ const menProductsData = [
 		"material": ["cotton"],
 		"size": ["M","XL",'3XL'],
 		"necktype": ["withcollar"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 85%, Poliester 15%',
-			'Descriere': 'Verde',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 13,
@@ -376,7 +363,7 @@ const menProductsData = [
 		"category": 'men',
 		"new": false,
 		"name": "Tricou barbati",
-		
+		"availableProductNo": 35,
 		"price": 34.99,
 		"oldPrice": 44.99,
 		"img": "https://cdn.designbyhumans.com/product_images/p/67846.65.996aeS7YyAwA-650x650-b-p-eee.jpg",
@@ -389,21 +376,20 @@ const menProductsData = [
 		"material": ["cotton","polyester"],
 		"size": ["S","M","XL"],
 		"necktype": ["vneck"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 85%, Poliester 15%',
-			'Descriere': 'Verde',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 14,
 		"id":'zHaeNaeZpbQ6lmg',
 		"category": 'men',
-		"new": false,
+		"new": true,
 		"name": "Tricou barbati",
-		
+		"availableProductNo": 959,
 		"price": 34.99,
 		"oldPrice": 39.99,
 		"img": "https://cdn.designbyhumans.com/product_images/p/813276.65.8dbb2S7ayBAA-650x650-b-p-eee.jpg",
@@ -416,13 +402,12 @@ const menProductsData = [
 		"material": ["cotton","polyester"],
 		"size": ["S","M","XL"],
 		"necktype": ["vneck"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 85%, Poliester 15%',
-			'Descriere': 'Verde',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 15,
@@ -430,7 +415,7 @@ const menProductsData = [
 		"category": 'men',
 		"new": false,
 		"name": "Tricou barbati",
-		
+		"availableProductNo": 929,
 		"price": 55.99,
 		"oldPrice": null,
 		"img": "https://cdn.designbyhumans.com/product_images/p/62420.65.4dc00S7ayBAA-650x650-b-p-eee.jpg",
@@ -443,21 +428,20 @@ const menProductsData = [
 		"material": ["polyester"],
 		"size": ["S"],
 		"necktype": ["withcollar"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 85%, Poliester 15%',
-			'Descriere': 'Verde',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 16,
 		"id":'JCPydU40gSm8pXu',
 		"category": 'men',
-		"new": false,
+		"new": true,
 		"name": "Tricou barbati",
-		
+		"availableProductNo": 199,
 		"price": 45.99,
 		"oldPrice": null,
 		"img": "https://cdn.designbyhumans.com/product_images/p/62420.65.967e8S7YyBAA-650x650-b-p-eee.jpg",
@@ -470,13 +454,12 @@ const menProductsData = [
 		"material": ["cotton"],
 		"size": ["S"],
 		"necktype": ["withcollar"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 85%, Poliester 15%',
-			'Descriere': 'Verde',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 17,
@@ -484,7 +467,7 @@ const menProductsData = [
 		"category": 'men',
 		"new": false,
 		"name": "Tricou barbati",
-		
+		"availableProductNo": 299,
 		"price": 65.99,
 		"oldPrice": 84.99,
 		"img": "https://cdn.designbyhumans.com/product_images/p/1066134.65.4b6cdS7YyNAYA-650x650-b-p-eee.jpg",
@@ -497,13 +480,12 @@ const menProductsData = [
 		"material": ["cotton"],
 		"size": ["M","XL",'3XL'],
 		"necktype": ["withcollar"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 85%, Poliester 15%',
-			'Descriere': 'Verde',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 18,
@@ -511,7 +493,7 @@ const menProductsData = [
 		"category": 'men',
 		"new": false,
 		"name": "Tricou barbati polo",
-		
+		"availableProductNo": 3,
 		"price": 84.99,
 		"oldPrice": null,
 		"img": "https://cdn.designbyhumans.com/product_images/p/1066134.65.7432bS7YyBAA-650x650-b-p-eee.jpg",
@@ -524,13 +506,12 @@ const menProductsData = [
 		"material": ["polyester"],
 		"size": ["M","XL",'3XL'],
 		"necktype": ["roundneck"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 85%, Poliester 15%',
-			'Descriere': 'Verde',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 19,
@@ -538,7 +519,7 @@ const menProductsData = [
 		"category": 'men',
 		"new": false,
 		"name": "Tricou barbati polo",
-		
+		"availableProductNo": 499,
 		"price": 84.99,
 		"oldPrice": null,
 		"img": "https://cdn.designbyhumans.com/product_images/p/166726.65.1c87dS7ayAAA-650x650-b-p-eee.jpg",
@@ -551,13 +532,12 @@ const menProductsData = [
 		"material": ["cotton"],
 		"size": ["M","XL"],
 		"necktype": ["withcollar"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 85%',
-			'Descriere': 'Albastru',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 20,
@@ -565,7 +545,7 @@ const menProductsData = [
 		"category": 'men',
 		"new": false,
 		"name": "Tricou barbati polo",
-		
+		"availableProductNo": 599,
 		"price": 104.99,
 		"oldPrice": 109.99,
 		"img": "https://cdn.designbyhumans.com/product_images/p/14649.65.a90fbS7YyAQA-650x650-b-p-eee.jpg",
@@ -578,13 +558,12 @@ const menProductsData = [
 		"material": ["cotton"],
 		"size": ["M","XL","3XL"],
 		"necktype": ["roundneck"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 85%',
-			'Descriere': 'Roz',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 21,
@@ -592,7 +571,7 @@ const menProductsData = [
 		"category": 'men',
 		"new": false,
 		"name": "Tricou barbati",
-		
+		"availableProductNo": 499,
 		"price": 104.99,
 		"oldPrice": null,
 		"img": "https://cdn.designbyhumans.com/product_images/p/164930.65.c02b7S7YyAwA-650x650-b-p-eee.jpg",
@@ -605,21 +584,20 @@ const menProductsData = [
 		"material": ["cotton","polyester"],
 		"size": ["M","XL","3XL"],
 		"necktype": ["roundneck"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 85%, Poliester 15%',
-			'Descriere': 'Roz',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 22,
 		"id":'ekGy4Hf8aj4sJLe',
 		"category": 'men',
-		"new": false,
+		"new": true,
 		"name": "Tricou barbati polo",
-		
+		"availableProductNo": 399,
 		"price": 114.99,
 		"oldPrice": 119.99,
 		"img": "https://cdn.designbyhumans.com/product_images/p/783122.65.ee4eaS7ayNDQGAA-650x650-b-p-eee.jpg",
@@ -632,13 +610,12 @@ const menProductsData = [
 		"material": ["cotton"],
 		"size": ["S","M","L","XL","3XL"],
 		"necktype": ["withcollar"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 85%, Poliester 15%',
-			'Descriere': 'Roz',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 23,
@@ -646,7 +623,7 @@ const menProductsData = [
 		"category": 'men',
 		"new": false,
 		"name": "Tricou barbati",
-		
+		"availableProductNo": 51,
 		"price": 114.99,
 		"oldPrice": null,
 		"img": "https://cdn.designbyhumans.com/product_images/p/827850.65.57459S7ayNDQGAA-650x650-b-p-eee.jpg",
@@ -668,13 +645,12 @@ const menProductsData = [
 		"material": ["cotton"],
 		"size": ["S","M","L","XL"],
 		"necktype": ["withcollar"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 85%, Poliester 15%',
-			'Descriere': 'Roz',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 24,
@@ -682,7 +658,7 @@ const menProductsData = [
 		"category": 'men',
 		"new": false,
 		"name": "Tricou barbati",
-		
+		"availableProductNo": 19,
 		"price": 114.99,
 		"oldPrice": null,
 		"img": "https://cdn.designbyhumans.com/product_images/p/827850.65.f51f4S7YyAgA-650x650-b-p-eee.jpg",
@@ -704,21 +680,20 @@ const menProductsData = [
 		"material": ["cotton"],
 		"size": ["S","M","L","XL"],
 		"necktype": ["withcollar"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 85%, Poliester 15%',
-			'Descriere': 'Verde',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 25,
 		"id":'mtdbm-aPO1NGqDrCWKSmr',
 		"category": 'men',
-		"new": false,
+		"new": true,
 		"name": "Tricou barbati",
-		
+		"availableProductNo": 10,
 		"price": 114.99,
 		"oldPrice": null,
 		"img": "https://cdn.designbyhumans.com/product_images/p/827850.65.2000fS7ayBAA-650x650-b-p-eee.jpg",
@@ -740,13 +715,12 @@ const menProductsData = [
 		"material": ["cotton"],
 		"size": ["S","M","L","XL"],
 		"necktype": ["withcollar"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 85%, Poliester 15%',
-			'Descriere': 'White',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 26,
@@ -754,7 +728,7 @@ const menProductsData = [
 		"category": 'men',
 		"new": false,
 		"name": "Tricou barbati",
-		
+		"availableProductNo": 9,
 		"price": 64.99,
 		"oldPrice": null,
 		"img": "https://cdn.designbyhumans.com/product_images/p/180134.65.d1f51S7ayMDMGAA-650x650-b-p-eee.jpg",
@@ -767,13 +741,12 @@ const menProductsData = [
 		"material": ["polyester"],
 		"size": ["M","XL"],
 		"necktype": ["roundneck"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Poliester 100%',
-			'Descriere': 'Roz',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 27,
@@ -781,7 +754,7 @@ const menProductsData = [
 		"category": 'men',
 		"new": false,
 		"name": "Tricou barbati",
-		
+		"availableProductNo": 69,
 		"price": 24.99,
 		"oldPrice": 35.99,
 		"img": "https://cdn.designbyhumans.com/product_images/p/1400671.65.35150S7YyNAAA-650x650-b-p-eee.jpg",
@@ -794,13 +767,12 @@ const menProductsData = [
 		"material": ["cotton"],
 		"size": ["M","XL"],
 		"necktype": ["roundneck"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Poliester 100%',
-			'Descriere': 'Roz',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	}
 
 ]

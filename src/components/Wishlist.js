@@ -4,14 +4,16 @@ import { Link               } from 'react-router-dom';
 import { setWishList } from '../actions';
 import logo2 from '../images/pants2.jpg';
 import { connect }            from "react-redux";
- 
+ import { addProdToWishlist } from '../fauna/addProdToWishlist';
+ import { addProdToCart } from '../fauna/addProdToCart';
 
 
 const mapStateToProps = state => {
   return {  
-  		  wishList : state.wishList,
-  		  userDbInfo: state.userDbInfo,
-  		  userIsSignedIn: state.userIsSignedIn
+  		  wishList       : state.wishList,
+  		  userDbInfo     : state.userDbInfo,
+  		  userIsSignedIn : state.userIsSignedIn,
+  		  cart           : state.cart
         };
 };
 
@@ -27,34 +29,11 @@ class connectedWishlist extends React.Component {
 
 
 	state = {
-		wishlistEmpty : true,
-		wishList      : this.props.wishList,
-
+		
 	}
 
  componentDidMount() {
- 	this.populateWishlist();
-}
 
-
-populateWishlist() {
-	// When page loads, if user is connected & user data was fetched from userDbInfo, set userDbInfo wishlist
-    if(this.props.userIsSignedIn && this.props.userDbInfo !== null) {
-    	console.log('Wishlist: SIGNED WISHLIST');
-    		  let wishListDb = this.props.userDbInfo.wishlist !== undefined ? this.props.userDbInfo.wishlist : [];
-	          this.props.setWishList({ wishList: wishListDb })
-	          this.setState({ wishList: wishListDb })
-	          
-	// If user is not connected, check wishlist on the localStorage
-    } else {
-    	// Check if wishList localStorage is not empty and wishList props was set; If not, set it.
-	    if (window.localStorage.getItem('wishList') !== null && !this.state.wishList.length > 0 ) {
-	          let wishListLS = JSON.parse(localStorage.getItem('wishList'));
-	          this.props.setWishList({ wishList: wishListLS })
-	          this.setState({ wishList: wishListLS })
-	          console.log('Wishlist: LOCALSTORAGE WISHLIST');
-	    } 
-    }
 }
 
 
@@ -68,12 +47,31 @@ removeFromWishlistBtn(e,id) {
 		let wishboxes = document.querySelectorAll('.wish_product_box');
 			wishboxes.forEach((wbox) => wbox.removeAttribute('style'));
 		// Remove product from wishlist
-		let wishList      = [...this.state.wishList],
+		let wishList      = [...this.props.wishList],
+			cart          = [...this.props.cart],
 			removeProduct = wishList.filter((prod) => prod.id !== id);
-			this.setState({ wishList: removeProduct })
+			// Set new props wishlist to be displayed
 			this.props.setWishList({ wishList: removeProduct })	
-			// Push wishlist to localstorage to be used on every mount
-			localStorage.setItem('wishList', JSON.stringify(removeProduct));		
+
+			// Map through cart and change to false 'addedtowishlistfromcart' prop to false
+			for(let c in cart) {
+				if(cart[c].id === id) {
+					cart[c].addedToWishlistFromCart = false;
+				}
+			}
+			// If user is signed in, send wishlist to userDb info
+			if(this.props.userIsSignedIn && this.props.userDbInfo !== null) {
+			    // Update database's wishlist and cart
+				let updatedWishlist = {id: this.props.userDbInfo.ref.value.id, wishlist : removeProduct},
+				    updatedCart     = {id: this.props.userDbInfo.ref.value.id, cart     : cart};
+	 			    // Update cart to set 'addtowishfromcart' to false
+	 			    addProdToCart(updatedCart);
+				    // Call function to update userDb  is user is signed in
+				    addProdToWishlist(updatedWishlist);
+		    } else {
+			    	// Set wishlist to localStorage
+					localStorage.setItem('wishList', JSON.stringify(removeProduct));
+		    }
 	},500);
 }
 
@@ -98,6 +96,8 @@ googlePlusConnect() {
 		if(this.props.userIsSignedIn && this.props.userDbInfo === null) {
 			return(<span>Loading...</span>)
 		}
+
+
 		return (
 				<div>
 
@@ -124,11 +124,11 @@ googlePlusConnect() {
 								</span>
 							</div>
 							{/* Items container */}
-							{this.state.wishList.length > 0 ? (
+							{this.props.wishList.length > 0 ? (
 							<div className='row justify-content-center'>
 								<div className='wishlist_wrap col-11'>
 									<div className='row'>
-										{this.state.wishList.map((prod,ind) => 
+										{this.props.wishList.map((prod,ind) => 
 										<div key={ind} className='wish_product_box'>
 											{/* Wishlist remove btn */} 
 											<i className='fa fa-heart wish_remove_prod' onClick={(e)=>this.removeFromWishlistBtn(e,prod.id)}></i>
@@ -145,7 +145,9 @@ googlePlusConnect() {
 											{/* Wishlist product price /old price */}
 											<div className='row justify-content-center'>
 												<span className='wishprod_price'>{prod.price} lei
+													{prod.oldPrice !== undefined && (
 													<span className='wishprod_old_price'>{prod.oldPrice} lei</span>
+													)}
 												</span>
 											</div>
 										</div>

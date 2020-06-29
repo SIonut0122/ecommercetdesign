@@ -6,16 +6,30 @@ import expressDelivery from '../images/express_delivery.png';
 import { connect }            from "react-redux";
 import logo2 from '../images/pants2.jpg';
 import { v4 as uuidv4 } from 'uuid';
+ import { client, q } from '../fauna/db';
+
+import { setCart,setUserDbInfo } from '../actions';
+import getAllWomenProducts from './products/getAllWomenProducts';
+import getAllMenProducts from './products/getAllMenProducts';
+
+
 
 const mapStateToProps = state => {
   return {  
           cart : state.cart,
           totalCartAmount: state.totalCartAmount,
-          cartIsLoaded: state.cartIsLoaded
+          cartIsLoaded: state.cartIsLoaded, // Use this to avoid accessing checkout with manually URL. If true, from cart - proceed.
+          userDbInfo:   state.userDbInfo
         };
 };
 
 
+function mapDispatchToProps(dispatch) {
+  return {
+          setCart       : cart   => dispatch(setCart(cart)),
+          setUserDbInfo : userDB => dispatch(setUserDbInfo(userDB))
+        };
+}
 
 class connectedCheckout extends React.Component {
 
@@ -23,10 +37,10 @@ class connectedCheckout extends React.Component {
 	state ={
 		deliveryMethodLoading: false,
 		deliveryChecked: false,
-		counties: ['Judet *','Alba','Arad','Argeș','Bacău','Bihor','Bistrița-Năsăud','Botoșani','Brașov','Brăila','Buzău','Caraș-Severin','Călărași','Cluj', 'Constanța','Covasna','Dâmbovița','Dolj','Galați','Giurgiu','Gorj','Harghita','Hunedoara','Ialomița','Iași','Ilfov','Maramureș', 'Mehedinți','Mureș','Neamț','Olt','Prahova','Satu Mare','Sălaj','Sibiu','Suceava','Teleorman','Timiș','Tulcea','Vaslui','Vâlcea', 'Vrancea'],
+		city: ['Judet *','Alba','Arad','Argeș','Bacău','Bihor','Bistrița-Năsăud','Botoșani','Brașov','Brăila','Buzău','Caraș-Severin','Călărași','Cluj', 'Constanța','Covasna','Dâmbovița','Dolj','Galați','Giurgiu','Gorj','Harghita','Hunedoara','Ialomița','Iași','Ilfov','Maramureș', 'Mehedinți','Mureș','Neamț','Olt','Prahova','Satu Mare','Sălaj','Sibiu','Suceava','Teleorman','Timiș','Tulcea','Vaslui','Vâlcea', 'Vrancea'],
 		courierType: '',
 		courierPrice: '',
-
+		cart: null,
 		chkAddressLoading: false,
 
 		addressName: '',
@@ -74,11 +88,12 @@ componentDidMount() {
 		//  Hide select delivery method payment after 1 sec
 		setTimeout(() => this.setState({ deliveryMethodLoading: false }),1000);
 	}
-
+	this.setState({ cart: this.props.cart })
 }
 
 handleDeliverySelect(e,courierType,courierPrice) {
 	this.setState({ deliveryChecked: e.target.checked, courierType: courierType, courierPrice: courierPrice })
+
 	this.scrollToTop();
 	// Call function after selecting delivery method to recalculate total price
 	this.checkDeliveryMethodPrice(courierPrice);
@@ -290,54 +305,176 @@ backBtnFromPayment() {
 }
 
 handleFinishOrderBtn() {
+	let userDbInfo = this.props.userDbInfo.data.myorders !== undefined ? this.props.userDbInfo.data.myorders : [];
 
+	// If payment was selected and 'Agree with conditions' was checked, continue, if not, display error message
 	if(this.state.paymentChecked) {
 		// Get date and time when the order has been completed
 		let today     = new Date(),
         	todayDate = today.getDate()  + '/' + (today.getMonth() + 1) + '/' + today.getFullYear(),
       		time      = today.getHours() + ":" + today.getMinutes();
 
-      		// Add missing zero 
-	  		function addZero(i) {
-			  if (i < 10) {
-			    i = "0" + i;
-			  }
-			  return i;
-			}
-			// Pass hour,minutes and secons through function and add zero
-		    let h    = addZero(today.getHours()),
-		        m    = addZero(today.getMinutes()),
-		        s    = addZero(today.getSeconds()),
-		        hour = h + ":" + m + ":" + s;
-			 
+  		// Add missing zero 
+  		function addZero(i) {
+		  if (i < 10) {
+		    i = "0" + i;
+		  }
+		  return i;
+		}
+
+		// Pass hour,minutes and secons through function and add zero
+	    let h    = addZero(today.getHours()),
+	        m    = addZero(today.getMinutes()),
+	        s    = addZero(today.getSeconds()),
+	        hour = h + ":" + m + ":" + s;
 		
+		// Scroll to top when page loads
 		this.scrollToTop();
 
 		// Generate random uuid and get string numbers from position 24 to the end (12 numbers)
+			// This is used to target unique specific product
 		let generateUuid = uuidv4(),
-			transId = generateUuid.substring(24,generateUuid.length);
+			transId      = generateUuid.substring(24,generateUuid.length);
+
 		// Payment method selected & payment loading modal on
-		this.setState({ chkPaymentLoading : true, 
-						paymentMsgError    : false, 
-						completedOrderDate : todayDate, 
-						completedOrderHour : hour,
-						transactionId      : transId
+		this.setState({ chkPaymentLoading  : true,      // Loading effect while
+						paymentMsgError    : false,     // If error msg was displayed, hide it
+						completedOrderDate : todayDate, // Get time when transaction was completed
+						completedOrderHour : hour,      // Get hour
+						transactionId      : transId    // Set transaction id to be displayed
 					})
-		// Payment loading modal off & confirm state (addressAndPaymentFinished) validated
-		setTimeout(() => { this.setState({chkPaymentLoading: false, addressAndPaymentFinished: true }) },2500);
+
+		let cart 		 = this.props.cart,
+			activeOrders = [];
+			// Map through all cart products, get all usefull info about product. Create new product with the info and push it as an object to userDb myorders
+
+		cart.forEach((prod) => {
+			let product                    = {};
+			product['status']              = 'In tranzit';
+			product['img']                 = prod.moreImages[0];
+			product['name']                = prod.name;
+			product['productId']           = prod.id;
+			product['orderedProductRefId'] = prod.refId;
+			product['totalAmount']         = parseFloat(prod.totalAmount);
+			product['quantity']            = parseFloat(prod.quantity);
+			product['size']                = prod.selectedSize;
+			product['color']               = prod.color;
+			product['transactionId']       = transId;
+			product['completedOrderDate']  = todayDate;
+			product['completedOrderHour']  = hour;
+			product['courierType']         = this.state.courierType;
+			product['courierPrice']        = this.state.courierPrice;
+			product['shippingAddress']     = this.state.addressName+' '+this.state.addressLastName+', '+this.state.addressStreet+', '+this.state.addressCity+', '+this.state.addressSubCity;
+			product['phone']               = this.state.addressPhone;
+			product['additionalInfo']      = this.state.addressAdditionalInfo;
+			product['email']               = this.props.userDbInfo.data.email;    
+			product['userDbAccountRefId']  = this.props.userDbInfo.ref.value.id;     
+
+			// Push to existing userDb myorders array
+			userDbInfo.push(product);
+			// Push products to active orders array to be sent to database
+			activeOrders.push(product);
+		})
+		
+		console.log(activeOrders);
+		// Send updated myorders to userDb database
+		client.query(
+		  q.Update(
+		    q.Ref(q.Collection('users'), this.props.userDbInfo.ref.value.id),
+		    { data: { 
+		    		  myorders : userDbInfo,
+		              cart     : [] }
+		             }, // Set new order list and clear cart from database
+		  )
+		)
+		.then((userDbInfoUpdated) => {
+			// Call function to send orders to database
+			this.sendActiveOrdesToDatabase(activeOrders);
+			// Set new userDb info
+			this.props.setUserDbInfo({ userDbInfo: userDbInfoUpdated })
+			this.props.setCart({ cart: [] })
+		})
+		// If error, refresh window
+		.catch((err) => console.log('NOT SENT: '+err))
+
 	} else {
 		this.setState({ paymentMsgError: true})
 	}
 }
 
- 
+
+async sendActiveOrdesToDatabase(activeOrders) {
+	// Modify ordered available product numbers from all the database products
+	this.modifyProductsAvailableNumber(activeOrders);
+	// Send all new orders to database active_orders section
+	let get = await client.query(
+	  q.Map(
+	      activeOrders,
+	    q.Lambda(
+	      'active_orders',
+	      q.Create(
+	        q.Collection('active_orders'),
+	        {  data: q.Var('active_orders') },
+	      )
+	    ),
+	  )
+	)
+	.then(() => console.log(''))
+	.catch((err) => {
+			console.log('Error while trying to set active orders to database: '+err);
+	})
+}
+
+
+async modifyProductsAvailableNumber(activeOrders) {
+	// First, fetcha all products from database 
+	let getMen = await getAllMenProducts
+		.then((respMen) => {
+			// Collect only data without database post reference
+			let menProductData = respMen.map(el => el.data);
+
+			let getWomen = getAllWomenProducts
+				.then((respWomen) => {
+					// Collect all products into one array
+					let womenProductData = respWomen.map(el => el.data),
+						concat 			 = [],
+						allProducts      = [...concat,...menProductData, ...womenProductData];
+						
+						// Map through user's orders
+						for(let c in activeOrders) {
+							// Search inside allproducts for the matching product to get updated data
+							let getRefId = allProducts.forEach(el => {
+								if(activeOrders[c].orderedProductRefId === el.refId) {
+									// If product match with client's order id, update ordered product 'availableProductNo' from database
+										// availableProductNo product minus user's ordered product quantity
+											// In this way, every database availableProductNo will be recalculated depending of user's product ordered
+									 client.query(
+									  q.Update(
+									    q.Ref(q.Collection(el.category), el.refId),
+									    { data: { availableProductNo: el.availableProductNo - activeOrders[c].quantity } },
+									  )
+									)
+									.then((updated) => console.log(''))
+									.catch((err) => console.log('EROARE ACI'))
+
+								}
+							})
+						}
+						// Payment loading modal off & confirm state (addressAndPaymentFinished) validated
+						this.setState({chkPaymentLoading: false, addressAndPaymentFinished: true })
+
+				})
+		})
+
+}
+
+
 backBtnFromSumar() {
 	// Push page to homepage and refresh
 	setTimeout(() => {
 		window.location.reload();
 	},500);
 }
-
 
 /* __ Actions after delivery method select __ */
 
@@ -349,24 +486,37 @@ checkDeliveryMethodPrice(courierPrice) {
 }
 
 fillAddressDelivery() {
+	let userDbInfo = this.props.userDbInfo.data.shippingdata;
 	// Check account user if has completed 'Address delivery' from user account 
-	let lastName = 'John',
-	    name     = 'Doe',
-	    phone    = '0786756564',
-	    fulladdress = 'John Doe No.12 255062';
-
 	setTimeout(() => {
+		// If userDb has shipping data info, set to state to be rendered inside
+			// checkout shipping address inputs. Also, if there is data, set validity to true
+			// If user will change any data, validity will change due to info match
 		this.setState({
-		addressLastName: lastName,
-		addressLastNameValid: true,
-		addressName: name,
-		addressNameValid: true,
-		addressPhone: phone,
-		addressPhoneValid: true,
-		addressStreet: fulladdress,
-		addressStreetValid: true
+		addressLastName       : userDbInfo.lastname.length !== 0 ? userDbInfo.lastname : '' ,
+		addressLastNameValid  : userDbInfo.lastname.length !== 0 ? true : false,
+		addressName           : userDbInfo.name.length     !== 0 ? userDbInfo.name     : '',
+		addressNameValid      : userDbInfo.name.length     !== 0 ? true : false,
+		addressStreet         : userDbInfo.street.length   !== 0 ? userDbInfo.street+','+userDbInfo.postalCode : '',
+		addressStreetValid    : userDbInfo.street.length   !== 0 ? true : false,
+		addressCity           : userDbInfo.city.length     !== 0 ? userDbInfo.city     : '',
+		addressCityValid      : userDbInfo.city.length     !== 0 ? true : false,
+		addressSubCity        : userDbInfo.village.length  !== 0 ? userDbInfo.village  : '',
+		addressSubCityValid   : userDbInfo.village.length  !== 0 ? true : false,
+		addressAdditionalInfo : userDbInfo.addInfo.length  !== 0 ? userDbInfo.addInfo  : '',
 		})
 
+		// Map through city select DOM options and check value to be selected
+		 
+		let selCityOpt = document.querySelectorAll('.chk_city_opt_sel');
+			selCityOpt.forEach((city) => {
+				if(city.value === userDbInfo.city) {
+					console.log('gasit:'+userDbInfo.city);
+					city.setAttribute('selected','selected');
+					city.parentElement.setAttribute('style','border:1px solid #000');
+				}
+			})
+		 
 		// Animate input label name to top to view the input value
 		let addressInputs = document.querySelectorAll('.chk_addr_input');
 			addressInputs.forEach((el) => {
@@ -384,8 +534,13 @@ fillAddressDelivery() {
 	render() {
 
 		// If user doesn't come from the Cart using 'Go to checkout' button, redirect.
-		if(!this.props.cartIsLoaded) {
+		if(!this.props.cartIsLoaded && !this.props.cart.length > 0) {
 			return (<Redirect to='/cart'/>)
+		}
+		if(this.state.cart === null) {
+			return (
+					<span>Loading...</span>
+				)
 		}
 		// Style for checkout header steps
 		const stepCheckedIcon        = {color:'#fff',backgroundColor:'#289b38'},
@@ -563,23 +718,23 @@ fillAddressDelivery() {
 															   onBlur       = {()  => this.onAddressBlur()}>
 															</input>
 														</span>
-														<span className='chk_addr_note'>Ex: strada, numar, bloc, apartament</span>
+														<span className='chk_addr_note'>Ex: Strada, numar, bloc, apartament, cod postal</span>
 														{this.state.invalidStreetMsg && (
 														<span className='chk_addr_err_msg'>Adresa invalida</span>
 														)}
-														{/* ADDRESS COUNTIES */}
+														{/* ADDRESS CITY */}
 														<span className='chk_addr_wrapinput'>
 															 <select className="custom-select form-control" onChange={(e)=>this.handleAddressCity(e)}>
-															    {this.state.counties.map((el,ind) =>
-															    	<option key={ind}>{el}</option>
+															    {this.state.city.map((el,ind) =>
+															    	<option className='chk_city_opt_sel'key={ind}>{el}</option>
 															    )}
 															</select>
 														</span>
 														{this.state.invalidCityMsg && (
-														<span className='chk_addr_err_msg'>Judet invalid</span>
+														<span className='chk_addr_err_msg'>Județ invalid</span>
 														)}
 
-														{/* ADDRESS COUNTIES/CITY */}
+														{/* ADDRESS COUNTIES */}
 														<span className='chk_addr_wrapinput'>
 															<label className='chk_inp_label'>Oras / comuna / sat *</label>
 															<input type     = 'text' 
@@ -759,7 +914,7 @@ fillAddressDelivery() {
 															</div>
 															<div className='wr_chk_sum wr_chk_sum_total_lab'>
 																<span className='wr_chk_sum_label'>Total plata</span>
-																<span className='wr_chk_sum_value'><strong>{this.state.totalCartAmountWithDelivery} lei</strong></span>
+																<span className='wr_chk_sum_value'><strong>{this.state.totalCartAmountWithDelivery.toFixed(2)} lei</strong></span>
 															</div>
 														</div>
 
@@ -770,7 +925,7 @@ fillAddressDelivery() {
 															</span>
 															<span className='chk_sumar_note'>
 																Daca ati intampinat probleme in procesarea comenzii, va rugam sa ne trimiteti 
-																un email la <a href='mailto:contact@tshirtdesign.ro'>contact@tshirtdesign.ro </a> 
+																un email la <a href='mailto:contact@tshirtdesign.ro'>contact@tdesign.ro </a> 
 																sau sa sunati la numarul de telefon <span className='sumar_infonote_phone'>0727 464 5671 </span>.
 															</span>
 														</div>
@@ -799,7 +954,7 @@ fillAddressDelivery() {
 													{/* Total products sum */}
 													<div className='chk_sec_displayprod'>
 														<span className='chk_sec_dprod_label'>Total</span>
-														<span className='chk_sec_dprod_val'>{this.state.totalCartAmount} lei</span>
+														<span className='chk_sec_dprod_val'>{this.state.totalCartAmount.toFixed(2)} lei</span>
 													</div>
 													{/* Delivery cost */}
 													<div className='chk_sec_displayprod'>
@@ -809,14 +964,14 @@ fillAddressDelivery() {
 													{/* Total with TVA */}
 													<div className='chk_sec_displayprod chk_sec_totaltva'>
 														<span className='chk_sec_dprod_label'><strong>Total</strong> cu TVA</span>
-														<span className='chk_sec_dprod_val'><strong>{this.state.totalCartAmountWithDelivery} lei</strong></span>
+														<span className='chk_sec_dprod_val'><strong>{this.state.totalCartAmountWithDelivery.toFixed(2)} lei</strong></span>
 													</div>
 													
 													{/* Display products */}
-													<span className='chk_sec_dprod_title'>Comanda ta <span>{this.props.cart.length} {this.props.cart.length === 1 ? 'articol' : 'articole'}</span></span>
+													<span className='chk_sec_dprod_title'>Comanda ta <span>{this.state.cart.length} {this.state.cart.length === 1 ? 'articol' : 'articole'}</span></span>
 
 													<div className='chk_wrap_display_products'>
-														{this.props.cart.length > 0 && this.props.cart.map((prod,ind) =>
+														{this.state.cart.length > 0 && this.state.cart.map((prod,ind) =>
 														<div key={ind} className='chk_wrap_dprod_box'>
 															<span className='chk_wrap_dprod_box_img'>
 															<img src={prod.img} alt='' className='chkwrap_prodbox_img'/>
@@ -826,7 +981,7 @@ fillAddressDelivery() {
 																<span className='chks_wdprod_boxd_subtitle'>Marime: {prod.selectedSize}</span>
 																<span className='chks_wdprod_boxd_subtitle chkswp_bsub_color'>Culoare: <span style={{backgroundColor: prod.color}}></span></span>
 																<span className='chks_wdprod_boxd_sub_quant'>x<span>{prod.quantity}</span></span>
-																<span className='chks_wdprod_boxd_price'>{prod.totalAmount} lei</span>
+																<span className='chks_wdprod_boxd_price'>{prod.totalAmount.toFixed(2)} lei</span>
 															</span>
 														</div>
 														)}
@@ -847,5 +1002,5 @@ fillAddressDelivery() {
 	}
 }
 
-const Checkout = connect(mapStateToProps,null)(connectedCheckout);
+const Checkout = connect(mapStateToProps,mapDispatchToProps)(connectedCheckout);
 export default Checkout;

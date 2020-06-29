@@ -7,13 +7,12 @@ import { setSearchInput,setOpenMobileSearch,
 		 setUserIsSignedIn,setUserInfo,
 		 setWishList, setCart,setSignedWithGoogle,
 		 setUserDbInfo } from '../actions';
-
-import menProductsData from '../data/men';
-import womenProductsData from '../data/women';
- import getAllUsers from '../fauna/getAllUsers.js'
+ 
+ import getAllUsers from '../fauna/getAllUsers'
  import { client, q } from '../fauna/db';
 
- 
+ import womenProductsData from '../data/women';
+  import menProductsData from '../data/men';
 
 const mapStateToProps = state => {
   return {  
@@ -52,35 +51,61 @@ class connectedHeader extends React.Component {
 		super(props);
 	 
 	this.state = {
-		userIsSignedIn   : null,
-		userDbInfo       : null,
-		displayUserDropdownMenu: false,
-		hoveringAccountIcon: false,
-		hoveringDropdownMenu: false,
-		wishList         : this.props.wishList,
-		openSortByMenu   : false,
-		openMobileMenu   : false
+		displayUserDropdownMenu : false,
+		hoveringAccountIcon     : false,
+		hoveringDropdownMenu    : false,
+		wishList                : this.props.wishList,
+		openSortByMenu          : false,
+		openMobileMenu          : false
 	}
 }
 
 componentDidMount() {
 	window.addEventListener('resize', (e) =>this.handleHeaderResize(e));
 
+	// Bind action to nav menu links buttons
+	if(document.contains(document.querySelector('.nav_menu_link'))) {
+		let navMenuLinks = document.querySelectorAll('.nav_menu_link');
+			navMenuLinks.forEach(el => {
+				el.addEventListener('click', () => this.handleNavMenuLinkClick());
+			})
+	}  
+
+	// Call function to initiate user session
 	this.authListener();
 
+/*// SEND DATA TO DB
+	client.query(
+  q.Map(
+      menProductsData,
+    q.Lambda(
+      'men_products',
+      q.Create(
+        q.Collection('men'),
+        {  data: q.Var('men_products') },
+      )
+    ),
+  )
+)
+.then((ret) => console.log(ret))*/
 
-	// Recheck if userDbinfo was fetched, if not, call again to fetch;
-	setTimeout(() => {
-		if(this.props.userInfo !== null && this.props.userIsSignedIn && this.props.userDbInfo === null) {
-			window.location.reload();
-			console.log('DATABASE USER FETCH FAILED, CALLED AGAIN');
-		} else {
-			console.log('EVERYTHING LOOKS GOOD HERE, DB EXISTS OR USER IS OFFLINE');
-		}
-	},5000);
+
 }
 
+ 
 
+componentDidUpdate(prevProps) {
+	// If wishlist number increase, animate wishlist header icon number
+	if(prevProps.wishList !== this.props.wishList) {
+		if(document.contains(document.querySelector('.hsscol_fav_icon_no'))) {
+		let wishListNumber = document.querySelector('.hsscol_fav_icon_no');
+			// Add class to animate number
+			wishListNumber.classList.add('wish_no_added');
+			// Remove animation class after 0.3 sec
+			setTimeout(() => { wishListNumber.classList.remove('wish_no_added'); },300);
+		}
+	}
+}
  
 authListener() {
  
@@ -97,63 +122,8 @@ authListener() {
 	    	console.log('User is not signed in');
 	    	this.props.setUserIsSignedIn({ userIsSignedIn: false })
 	    	this.props.setUserInfo({ userInfo: null })
-	    }
-    });
-}
 
-
-authSignOut() {
-	// Signout and reload
-	firebase.auth().signOut().then(() => {
-	 window.location.reload();
-	}).catch(function(error) {
-	  console.log('An error occurred while signing out');
-	});
-}
-
-
-
-async fetchDbUser(userAuth) {
-
-	 
-/* // Getting the refs with a first query
-    let refs = await client.query(q.Paginate(q.Match(q.Index('all_users'))))
-    // Forging a second query with the retrieved refs
-    const bigQuery = refs.data.map((ref) => q.Get(ref))
-    // Sending over that second query
-    let allDocuments = await client.query(bigQuery)
-    // All my documents are here!
-   for(let c in allDocuments) { 
-   			if(allDocuments[c].ref.value.id === '268327532061786630') { 
-   		console.log(allDocuments[c].data);
-   	}
-
-*/
-	
-	const get = await getAllUsers
-		.then((users) => {
-		let usersDB = users;
-		let userExists = false;
-
-		for(let c in usersDB) {
-			if(usersDB[c].data.email === userAuth.email && usersDB[c].data.uid === userAuth.uid) {
-				userExists = true;
-				console.log('User exists, userdb set');
-				// Set userDb props info and state to render
-				this.props.setUserDbInfo({ userDbInfo: usersDB[c] })
-				this.setState({ userDbInfo: usersDB[c] })
-
-				console.log('Header: wishlistDB, cartDB pouplated');
-				  this.props.setWishList({ wishList: usersDB[c].data.wishlist !== undefined ? usersDB[c].data.wishlist : [] })
-				  this.props.setCart({ cart: usersDB[c].data.cart !== undefined ? usersDB[c].data.cart : [] })
-			}
-		}
-
-		if(!userExists) {
-			console.log('Creating user...');
-			this.createNewDbUser(userAuth);
-
-			// UPDATE WISHLIST FROM USERDB		
+	    	// UPDATE WISHLIST FROM LOCALSTORAGE		
 			console.log('Header: wishlist/cart localstoraged and populated');
 			if (window.localStorage.getItem('wishList') !== null) {
 	          let wishlistLS = JSON.parse(localStorage.getItem('wishList'));
@@ -163,7 +133,58 @@ async fetchDbUser(userAuth) {
 			if (window.localStorage.getItem('cart') !== null && !this.props.cart.length > 0 ) {
 		 	  let cartStorage = JSON.parse(localStorage.getItem('cart'));
 		 	  this.props.setCart({ cart: cartStorage })
-			 }
+			}
+	    }
+    });
+}
+
+
+authSignOut() {
+	// Signout and reload
+	firebase.auth().signOut().then(() => {
+		// Sign out after 0.5sec
+		setTimeout(() => {
+	 		window.location.reload();
+		},500);
+	}).catch(function(error) {
+	  console.log('An error occurred while signing out');
+	});
+}
+
+
+
+async fetchDbUser(userAuth) {
+
+	const get = await getAllUsers
+		.then((users) => {
+		let usersDB    = users,
+		    userExists = false,
+		// Collect all emails for double user check
+		    emails = [];
+			usersDB.forEach((el) => emails.push(el.data.email));
+
+		for(let c in usersDB) {
+			// If signed user match with any email and uid from db
+			if(usersDB[c].data.email === userAuth.email && usersDB[c].data.uid === userAuth.uid) {
+				// If collected emails contains signed users email, , set 'userExists' to true 
+				if(emails.includes(usersDB[c].data.email)) {
+					  userExists = true;
+					  console.log('Users exists, DB SET');
+				
+					  // Set userDb props info and state to render
+					  this.props.setUserDbInfo({ userDbInfo: usersDB[c] })
+
+					  console.log('Header: wishlistDB, cartDB pouplated');
+					  // If data is undefined (when data is null on faunaDB, data is deleted ->undefined)
+					  this.props.setWishList ({ wishList: usersDB[c].data.wishlist !== undefined ? usersDB[c].data.wishlist : [] })
+					  this.props.setCart     ({ cart: usersDB[c].data.cart !== undefined ? usersDB[c].data.cart : [] })
+				}
+			}
+		}
+		// If userexists remains false, create new user
+		if(!userExists) {
+			console.log('Creating user...');
+			this.createNewDbUser(userAuth);
 		}
 	   
 	})
@@ -172,24 +193,30 @@ async fetchDbUser(userAuth) {
 
 
 createNewDbUser(userAuth) {
+	console.log(userAuth);
 	let newUserData = {
-	  email        : userAuth.email,
-	  uid          : userAuth.uid,
-	  displayName  : userAuth.displayName,
-	  cart         : null,
-	  wishlist     : null,
-	  myprofile    : [{lastname:'',name:'',gender:'',phone:''}],
-	  myorders     : null,
-	  shippingdata : [{lastname:'',name:'',street:'',postalCode:'',city:'',addInfo:''}]
+		  email        : userAuth.email.toLowerCase(),
+		  uid          : userAuth.uid,
+		  displayName  : userAuth.displayName === null ? 'este null' : userAuth.displayName,
+		  cart         : null,
+		  wishlist     : null,
+		  myprofile    : {lastname:'',name:'',gender:'',phone:''},
+		  myorders     : null,
+		  shippingdata : {lastname:'',name:'',street:'',postalCode:'',city:'',village:'',addInfo:''}
 	};
 
+	// Create a new user with those prop on database
 	client.query(
 	  q.Create(
 	    q.Collection('users'),
 	    { data: newUserData },
 	  )
 	)
-	.then((ret) => console.log('New user created'))
+	.then((newUserCreated) => { 
+	  console.log('New user was created.');
+	  // Set userDb props after user was created
+	  this.props.setUserDbInfo ({ userDbInfo: newUserCreated })
+	 })
 	.catch((err) => {
 		console.log('Something went wrong while creatint new user');
 	})
@@ -199,7 +226,7 @@ createNewDbUser(userAuth) {
 
 componentWillUnmount() {
 	// Use this to restyle page depending of page size
-	window.removeEventListener('resize', (e) =>this.handleHeaderResize(e));
+	window.removeEventListener('resize', (e) => this.handleHeaderResize(e));
 }
 
 handleHeaderResize(e) {
@@ -220,7 +247,6 @@ handleHeaderResize(e) {
 			this.props.setOpenMediumSearch({ openMediumSearch: false })
 		}
 	}
-
 }
 
 /* Mobile search handler */
@@ -269,7 +295,7 @@ handleMobileMenu() {
 	} else {
 		document.querySelector('.head_mob_menu').classList.remove('mobmenu_active');
 		setTimeout(() => {
-		this.setState({ openMobileMenu: false })
+			this.setState({ openMobileMenu: false })
 		},300)
 	}
 }
@@ -312,19 +338,27 @@ handleSetSearchInputKey(e) {
  	}
 }
 
+renderUsername() {
+	// If userDb has a lastname available, use it
+	if(this.props.userDbInfo !== null && this.props.userDbInfo.data.myprofile.lastname.length > 0) {
+			return this.props.userDbInfo.data.myprofile.lastname;
+	} else {
+	// Instead, if user hasn't completed the lastname input, use the displayName from firebase auth account
+ 		if(this.props.userIsSignedIn && this.props.userInfo !== null && this.props.userInfo.displayName !== undefined) {
+	 		return this.props.userInfo.displayName;
+ 		}
+	}
+}
 
-
+handleNavMenuLinkClick() {
+	// Scroll to top on every change
+	if(document.contains(document.querySelector('.nav_path_cont'))) {
+ 		document.querySelector('.nav_path_cont').scrollIntoView({behavior: "auto", block: "center"});
+ 	}
+}
 
 	render() {
- 
-
-	// If wishlist number increase, animate wishlist header number
-	if(this.props.wishList.length > this.state.wishList.length) {
-		let wishListNumber = document.querySelector('.hsscol_fav_icon_no');
-			wishListNumber.classList.add('wish_no_added');
-			setTimeout(() => { wishListNumber.classList.remove('wish_no_added'); },300);
-	}
-
+  
 
 		return (
 			<div>
@@ -371,6 +405,15 @@ handleSetSearchInputKey(e) {
 					    		<span className='h_social_phone'>0727 464 5671</span>
 					    		<i className='fab fa-whatsapp'></i>
 					    		<span className='h_social_whatapp'>0734 124 6404</span>
+
+					    		{this.props.userIsSignedIn && this.props.userDbInfo !== null && this.props.userDbInfo.data.access_granted === 'mod' && (
+					    		<div className='head_wrap_admin_cpanel'>
+					    			<div className='row justify-content-center'>
+					    				<i className='fas fa-cogs'></i>
+					    				<Link to={'/dashboard'}>Panou de control</Link>
+					    			</div>	
+					    		</div>
+					    		)}
 					    	</div>
 					    </div>
 					    <hr className='head_hr'/>
@@ -393,10 +436,10 @@ handleSetSearchInputKey(e) {
 												<div className='row float-right'>
 													{/* User icon */}
 													<Link to={this.props.userIsSignedIn ? '/account' : '/login'}
-														  onMouseOver={() => this.accountIconHoverIn()}
-														  onMouseLeave={() => this.accountIconHoverOut()}
-														  className='hsccol_user_icon hsccol_acc_icon'>
-														  <i className='fas fa-user'></i>
+														  onMouseOver  = {() => this.accountIconHoverIn()}
+														  onMouseLeave = {() => this.accountIconHoverOut()}
+														  className    = 'hsccol_user_icon hsccol_acc_icon'>
+														  <i className = 'fas fa-user'></i>
 													</Link>
 													{/* Wishlist icon */} 
 													<Link to={'/wishlist'} className='hsscol_fav_icon hsccol_acc_icon'>
@@ -421,37 +464,45 @@ handleSetSearchInputKey(e) {
 						<div className='row'>
 							<div className='head_nav_menu col-12'>
 								<div className='row justify-content-sm-start justify-content-md-center'>
-									<Link to={'/products/men'}    className='nav_menu_link'>Barbati</Link>
-									<Link to={'/products/women'} className='nav_menu_link'>Femei</Link>
-									<span className='nav_menu_link'>Noutati</span>
-									<span className='nav_menu_link'>Custom</span>
-									<span className='nav_menu_link'>Contact</span>
+									<Link to={'/products/men'}      className='nav_menu_link nav_menu_men'><span>Barbati</span></Link>
+									<Link to={'/products/women'}    className='nav_menu_link nav_menu_women'><span>Femei</span></Link>
+									<Link to={'/products/children'} className='nav_menu_link nav_menu_custom'><span>Copii</span></Link>
+									<Link to={'/products/new'}      className='nav_menu_link nav_menu_new'><span>Noutati</span></Link>
+									<Link to={'/contact'}           className='nav_menu_link nav_menu_contact nav_mlink_men'><span>Contact</span></Link>
 
 									{/* Search bar on large breakpoint */}
 									<form className='nav_m_search form-inline d-flex justify-content-center md-form form-sm active-cyan active-cyan-2 mt-2'>
-									  <Link to={'/search/'+this.props.searchInput} className='nav_m_search_btn'><i className='fas fa-search' aria-hidden='true'></i></Link>
-									  <input className='form-control form-control-sm ml-3 w-75' 
-									  		 type='text' 
-									  		 placeholder='Caută'
-									    	 aria-label='Search' 
-									    	 onChange={(e) => {this.props.setSearchInput({ searchInput: e.target.value })}} 
-									    	 onKeyDown={(e)=> this.handleSetSearchInputKey(e)}
-									    	 value={this.props.searchInput}>
+									  <Link to={'/search/'+this.props.searchInput} className='nav_m_search_btn' style={{pointerEvents: !this.props.searchInput.length > 0 ? 'none' : 'visible'}}><i className='fas fa-search' aria-hidden='true'></i></Link>
+									  <input className   = 'form-control form-control-sm ml-3 w-75' 
+									  		 type        = 'text' 
+									  		 placeholder = 'Caută'
+									    	 aria-label  = 'Search' 
+									    	 onChange    = {(e) => {this.props.setSearchInput({ searchInput: e.target.value })}} 
+									    	 onKeyDown   = {(e)=> this.handleSetSearchInputKey(e)}
+									    	 value       = {this.props.searchInput}>
 									   </input>
 									</form>
 
 									{/* Search bar on medium breakpoint */}
+									{!this.props.openMediumSearch && (
 									<i className='fas fa-search nav_m_search_med d-lg-none' onClick={() => this.openMedSizeSearch()}></i>
+									)}
+
+									{/* If searach bar medium is displayed, display search icon */}
+									{this.props.openMediumSearch && ( 
+										<Link to={'/search/'+this.props.searchInput} style={{pointerEvents: !this.props.searchInput.length > 0 ? 'none' : 'visible'}}><i className='fas fa-search nav_m_search_med d-lg-none'></i></Link>
+									)}
 									{this.props.openMediumSearch && (
 									<div className='nav_search_medium_input'>
+										<span onClick={() => this.openMedSizeSearch()}>&times;</span>
 										<form className='form-inline d-flex justify-content-center md-form form-sm mt-2'>
-									  		<input className='form-control form-control-sm w-80' 
-									  			   type='text' 
-									  			   placeholder='Caută'
-									   	           aria-label='Search' 
-									   	           onChange={(e) => {this.props.setSearchInput({ searchInput: e.target.value })}} 
-									   	           onKeyDown={(e)=> this.handleSetSearchInputKey(e)}
-									   	           value={this.props.searchInput}>
+									  		<input className   = 'form-control form-control-sm w-80' 
+									  			   type        = 'text' 
+									  			   placeholder = 'Caută'
+									   	           aria-label  = 'Search' 
+									   	           onChange    = {(e) => {this.props.setSearchInput({ searchInput: e.target.value })}} 
+									   	           onKeyDown   = {(e)=> this.handleSetSearchInputKey(e)}
+									   	           value       = {this.props.searchInput}>
 									   	    </input>
 										</form>
 									</div>
@@ -483,7 +534,7 @@ handleSetSearchInputKey(e) {
 												<i className='fas fa-user'></i>
 											)}
 										</Link>
-										<span className='udrmenu_sin_title'>{this.props.userInfo !== null ? this.props.userInfo.displayName : '' }</span>
+										<span className='udrmenu_sin_title'>{this.renderUsername()}</span>
 										<span className='udrmenu_sin_signout_btn' onClick={()=>this.authSignOut()}><span>Iesi din cont</span></span>
 
 										<Link to={'/account'}              className='udrmenu_sin_menu_btn' onClick={()=>this.handleAccDropdownClick()}>Profilul meu</Link>
@@ -505,6 +556,7 @@ handleSetSearchInputKey(e) {
 								<Link to={'/products/childrens'} className='h_mob_menu_btn' onClick={()=>this.handleMobileMenu()}>Copii</Link>
 								<Link to={'/products/customize'} className='h_mob_menu_btn' onClick={()=>this.handleMobileMenu()}>Customize</Link>
 								<Link to={'/products/contact'}   className='h_mob_menu_btn' style={{borderBottom:'1px solid transparent'}} onClick={()=>this.handleMobileMenu()}>Contact</Link>
+								<Link to={'/dashboard'}          className='h_mob_menu_btn hmob_menu_cplink' onClick={()=>this.handleMobileMenu()}>Panou de control</Link>
 							</div>
 						</div>
 						)}

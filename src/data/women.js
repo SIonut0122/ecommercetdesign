@@ -2,8 +2,9 @@ const womenProductsData = [
 	{
 		"pNo": 1,
 		"id":'mtdtpb-yUJ7Br4SZpuaDS2',
-		"new": false,
+		"new": true,
 		"name": "Tricou pentru femei",
+		"availableProductNo": 99,
 		"category": 'women',
 		"price": 54.99,
 		"oldPrice": null,
@@ -22,19 +23,19 @@ const womenProductsData = [
 		"material": ["polyester","cotton"],
 		"size": ["S","M","XL","XXL"],
 		"necktype": ["vneck"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 100%',
-			'Descriere': 'Negru/rosu',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 2,
 		"id":'mtdtpb-TGuKqxOPh5msFQr',
 		"new": false,
 		"name": "Tricou pentru femei",
+		"availableProductNo": 929,
 		"category": 'women',
 		"price": 54.99,
 		"oldPrice": 59.99,
@@ -53,19 +54,19 @@ const womenProductsData = [
 		"material": ["polyester","cotton"],
 		"size": ["S","M","3XL"],
 		"necktype": ["vneck"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 100%',
-			'Descriere': 'Negru/rosu',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 3,
 		"id":'iNatbfIIhBx6aAX',
 		"new": false,
 		"name": "Tricou polo",
+		"availableProductNo": 39,
 		"category": 'women',
 		"price": 65.99,
 		"oldPrice": null,
@@ -79,19 +80,19 @@ const womenProductsData = [
 		"material": ["cotton"],
 		"size": ["S","M","XL"],
 		"necktype": ["vneck"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'message',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 100%',
-			'Descriere': 'Negru/rosu',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 4,
 		"id":'mtdtpol-pSM6RRYz2LrVBZw',
-		"new": false,
+		"new": true,
 		"name": "Tricou polo femei",
+		"availableProductNo": 599,
 		"category": 'women',
 		"price": 75.99,
 		"oldPrice": null,
@@ -110,19 +111,19 @@ const womenProductsData = [
 		"material": ["cotton"],
 		"size": ['XS','S','XL'],
 		"necktype": ["withcollar"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 100%',
-			'Descriere': 'Negru/rosu',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 5,
 		"id":'mtdtpol-wzrblEVGubZNRzw',
 		"new": false,
 		"name": "Tricou polo femei",
+		"availableProductNo": 49,
 		"category": 'women',
 		"price": 75.99,
 		"oldPrice": null,
@@ -141,19 +142,19 @@ const womenProductsData = [
 		"material": ["cotton"],
 		"size": ['XS','S','XL'],
 		"necktype": ["withcollar"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 100%',
-			'Descriere': 'Negru/rosu',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 6,
 		"id":'NZpcI2XhRBDYujO',
 		"new": false,
 		"name": "Tricou femei",
+		"availableProductNo": 19,
 		"category": 'women',
 		"price": 49.99,
 		"oldPrice": 54.99,
@@ -167,19 +168,19 @@ const womenProductsData = [
 		"material": ["polyester","cotton"],
 		"size": ["S","M","XL"],
 		"necktype": ["withcollar"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 85%, Poliester 15%',
-			'Descriere': 'Verde',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 7,
 		"id":'BGJgli0eGCj6RwQ',
 		"new": false,
 		"name": "Tricou femei",
+		"availableProductNo": 39,
 		"category": 'women',
 		"price": 94.99,
 		"oldPrice": 99.99,
@@ -193,19 +194,19 @@ const womenProductsData = [
 		"material": ["cotton"],
 		"size": ["S","M"],
 		"necktype": ["roundneck"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 85%, Poliester 15%',
-			'Descriere': 'Verde',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 8,
 		"id":'jBpfrHVy5FALgzC',
 		"new": false,
 		"name": "Tricou femei simplu",
+		"availableProductNo": 969,
 		"category": 'women',
 		"price": 39.99,
 		"oldPrice": 44.99,
@@ -219,19 +220,19 @@ const womenProductsData = [
 		"material": ["polyester"],
 		"size": ["XS","S","M"],
 		"necktype": ["roundneck"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 85%, Poliester 15%',
-			'Descriere': 'Verde',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 9,
 		"id":'ROJsbi6mDZ535wT',
 		"new": false,
 		"name": "Tricou femei",
+		"availableProductNo": 29,
 		"category": 'women',
 		"price": 49.99,
 		"oldPrice": null,
@@ -245,19 +246,19 @@ const womenProductsData = [
 		"material": ["organic"],
 		"size": ["S","M","XL"],
 		"necktype": ["roundneck"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 85%, Poliester 15%',
-			'Descriere': 'Verde',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 10,
 		"id":'mtdndf-VX1VUFl6T50UjoP',
 		"new": false,
-		"name": "Tricou barbati",
+		"name": "Tricou femei",
+		"availableProductNo": 79,
 		"category": 'women',
 		"price": 59.99,
 		"oldPrice": null,
@@ -280,19 +281,19 @@ const womenProductsData = [
 		"material": ["cotton"],
 		"size": ["XS","S","L","M","XL"],
 		"necktype": ["withcollar"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 85%, Poliester 15%',
-			'Descriere': 'Verde',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 11,
 		"id":'mtdndf-7DbBmRtyf6reC9p',
 		"new": false,
-		"name": "Tricou barbati",
+		"name": "Tricou femei",
+		"availableProductNo": 29,
 		"category": 'women',
 		"price": 59.99,
 		"oldPrice": 69.99,
@@ -315,19 +316,19 @@ const womenProductsData = [
 		"material": ["cotton"],
 		"size": ["XS","S","L","M","XL"],
 		"necktype": ["withcollar"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 100%',
-			'Descriere': 'Verde',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 12,
 		"id":'mtdndf-i6zB2RRKkpFhvB7',
 		"new": false,
 		"name": "Tricou femei",
+		"availableProductNo": 9,
 		"category": 'women',
 		"price": 59.99,
 		"oldPrice": null,
@@ -350,19 +351,19 @@ const womenProductsData = [
 		"material": ["cotton"],
 		"size": ["XS","S","L","M","XL"],
 		"necktype": ["withcollar"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 100%',
-			'Descriere': 'Verde',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 13,
 		"id":'fXbPHjPtvF0toHr',
 		"new": false,
 		"name": "Tricou femei",
+		"availableProductNo": 239,
 		"category": 'women',
 		"price": 34.99,
 		"oldPrice": 44.99,
@@ -376,19 +377,19 @@ const womenProductsData = [
 		"material": ["cotton","polyester"],
 		"size": ["S","M","XL"],
 		"necktype": ["vneck"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 85%, Poliester 15%',
-			'Descriere': 'Verde',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 14,
 		"id":'aHoNCLVzk8afHvS',
 		"new": false,
 		"name": "Tricou femei",
+		"availableProductNo": 43,
 		"category": 'women',
 		"price": 34.99,
 		"oldPrice": null,
@@ -402,19 +403,19 @@ const womenProductsData = [
 		"material": ["cotton"],
 		"size": ["S","M","XL"],
 		"necktype": ["vneck"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 85%, Poliester 15%',
-			'Descriere': 'Verde',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 15,
 		"id":'qgvesWq2YWhgh1F',
 		"new": false,
 		"name": "Tricou femei simplu",
+		"availableProductNo": 99,
 		"category": 'women',
 		"price": 54.99,
 		"oldPrice": 59.99,
@@ -428,19 +429,19 @@ const womenProductsData = [
 		"material": ["polyester"],
 		"size": ["S"],
 		"necktype": ["withcollar"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 85%, Poliester 15%',
-			'Descriere': 'Verde',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 16,
 		"id":'cEnTUESlGDtdiCI',
 		"new": false,
 		"name": "Tricou femei",
+		"availableProductNo": 99,
 		"category": 'women',
 		"price": 45.99,
 		"oldPrice": 54.99,
@@ -454,19 +455,19 @@ const womenProductsData = [
 		"material": ["cotton"],
 		"size": ["S"],
 		"necktype": ["withcollar"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 85%, Poliester 15%',
-			'Descriere': 'Verde',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 17,
 		"id":'FNloCnbTUNc38Rf',
 		"new": false,
 		"name": "Tricou femei",
+		"availableProductNo": 99,
 		"category": 'women',
 		"price": 65.99,
 		"oldPrice": 74.99,
@@ -480,19 +481,19 @@ const womenProductsData = [
 		"material": ["cotton"],
 		"size": ["M","XL",'3XL'],
 		"necktype": ["withcollar"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 85%, Poliester 15%',
-			'Descriere': 'Verde',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 18,
 		"id":'sQ6CdItbmsRKSfk',
 		"new": false,
 		"name": "Tricou femei",
+		"availableProductNo": 99,
 		"category": 'women',
 		"price": 84.99,
 		"oldPrice": null,
@@ -506,19 +507,19 @@ const womenProductsData = [
 		"material": ["cotton"],
 		"size": ["M","XL"],
 		"necktype": ["withcollar"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 100%',
-			'Descriere': 'Verde',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 19,
 		"id":'rPd51iOBqbsmzYZ',
 		"new": false,
 		"name": "Tricou femei polo",
+		"availableProductNo": 99,
 		"category": 'women',
 		"price": 84.99,
 		"oldPrice": null,
@@ -532,19 +533,19 @@ const womenProductsData = [
 		"material": ["cotton"],
 		"size": ["M","XL"],
 		"necktype": ["withcollar"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 85%',
-			'Descriere': 'Albastru',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 20,
 		"id":'jjc9DA900wbc2F2',
 		"new": false,
-		"name": "Tricou barbati polo",
+		"name": "Tricou femei polo",
+		"availableProductNo": 99,
 		"category": 'women',
 		"price": 104.99,
 		"oldPrice": 119.99,
@@ -558,19 +559,19 @@ const womenProductsData = [
 		"material": ["cotton"],
 		"size": ["M","XL","3XL"],
 		"necktype": ["roundneck"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 85%',
-			'Descriere': 'Roz',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 21,
 		"id":'EJlLfnXSQiaH5G8',
 		"new": false,
 		"name": "Tricou femei",
+		"availableProductNo": 99,
 		"category": 'women',
 		"price": 104.99,
 		"oldPrice": 109.99,
@@ -584,19 +585,19 @@ const womenProductsData = [
 		"material": ["cotton","polyester"],
 		"size": ["M","XL","3XL"],
 		"necktype": ["roundneck"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 85%, Poliester 15%',
-			'Descriere': 'Roz',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 22,
 		"id":'aC9Ir6Cp4dBnKP6',
 		"new": false,
 		"name": "Tricou femei polo",
+		"availableProductNo": 99,
 		"category": 'women',
 		"price": 114.99,
 		"oldPrice": null,
@@ -623,6 +624,7 @@ const womenProductsData = [
 		"id":'mtdbmf-8KtTJ2iu7eIuOPx',
 		"new": false,
 		"name": "Tricou femei",
+		"availableProductNo": 99,
 		"category": 'women',
 		"price": 114.99,
 		"oldPrice": null,
@@ -645,19 +647,19 @@ const womenProductsData = [
 		"material": ["cotton"],
 		"size": ["S","M","L","XL"],
 		"necktype": ["withcollar"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 85%, Poliester 15%',
-			'Descriere': 'Roz',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 24,
 		"id":'mtdbmf-p0BSqV1KrFKOlG4',
 		"new": false,
 		"name": "Tricou femei",
+		"availableProductNo": 99,
 		"category": 'women',
 		"price": 114.99,
 		"oldPrice": null,
@@ -680,19 +682,19 @@ const womenProductsData = [
 		"material": ["cotton"],
 		"size": ["S","M","L","XL"],
 		"necktype": ["withcollar"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 85%, Poliester 15%',
-			'Descriere': 'Verde',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 25,
 		"id":'mtdbmf-t4yK1Rz0k1ZYQJX',
 		"new": false,
 		"name": "Tricou femei",
+		"availableProductNo": 99,
 		"category": 'women',
 		"price": 114.99,
 		"oldPrice": null,
@@ -715,19 +717,19 @@ const womenProductsData = [
 		"material": ["cotton"],
 		"size": ["S","M","L","XL"],
 		"necktype": ["withcollar"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Bumbac 85%, Poliester 15%',
-			'Descriere': 'White',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 26,
 		"id":'Kv9WOgzDBeDdQQ6',
 		"new": false,
 		"name": "Tricou femei",
+		"availableProductNo": 99,
 		"category": 'women',
 		"price": 64.99,
 		"oldPrice": 74.99,
@@ -741,19 +743,19 @@ const womenProductsData = [
 		"material": ["polyester"],
 		"size": ["M","XL"],
 		"necktype": ["withcollar"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Poliester 100%',
-			'Descriere': 'Roz',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	},
 	{
 		"pNo": 27,
 		"id":'qOa8lNhMAii37jD',
 		"new": false,
 		"name": "Tricou femei",
+		"availableProductNo": 99,
 		"category": 'women',
 		"price": 24.99,
 		"oldPrice": 35.99,
@@ -767,13 +769,12 @@ const womenProductsData = [
 		"material": ["polyester","cotton"],
 		"size": ["M","XL"],
 		"necktype": ["roundneck"],
-		"ro": {
-			'Marime': 'Cu maneci scurte',
-			'Imprimeu': 'grafic',
-			'Model': 'Decolteu rotund',
-			'Compozitie': 'Poliester 100%',
-			'Descriere': 'Roz',
-		}
+		"ro": [ {type:'Marime',descr:  'Cu maneci scurte'},
+		        {type:'Imprimeu',descr:  'grafic'},
+		        {type:'Model',descr:  'Decolteu rotund'},
+		        {type:'Compozitie',descr:  'Bumbac 100%'},
+		        {type:'Descriere',descr:  'Negru/rosu'}
+	     ]
 	}
 
 ]

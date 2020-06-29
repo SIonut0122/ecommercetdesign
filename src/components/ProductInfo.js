@@ -3,14 +3,18 @@ import { Link                  } from 'react-router-dom';
 import { FacebookShareButton  } from 'react-share';
 import logo2 from '../images/pants2.jpg';
 import '../css/ProductInfo.css';
-import   menProductsData from '../data/men';
-import   womenProductsData from '../data/women';
+ 
+
+
 import PageNotFound             from './Pagenotfound';
 import { connect }            from "react-redux";
-import { setWishList, setCart } from '../actions';
+import { setWishList, setCart,setWomenProductsDb,setMenProductsDb } from '../actions';
 import { client, q } from '../fauna/db';
-import { addProdToDB } from './addProdToDB';
+import { addProdToCart } from '../fauna/addProdToCart';
+import { addProdToWishlist } from '../fauna/addProdToWishlist';
 
+import getAllWomenProducts from './products/getAllWomenProducts';
+import getAllMenProducts from './products/getAllMenProducts';
 
 
 const mapStateToProps = state => {
@@ -18,14 +22,18 @@ const mapStateToProps = state => {
           wishList   : state.wishList,
           cart       : state.cart,
           userIsSignedIn : state.userIsSignedIn,
-          userDbInfo: state.userDbInfo
+          userDbInfo: state.userDbInfo,
+          menProductsDataDb: state.menProductsDataDb,
+          womenProductsDataDb: state.womenProductsDataDb
         };
 };
 
 function mapDispatchToProps(dispatch) {
   return {
           setWishList : wishlist => dispatch(setWishList(wishlist)),
-          setCart     : cart     => dispatch(setCart(cart))
+          setCart     : cart     => dispatch(setCart(cart)),
+          setMenProductsDb : menProdDb => dispatch(setMenProductsDb(menProdDb)),
+          setWomenProductsDb : womenProdDb => dispatch(setWomenProductsDb(womenProdDb))
         };
 }
 
@@ -37,13 +45,15 @@ class connectedProductInfo extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			productInfo: null,
-			productInfoFound: null,
-			addedToWishList: false,
-			addedToWishListMsg: null,
-			selectedSize: '',
-			selectSizeErrMsg: false,
-			saveUpPercent: null,
+			productInfo        : null,
+			productInfoFound   : null,
+			addedToWishList    : false,
+			addedToWishListMsg : null,
+			selectedSize       : '',
+			selectSizeErrMsg   : false,
+			saveUpPercent      : null,
+			backgroundPosition : '0% 0%',
+			allProductsDataDb: null
 
 
 		}
@@ -52,29 +62,93 @@ class connectedProductInfo extends React.Component {
 
 componentDidMount() {
 	// Search a product with the desired url id
-	 this.displayProductInfo();
+	 this.fetchAllProductsData();
 
+	 // Scroll to top on every change
+	if(document.contains(document.querySelector('.nav_path_cont'))) {
+ 		document.querySelector('.nav_path_cont').scrollIntoView({behavior: "auto", block: "center"});
+ 	}
 
 }
 
 componentDidUpdate(prevProps) {
 	// Listen to params url id changes and if prevState id !== this.id, call function
 	if(prevProps.match.params.id !== this.props.match.params.id) {
-		this.displayProductInfo();
+		this.fetchAllProductsData();
 	}
+
+	// If user is logged in or nor and wishList was loaded, check if this products was already inside wishlist and set icon to true
+	if(prevProps.wishList !== this.props.wishList && this.state.productInfo !== null) {
+		this.props.wishList.forEach((el) => { if(el.id === this.state.productInfo.id) { this.setState({ addedToWishList: true }) } })
+	}
+
 }
 
-displayProductInfo() {
-  // Combine all products objects data into one array
-  let newArray        = [],
-      allProductsData = [...newArray, ...menProductsData, ...womenProductsData];
-  // Loop through all products for the URL PARAM ID and get products info
+async fetchAllProductsData() {
+		let newArray = [], allProductsDataDb;
+
+	// If products data was not fetched before, start fetching all data
+	if(this.props.menProductsDataDb === null || this.props.womenProductsDataDb === null) {
+		console.log('NO DATA HERE, FETCHING...');
+			let getMen = await getAllMenProducts
+			.then((menProdData) => {
+				// Collect inside menProductsData only menProds data
+			     	let menProductsData = [];
+			     	// Extract only data
+			     	menProdData.forEach(el => {
+			     		el.data.refId = el.ref.value.id; 
+			     		menProductsData.push(el.data) 
+			     	});
+
+			     	this.props.setMenProductsDb({ menProductsDataDb: menProductsData })
+			     	// After fetchind mens data, call to fetch womenproductsdata
+			     	this.fetchWomenProductsData(menProductsData);
+
+			     	// if any erros while fetching men data, display error
+			}).catch((error) => console.log('Error while fetching menData: ', error.message))
+			
+			// If all data was fetched before, collect in into one array and send it to display
+	} else if(this.props.menProductsDataDb !== null && this.props.womenProductsDataDb !== null) {
+		console.log('DATA IS HERE, nothing to fetch...');
+			allProductsDataDb = [...newArray, ...this.props.menProductsDataDb, ...this.props.womenProductsDataDb];
+			this.displayProductInfo(allProductsDataDb);
+	}
+
+}
+
+async fetchWomenProductsData(menProductsData) {
+	let newArray = [], allProductsDataDb;
+
+	// Then, fetch all womens products
+ 	let getWomen = await getAllWomenProducts
+ 	.then((womenProdData) => {
+ 		let womenProductsData = [];
+     	// Extract only data
+     	womenProdData.forEach(el => {
+     		el.data.refId = el.ref.value.id; 
+     		womenProductsData.push(el.data) 
+     	});
+     	this.props.setWomenProductsDb({ womenProductsDataDb: womenProductsData })
+
+     	// After fetchind men and woman data, collect all into one array and send it to display
+     	allProductsDataDb = [...newArray, ...menProductsData,...womenProductsData];
+     	this.displayProductInfo(allProductsDataDb);
+
+ 	}).catch((error) => console.log('Error while fetching womenData: ', error.message))
+}
+
+
+displayProductInfo(allProductsDataDb) {
+	console.log('Trying to dispay product');
+    let allProductsData = allProductsDataDb;
+  	// Loop through all products for the URL PARAM ID and get products info
  	for(let p in allProductsData) {
  		if(allProductsData[p].id === this.props.match.params.id) {
+ 			console.log(allProductsData[p]);
  			// Restore profile image to product (Hovering changes profile image before click)
  			allProductsData[p].img = allProductsData[p].moreImages[0];
  			// Set found product to true and product info to be displayed
- 			this.setState({ productInfoFound: true, productInfo: allProductsData[p] })
+ 			this.setState({ productInfoFound: true, productInfo: allProductsData[p], allProductsDataDb: allProductsData })
  			// Set document title with the name of product
 			document.title = allProductsData[p].name+' | TshirtDesign.com';
  			// Check if product is in the wishlist
@@ -83,7 +157,7 @@ displayProductInfo() {
  						this.setState({ addedToWishList: true })
  					} 
  				})
- 			break;
+ 			break; // Break when first product was found. Avoid changing productInfoFound to false and displaying 404 error
  		}  else {
  			this.setState({ productInfoFound: false })
  		}
@@ -143,15 +217,19 @@ prodInfoAddToWishlistBtn(e,bol) {
 		    // Set new props wishlist
 			this.props.setWishList({ wishList })
 
+			// If user is signed in, update userDB
 			if(this.props.userIsSignedIn && this.props.userDbInfo !== null) {
+			// Collect id and wishlist inside an object
+			let updatedWishlist = {id: this.props.userDbInfo.ref.value.id, wishlist: wishList};
 		    // Call function to update userDb  is user is signed in
-		    this.updateDbWishlist(wishList);
+		    addProdToWishlist(updatedWishlist);
 			} else {
  		    // Push wishlist to localstorage if user is not signed in
 		    localStorage.setItem('wishList', JSON.stringify(wishList));
 		 	}
 
 	} else {
+		// If product was already inside the wishlist, proceed to remove.
 		  // Same thing as above /\ but reversed
 		  this.setState({ addedToWishList: false })
 		  addedToWishlistMsg.style.width = '100%'; 
@@ -162,10 +240,13 @@ prodInfoAddToWishlistBtn(e,bol) {
 		  // Remove from wishlist
 		  let removeProduct = [...this.props.wishList].filter((prod) => prod.id !== this.props.match.params.id);
 		  this.props.setWishList({ wishList: removeProduct })
-		  
+		  	
+		  	// If user is signed in, update userDB
 		    if(this.props.userIsSignedIn && this.props.userDbInfo !== null) {
+		    // Collect id and wishlist inside an object
+			let updatedWishlist = {id: this.props.userDbInfo.ref.value.id, wishlist: removeProduct};
 		    // Call function to update userDb  is user is signed in
-		  	this.updateDbWishlist(removeProduct);
+		    addProdToWishlist(updatedWishlist);
 			} else {
 			// Push wishlist to localstorage if user is not signed in
 		    localStorage.setItem('wishList', JSON.stringify(removeProduct));
@@ -174,19 +255,6 @@ prodInfoAddToWishlistBtn(e,bol) {
 
 		  // Hide 'added to wishlist/remove from wishlist' every time after 3 sec
  		  setTimeout(() => { addedToWishlistMsg.style.width = '0'},3000);
-}
-
-
-updateDbWishlist(updatedWishlist) {
-	// Get user db id to target user db info and update database
-  	let id = this.props.userDbInfo.ref.value.id;
-  	  client.query(
-	  q.Update(
-	    q.Ref(q.Collection('users'), id),
-	    { data: { wishlist: !updatedWishlist.length > 0 ? null : updatedWishlist} },
-	  )
-	)
-	.then((ret) => console.log('added/removed to/from dbinfo wishlist'))
 }
 
 
@@ -206,9 +274,9 @@ prodInfoAddToCart(e,product) {
 			document.querySelector('.addtocart_i_bag').classList.add('addtocart_i_grow');
 			// Call function to add product to cart
 			this.addProductToCart(product);
-		},2000);
+		},1500);
 			// Remove classname which animate the icon bag from 'Add to cart' btn
-		setTimeout(() => {document.querySelector('.addtocart_i_bag').classList.remove('addtocart_i_grow');},2300);
+		setTimeout(() => {document.querySelector('.addtocart_i_bag').classList.remove('addtocart_i_grow');},1800);
 	} else {
 		// If size is not selected, display error message
 		this.setState({ selectSizeErrMsg: true })
@@ -219,14 +287,19 @@ addProductToCart(product) {
 	let cart       = [...this.props.cart],
 		newProduct = product;
 
+		// If product oldPrice was set, calculate the save up percentage
+		if(product.oldPrice !== undefined) {
 		// Calculate the save up percent and add it to product prop 
 		let decr         = this.state.productInfo.oldPrice - this.state.productInfo.price;
 		let saveUpPercent = Math.round((decr / this.state.productInfo.oldPrice) * 100).toFixed(0);
+	    	newProduct.saveUpPercent = saveUpPercent;
+	    }
  		// Set new values for the new prduct
+ 		newProduct.img           = newProduct.moreImages[0];
 		newProduct.quantity      = 1;
 	    newProduct.totalAmount   = product.price;
 	    newProduct.selectedSize  = this.state.selectedSize;
-	    newProduct.saveUpPercent = saveUpPercent;
+	    newProduct.refId         = product.refId;
 		// Collect all product id's
 		let idList = cart.map((el) => el.id);
 		// Check if clicked product is found inside the idList  
@@ -240,13 +313,12 @@ addProductToCart(product) {
 
 	 	 this.props.setCart({ cart: cart })
 
-	 	 // After setting new props, call function to update user db or localstorage
+	 	 // If user is signed in, send data to userDB, if not, set it to localStorage
 		 if(this.props.userIsSignedIn && this.props.userDbInfo !== null) {
 		 // Send user id and updated cart param to function 
 		 let id          = this.props.userDbInfo.ref.value.id,
 		     updatedCart = {id: id, cart: cart};
-		 // Set DB cart
-		 addProdToDB(updatedCart)
+			 addProdToCart(updatedCart)
 		 } else {	
 		 	console.log('add prod to localstorage');
 		 // Push cart to localstorage to be used on every mount
@@ -259,22 +331,18 @@ addProductToCart(product) {
  		 // Set props with new added cart products
 		 this.props.setCart({ cart: cart })
 
-		 // After setting new props, call function to update user db or localstorage
+		 // If user is signed in, send data to userDB, if not, set it to localStorage
 		 if(this.props.userIsSignedIn && this.props.userDbInfo !== null) {
 		 // Set DB cart
 		 let id          = this.props.userDbInfo.ref.value.id,
 		     updatedCart = {id, cart};
-		 // Set DB cart
-		 addProdToDB(updatedCart)
+			 addProdToCart(updatedCart)
 		 } else {	
 		 // Push cart to localstorage to be used on every mount
 		 localStorage.setItem('cart', JSON.stringify(cart));
 		 }
 	 }		  
 }
-
-
-
 
 setPathName() {
 	// If clicked product info was found, render nav pathname depending of what category type gender is
@@ -293,12 +361,7 @@ setPathName() {
 				return;
 		} 
 	}
-	// Scroll to top on every change
-	if(document.contains(document.querySelector('.nav_path_cont'))) {
- 		document.querySelector('.nav_path_cont').scrollIntoView({behavior: "auto", block: "center"});
- 	}
 }
-
 
 saveUpTo() {
 	// Calculate the save up percent and display it to the product info
@@ -307,12 +370,33 @@ saveUpTo() {
  
 	return save;
 }
+
+ handleImgMouseMove(e) {
+ 	// Calculate user's cursor position, and set new background pos
+    const { left, top, width, height } = e.target.getBoundingClientRect(),
+          x = (e.pageX - left) / width * 100,
+          y = (e.pageY - top) / height * 100;
+    this.setState({ backgroundPosition: `${x}% ${y}%` })
+  }
+
+
 	render() {
- 		
- 		if(this.props.userIsSignedIn && this.props.userDbInfo === null) {
- 			return (<span>Loading...</span>)
- 		}
- 		
+
+		// Display loading effect while fetching data
+		if(this.state.allProductsDataDb === null) {
+			return (
+				<div className='account_loading_modal'>
+					<div className='row justify-content-center h-100'>
+						<div className='acc_load_mod my-auto'><div></div><div></div><div></div><div></div></div>
+					</div>
+				</div>)
+		}
+
+
+		// Set new style for image zoom when productInfo !== null
+		let zoom_style = this.state.productInfo !== null ? {
+			 backgroundImage    : `url(${this.state.productInfo.img})`,
+   			 backgroundPosition : this.state.backgroundPosition} : {};
 
 		return (
 				<div>
@@ -342,7 +426,11 @@ saveUpTo() {
 	                		<React.Fragment>
 		                		<div className='row justify-content-center'>
 		                			<div className='prodinfo_sec_img prodinfo_section col-12 col-lg-6'>
-		                				<img className='prodinfo_img_prof' src={this.state.productInfo.img} alt=''/>
+
+		                				{/* Product info profile image */}
+		                				<span className='prodinfo_img_prof' onMouseMove={(e) => this.handleImgMouseMove(e)} style={zoom_style}>
+		                				<img src={this.state.productInfo.img} alt=''/>
+		                				</span>
 		                				<div className='prodinfo_sec_img_gallery'>
 		                					{this.state.productInfo.moreImages.map((img,ind) =>
 		                					<img src={img} className='pinfo_moreimg_gallery' alt='' onClick={(e)=>this.handleProdInfoMoreImg(e,img)}/>
@@ -351,11 +439,17 @@ saveUpTo() {
 		                				</div>
 		                			</div>
 		                			<div className='prodinfo_info_sec prodinfo_section col-12 col-lg-6'>
-		                			 
+		                			 	
+		                			 	{/* Added/removed from wishlist message */}
 		                				<span className='prodinfo_addedtowishlist_msg'></span>
-		                				 
+		                				
+		                				{/* Product title and 'add to wishlist' icon */}
 		                				<div className='prodinfo_prod_title'>
 		                					{this.state.productInfo.name}
+
+		                					{/* Render only if user is logged in or not; Avoid click while loading */}
+		                					{this.props.userIsSignedIn !== null && (
+		                					<React.Fragment>
 		                				 	{this.state.addedToWishList ? (
 		                				 		<svg onClick={(e)=>this.prodInfoAddToWishlistBtn(e)} className="bi bi-heart-fill addto_wsh_full" width="1em" height="1em" viewBox="0 0 16 16" fill="#FF3E3E" xmlns="http://www.w3.org/2000/svg">
 												  <path fillRule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
@@ -365,19 +459,28 @@ saveUpTo() {
 												  <path fillRule="evenodd" d="M8 2.748l-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z"/>
 												</svg>
 		                				 	)}
+		                				 	</React.Fragment>
+		                				 	)}
 		                				</div>
 
 		                				{/* Product model */}
 		                				<span className='prodinfo_prod_modelno'>Numar model: {this.state.productInfo.id}</span>
 
+		                				{/* Product new icon */}
+		                				{this.state.productInfo.new && (
+		                				<span className='prodinfo_prod_new_icon'>NOU !</span>
+		                				)}
+
 		                				{/* Original price / old price */}
 		                				<span className='prodinfo_prod_price'>
 		                					<span className='prodinfo_prod_act_price'>{this.state.productInfo.price} LEI</span>
-		                					<span className='prodinfo_prod_old_price'>{this.state.productInfo.oldPrice !== null ? this.state.productInfo.oldPrice+' LEI' : '' }</span>
+		                					{this.state.productInfo.oldPrice !== undefined && (
+		                					<span className='prodinfo_prod_old_price'>{this.state.productInfo.oldPrice+' LEI'}</span>
+		                					)}
 		                				</span>
 
 		                				{/* Save up to */}
-		                				{this.state.productInfo.oldPrice !== null && (
+		                				{this.state.productInfo.oldPrice !== undefined && (
 		                				<span className='prodinfo_prod_saveupto'>Economisesti <span>{this.saveUpTo()} %</span></span>
 		                				)}
 
@@ -409,10 +512,18 @@ saveUpTo() {
 		                				)}
 
 	                               		{/* Add to cart button */}
-		                				<span className='prodinfo_addtocart_bnt' onClick={(e)=>this.prodInfoAddToCart(e,this.state.productInfo)}>
+	                               		{/* If product info availableproduct number stock is 0, render 'Out of stock' button */}
+		                				{this.state.productInfo.availableProductNo > 0 ? (
+		                					<span className='prodinfo_addtocart_bnt' onClick={(e)=>this.prodInfoAddToCart(e,this.state.productInfo)}>
 		                					<i className='fas fa-shopping-bag addtocart_i_bag' aria-hidden='true'></i>
 		                					<span className='pinf_addtocart_txt'>Adaugă în coș</span>
 		                				</span>
+		                				): (
+		                					<span className='prodinfo_addtocart_bnt prodinfo_addcart_nostock'>
+		                					<i className='fas fa-shopping-bag addtocart_i_bag' aria-hidden='true'></i>
+		                					<span className='pinf_addtocart_txt'>Stoc epuizat</span>
+		                					</span>
+		                				)}
 
 		                				{/* Share product button */}
 		                				<FacebookShareButton url       = {window.location.href}
@@ -422,6 +533,9 @@ saveUpTo() {
 	                                   </FacebookShareButton>
 		                			</div>
 		                		</div>
+
+		                		{/* Product ro description */}
+
 		                		<div className='row justify-content-center'>
 		                			<div className='productinfo_aboutprod_info col-12'>
 		                				<span className='pi_ap_i_sep col-12'></span>
@@ -429,28 +543,19 @@ saveUpTo() {
 		                					<div className='prodinfo_aboutprod_info_sec col-12 col-lg-6'>
 		                						<span className='pinfo_aboutp_info_title'>Despre produs</span>
 
-		                						<span className='pinfo_aboutp_info_subtitle'>Marime</span>
-		                						<span className='pinfo_aboutp_info_descr'>{this.state.productInfo.ro.Marime}</span>
-
-		                						<span className='pinfo_aboutp_info_subtitle'>Descriere</span>
-		                						<span className='pinfo_aboutp_info_descr'>Negru / rosu / verde</span>
-		                						<span className='pinfo_aboutp_info_descr'>{this.state.productInfo.name}</span>
-
-		                						<span className='pinfo_aboutp_info_subtitle'>Stil</span>
-		                						<span className='pinfo_aboutp_info_descr'>{this.state.productInfo.ro.Model}</span>
-
-		                						<span className='pinfo_aboutp_info_subtitle'>Compozitie</span>
-		                						<span className='pinfo_aboutp_info_descr'>{this.state.productInfo.ro.Compozitie}</span>
-
-		                						<span className='pinfo_aboutp_info_subtitle'>Imprimeu</span>
-		                						<span className='pinfo_aboutp_info_descr'>{this.state.productInfo.ro.Imprimeu}</span>
-
+		                						{this.state.productInfo.ro.map((ro,ind) =>
+		                							<React.Fragment key={ind}>
+		                							<span className='pinfo_aboutp_info_subtitle'>{ro.type}</span>
+		                							<span className='pinfo_aboutp_info_descr'>{ro.descr}</span>
+		                							</React.Fragment>
+		                						)}
 		                						<span className='pinfo_aboutp_info_subtitle'>Instrucţiuni de întreţinere</span>
 		                						<span className='pinfo_aboutp_info_descr'>Spălare la maşină la 40°</span>
 		                						<span className='pinfo_aboutp_info_descr'>Nu folosiţi întălbitor</span>
 
 		                						<span className='pinfo_aboutp_info_subtitle'>Număr articol</span>
 		                						<span className='pinfo_aboutp_info_descr'>{this.state.productInfo.id}</span>
+
 		                					</div>
 		                					<div className='prodinfo_aboutprod_info_sec col-12 col-lg-6'>
 

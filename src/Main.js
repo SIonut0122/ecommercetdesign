@@ -1,12 +1,13 @@
 import   React from 'react';
 import   Header from './components/Header';
-
+import   Footer from './components/Footer';
 import { HashRouter , Router, Route, Switch } from 'react-router-dom'; 
 import './css/Main.css';
 
 import ProductInfo                   from './components/ProductInfo';
 import menProducts                   from './components/products/menProducts';
 import womenProducts                   from './components/products/womenProducts';
+import newProducts                   from './components/products/newProducts';
 import Account                    from './components/account/Account';
 import MyOrders                 from './components/account/MyOrders';
 import ShippingData                 from './components/account/ShippingData';
@@ -18,8 +19,10 @@ import Checkout                 from './components/Checkout';
 import TermsAndConditions       from './components/TermsAndConditions';
 import Register                 from './components/Register';
 import searchProducts                 from './components/searchProducts';
- 
-
+import Contact                     from './components/Contact';
+import Dashboard                 from './components/dashboard/Dashboard';
+import addProduct                 from './components/dashboard/addProduct';
+import activeOrders                 from './components/dashboard/activeOrders';
 
 
 
@@ -38,26 +41,35 @@ class Main extends React.Component {
                     
                  
                     <Switch>    
-                      <Route  exact path='/'                component={Login} />
-                      <Route  path='/search/:id'            component={searchProducts} />
-                      <Route  path='/products/men'          component={menProducts} />
-                      <Route  path='/products/women'        component={womenProducts} />
-                      <Route  path='/productinfo/:id'       component={ProductInfo} />
-                      <Route  path='/login'                 component={Login} />
-                       <Route exact path='/account'               component={Account} />
-                       <Route exact path='/account/myorders'      component={MyOrders} />
-                       <Route exact path='/account/shippingdata'  component={ShippingData} />
-                       <Route path='/register'              component={Register}/>
-                       <Route path='/wishlist'              component={Wishlist} />
-                       <Route path='/cart'                  component={Cart} />
-                       <Route path='/checkout'              component={Checkout} />
-                       <Route path='/terms'                 component={TermsAndConditions} />
-                       <Route path=""                       component={PageNotFound}/>
+                       <Route exact path='/dashboard'            component={Dashboard}/>
+                       <Route  path='/dashboard/addproduct'      component={addProduct}/>
+                       <Route   path='/dashboard/activeorders'   component={activeOrders}/>
+
+                      <Route  exact path='/'                     component={Login} />
+                      <Route  path='/search/:id'                 component={searchProducts} />
+                      <Route  path='/productinfo/:id'      component={ProductInfo} />
+                      <Route  path='/products/men'               component={menProducts} />
+                      <Route  path='/products/women'             component={womenProducts} />
+                      <Route  path='/products/new'               component={newProducts} />
+                      <Route  exact path='/login'                component={Login} />
+                       <Route exact path='/account'              component={Account} />
+                       <Route exact path='/account/myorders'     component={MyOrders} />
+                       <Route exact path='/account/shippingdata' component={ShippingData} />
+                       <Route path='/register'                   component={Register}/>
+                       <Route path='/wishlist'                   component={Wishlist} />
+                       <Route path='/cart'                       component={Cart} />
+                       <Route path='/checkout'                   component={Checkout} />
+                       <Route path='/contact'                    component={Contact} />
+                       <Route path='/terms'                      component={TermsAndConditions} />
+                       <Route path=''                            component={PageNotFound}/>
                     </Switch>
                 
 
                 </div>
                </div>
+
+
+               <Footer />
               </div>
           </div>
         </HashRouter>

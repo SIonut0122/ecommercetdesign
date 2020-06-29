@@ -15,9 +15,9 @@ import { SET_SELECTED_PRODUCTS }  from "./constants/action-types";
 import { CART_IS_LOADED }  from "./constants/action-types";
 import { SIGNED_WITH_GOOGLE }  from "./constants/action-types";
 import { USER_DB_INFO }  from "./constants/action-types";
-
-
-
+import { MEN_PRODUCTS_DB }  from "./constants/action-types";
+import { WOMEN_PRODUCTS_DB }  from "./constants/action-types";
+import { NEW_PRODUCTS_DB }  from "./constants/action-types";
 
 
     const initialState = {
@@ -29,12 +29,18 @@ import { USER_DB_INFO }  from "./constants/action-types";
          openMobileSearch: false,
          openMediumSearch: false,
          propsFilteredTerms: [],
-         propsPassingTags: {},
+         propsPassingTags: { price: { lowHigh: false, highLow: false }, newer: { newer: false} },
          wishList: [],
          cart: [],
          cartIsLoaded: false,
          totalCartAmount: 0,
          userInfo: null,
+
+         menProductsDataDb: null,
+         womenProductsDataDb: null,
+         newProductsDataDb: null,
+
+
 
   }
 
@@ -114,6 +120,22 @@ import { USER_DB_INFO }  from "./constants/action-types";
           signedWithGoogle: action.payload.signedWithGoogle
         });
         break;
+        case MEN_PRODUCTS_DB:
+           return Object.assign({}, state, {
+          menProductsDataDb: action.payload.menProductsDataDb
+        });
+        break;
+        case WOMEN_PRODUCTS_DB:
+           return Object.assign({}, state, {
+          womenProductsDataDb: action.payload.womenProductsDataDb
+        });
+        break;
+         case NEW_PRODUCTS_DB:
+           return Object.assign({}, state, {
+          newProductsDataDb: action.payload.newProductsDataDb
+        });
+        break;
+
       }
 
       return state;

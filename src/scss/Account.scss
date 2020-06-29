@@ -64,7 +64,7 @@ $blueLightColor: #007bff;
 	padding-bottom: 10px;
 	margin-top:20px;
  
- 
+  
 	.acc_title_signout_btn {
 		font-size: 15px;
  
@@ -429,15 +429,24 @@ $blueLightColor: #007bff;
  			padding:0 5px 0 10px;
   
  		}
+ 		.acc_o_pd_status span {
+ 			color: $greenColor;
+ 		}
  		.acc_ord_prodinfo_title {
  			font-weight: bold;
  			color: $grayColorInside;
  			cursor: pointer;
+ 			&:hover {
+ 				text-decoration:none;
+ 				opacity: 0.9;
+ 			}
  			
  		}
  		.acc_ord_prodinfo_delivered {
  			font-size:13px;
- 			 
+ 			 span {
+ 			 	font-weight: bold;
+ 			 }
  		}
  		.acc_ord_prodinfo_price {
  			text-align: right;
@@ -445,6 +454,7 @@ $blueLightColor: #007bff;
 
  			span {
  				font-weight: normal;
+ 				font-size: 13.5px;
  			}
  		}
  	}

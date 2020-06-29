@@ -1,4 +1,5 @@
 
+
   var config = {
     apiKey: process.env.REACT_APP_FIREBASE_KEY,
     authDomain: "ecommtshirt.firebaseapp.com",
@@ -10,11 +11,7 @@
     measurementId: "G-KVT07EBY5P"
   };
 
-let fire = firebase.initializeApp(config)
-firebase.analytics();
+  firebase.initializeApp(config)
 
-export {fire as default}
- 
- 
  
  

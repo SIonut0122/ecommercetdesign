@@ -185,8 +185,12 @@ float: left;
 	margin-top:20px;
 	border:2px solid $grayColorBorder;
 	overflow: hidden;
+	border-radius: 3px;
 	&:hover {
-		border:2px solid #DCDCDC;
+	 
+ 
+		background-color:#F7F7F7;
+ 
 	}
 }
 .chk_check_del_check {
@@ -197,6 +201,7 @@ float: left;
 	font-size: 24px;
 	width: 30%;
 	height: 100%;
+
 }
 .chk_check_del_check i {
 	font-size: 26px;
@@ -493,7 +498,7 @@ float: left;
  }
   .chs_cashondel_check  .custom-control {
   	&:hover .custom-control-label::before {
-  		border:1px solid $greenColor;
+  		border:1px solid $blackColor;
   	}
   }
 
@@ -577,9 +582,24 @@ float: left;
 .chk_seldel_termsandcont_div .custom-control-label::after {
 	top:.20rem;
 }
+
+
+.custom-control-label::before {
+
+ 
+    border-color: #cccccc !important;
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
+ 
+}
+
 .chk_seldel_agreeterms_txt {
 	font-size: 13.5px;
 	display: inline-block;
+
+	&:hover {
+		cursor:pointer;
+	}
 }
 .chk_seldel_agreeterms_txt span {
 	font-weight: bold;
@@ -788,8 +808,8 @@ float: left;
 .chk_wrap_dprod_box_img img {
 
 	width: 80px;
-	height: 100px;
-	cursor: pointer;
+	height: 80px;
+
 }
 
 .chks_wdprod_boxd_title {

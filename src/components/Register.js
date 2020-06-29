@@ -2,18 +2,23 @@ import React from 'react';
 import '../css/Register.css'
 import { connect }            from 'react-redux';
 import { Link, Redirect           } from 'react-router-dom'
-
- import firebase from 'firebase/app';
- 
- 
- 
+ import { setUserDbInfo } from '../actions';
+ import { client, q } from '../fauna/db';
 
 
+ 
 const mapStateToProps = state => {
   return {  
   		  userIsSignedIn   : state.userIsSignedIn
         };
 };
+
+function mapDispatchToProps(dispatch) {
+  return {
+          setUserDbInfo : userDB  => dispatch(setUserDbInfo(userDB))
+        };
+}
+
 
 class connectedRegister extends React.Component {
 
@@ -95,21 +100,21 @@ handleRegName(e) {
 }
 
 handleRegPassword(e) {
-	 let regPasswordValue  = e.target.value,
-	   		   // Check password length to be higher than 4
-	      checkValueLength = regPasswordValue.length > 4,
-	   		   // Check for blank spaces
-	      checkWhiteSpaces = regPasswordValue.trim().length === regPasswordValue.length;
+ 	let regPasswordValue  = e.target.value,
+   		   // Check password length to be higher than 4
+      checkValueLength = regPasswordValue.length > 4,
+   		   // Check for blank spaces
+      checkWhiteSpaces = regPasswordValue.trim().length === regPasswordValue.length;
 
-        	// If password value match, setstate value 
-	    if(checkValueLength && checkWhiteSpaces) {
-	        this.setState({regPassword: regPasswordValue, regPasswordValid: true, regPasswordErrMsg: false })
-	    } else if(regPasswordValue.length === 0) {
-	      	// If input is empty, reset value input
-	        this.setState({regPassword: '', regPasswordValid: false})
-	    } else {
-	        this.setState({regPassword: regPasswordValue, regPasswordValid: false})
-	    }
+    	// If password value match, setstate value 
+    if(checkValueLength && checkWhiteSpaces) {
+        this.setState({regPassword: regPasswordValue, regPasswordValid: true, regPasswordErrMsg: false })
+    } else if(regPasswordValue.length === 0) {
+      	// If input is empty, reset value input
+        this.setState({regPassword: '', regPasswordValid: false})
+    } else {
+        this.setState({regPassword: regPasswordValue, regPasswordValid: false})
+    }
 }
 
 showHidePassword(e) {
@@ -204,12 +209,39 @@ createAccount() {
 
 updateNewAccountInfo() {
 	let user = firebase.auth().currentUser;
-	user.updateProfile({
-      // Use displayName to store the Username
-      displayName: this.state.regLastName +' '+this.state.regName
-    }).then(() => {
-      window.location.reload();
-    })
+		user.updateProfile({
+	      // Use displayName to store the Username
+	      displayName: this.state.regLastName
+	    }).then(() => {
+	     	this.createNewDbUser(user);
+	    })
+}
+
+createNewDbUser(userAuth) {
+
+	let newUserData = {
+		  email        : userAuth.email.toLowerCase(),
+		  uid          : userAuth.uid,
+		  displayName  : userAuth.displayName,
+		  cart         : null,
+		  wishlist     : null,
+		  myprofile    : {lastname:'',name:'',gender:'',phone:''},
+		  myorders     : null,
+		  shippingdata : {lastname:'',name:'',street:'',postalCode:'',city:'',village:'',addInfo:''}
+	};
+
+	// Create a new user with those prop on database
+	client.query(
+	  q.Create(
+	    q.Collection('users'),
+	    { data: newUserData },
+	  )
+	)
+	.then(() => { window.location.reload() })
+	.catch((err) => {
+		console.log('Something went wrong while creatint new user');
+	})
+
 }
 
 /* Register with Google+ */
@@ -218,7 +250,7 @@ googlePlusConnect() {
 	// Create google auth provider
 	let provider = new firebase.auth.GoogleAuthProvider();
 		// Open popup window to signin Google+
-		firebase.auth().signInWithPopup(provider).then((result) => {
+		firebase.auth().signInWithPopup(provider).then(() => {
 		 // Console.log results if you need info about user
 		 window.location.reload();
 		}).catch(function(error) {
@@ -407,5 +439,5 @@ googlePlusConnect() {
 }
 
 
-const Register = connect(mapStateToProps,null)(connectedRegister);
+const Register = connect(mapStateToProps,mapDispatchToProps)(connectedRegister);
 export default Register;

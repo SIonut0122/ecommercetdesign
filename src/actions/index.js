@@ -14,8 +14,21 @@ import { SET_USER_INFO }  from "../constants/action-types";
 import { CART_IS_LOADED }  from "../constants/action-types";
 import { SIGNED_WITH_GOOGLE }  from "../constants/action-types";
 import { USER_DB_INFO }  from "../constants/action-types";
+import { MEN_PRODUCTS_DB }  from "../constants/action-types";
+import { WOMEN_PRODUCTS_DB }  from "../constants/action-types";
 
-
+import { NEW_PRODUCTS_DB }  from "../constants/action-types";
+ 
+ 
+export function setNewProductsDb(payload) {
+  return { type: NEW_PRODUCTS_DB, payload };
+}
+export function setWomenProductsDb(payload) {
+  return { type: WOMEN_PRODUCTS_DB, payload };
+}
+export function setMenProductsDb(payload) {
+  return { type: MEN_PRODUCTS_DB, payload };
+}
 export function setUserDbInfo(payload) {
   return { type: USER_DB_INFO, payload };
 }

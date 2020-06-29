@@ -4,8 +4,8 @@ import { Link               } from 'react-router-dom';
 import { connect }            from "react-redux";
 import { setCart,setWishList,setTotalCartAmount,setCartIsLoaded } from '../actions';
  import { client, q } from '../fauna/db';
-import { addProdToDB } from './addProdToDB';
-
+import { addProdToCart } from '../fauna/addProdToCart';
+import { addProdToWishlist } from '../fauna/addProdToWishlist';
 
 
 const mapStateToProps = state => {
@@ -45,7 +45,7 @@ componentDidMount() {
 
 populateCart() {
 
-	// When page loads, if user is connected & user data was fetched from userDbInfo, set userDbInfo cart
+	// When page loads, if user is connected & user data was fetched from userDbInfo, set userDbInfo
     if(this.props.userIsSignedIn && this.props.userDbInfo !== null) {
     	console.log('cart: SIGNED cart');
     		  let cartDb = this.props.userDbInfo.cart !== undefined ? this.props.userDbInfo.cart : [];
@@ -87,11 +87,11 @@ checkWishlist() {
 }
 
 cartAddToWishlist(e,product) {
-	let cart     = [...this.props.cart],
-		wishList = [...this.props.wishList];
-
-	 const elementsIndex  = cart.findIndex(element => element.id === product.id),
-	       wishListIdList = wishList.map(el => el.id);
+	let cart           = [...this.props.cart],
+		wishList       = [...this.props.wishList],
+		// Get product's index to change 'addedtocart' prop to false
+        elementsIndex  = cart.findIndex(element => element.id === product.id),
+	    wishListIdList = wishList.map(el => el.id);
 
 	// If product was already added to the wishlist
 	if(wishListIdList.includes(product.id)) {
@@ -103,13 +103,19 @@ cartAddToWishlist(e,product) {
 		let removeProduct = wishList.filter((prod) => prod.id !== product.id);
 		this.props.setWishList({ wishList: removeProduct })
 		
+		
 		// If user is signed in, update userDB wishlist info
 		if(this.props.userIsSignedIn && this.props.userDbInfo !== null) {
- 			this.addRemoveWishlistedCartProd(removeProduct, removeProduct)
+ 			// Collect id and wishlist inside an object
+			let updatedWishlist = {id: this.props.userDbInfo.ref.value.id, wishlist: removeProduct},
+		        updatedCart     = {id: this.props.userDbInfo.ref.value.id, cart: cart};
+			    // Send new info to userDb
+			    addProdToWishlist(updatedWishlist);
+				addProdToCart(updatedCart);
  		} else {
-		// Set cart & wishlist localstorage
-		localStorage.setItem('cart', JSON.stringify(cart));
-		localStorage.setItem('wishList', JSON.stringify(removeProduct));
+				// Set cart & wishlist localstorage
+				localStorage.setItem('cart', JSON.stringify(cart));
+				localStorage.setItem('wishList', JSON.stringify(removeProduct));
 		}
 	 
 	} else {
@@ -124,28 +130,19 @@ cartAddToWishlist(e,product) {
 
  		// If user is signed in, update userDB wishlist info
  		if(this.props.userIsSignedIn && this.props.userDbInfo !== null) {
- 			this.addRemoveWishlistedCartProd(cart,wishList)
+ 			 // Send new info to userDb
+			let updatedWishlist = {id: this.props.userDbInfo.ref.value.id, wishlist: wishList},
+		        updatedCart     = {id: this.props.userDbInfo.ref.value.id, cart: cart};
+			    addProdToWishlist(updatedWishlist);
+				addProdToCart(updatedCart);
  		} else {
-		// Set cart & wishlist localstorage
-		localStorage.setItem('cart', JSON.stringify(cart));
-		localStorage.setItem('wishList', JSON.stringify(wishList));
+				// Set cart & wishlist localstorage
+				localStorage.setItem('cart', JSON.stringify(cart));
+				localStorage.setItem('wishList', JSON.stringify(wishList));
  		}
 	}
 }
 
-addRemoveWishlistedCartProd(updatedCart,updatedWishlist) {
-	// Here, we have to update wishlist and cart (addedToWishlist: false/true)
-	// Get user id to target userDb on db
-	let id = this.props.userDbId.ref.value.id;
-	  	client.query(
-		  q.Update(
-		    q.Ref(q.Collection('users'), id),
-		    { data: { cart: !updatedCart.length > 0 ? null : updatedCart,
-		    		  wishlist: !updatedWishlist.length > 0 ? null : updatedWishlist} },
-		  )
-		)
-		.then((ret) => console.log('Add/Remove wishlisted cart product'))
-}
 
 
 cartRemoveProduct(e,productId) {
@@ -157,25 +154,24 @@ cartRemoveProduct(e,productId) {
 			// Set style while removing/loading
 			modelNo.setAttribute('style','opacity:0.6;pointer-events:none');
 			// Remove product from cart/localstorage after 1.5 sec
+
 			setTimeout(() => {
 				let cart = [...this.props.cart];
 					// Filter cart to remove the selected product from it
 					let removeProduct = cart.filter((el) => el.id !== productId);
 					this.props.setCart({ cart: removeProduct })
 
+					// If user is signed in, update cart from database		
 					if(this.props.userIsSignedIn && this.props.userDbInfo !== null) {
-						 let id          = this.props.userDbInfo.ref.value.id,
-		     				 updatedCart = {id: id, cart: removeProduct};
+		     			let updatedCart = {id: this.props.userDbInfo.ref.value.id, cart: removeProduct};
 		     			     // Send new data to function
-		     			     addProdToDB(updatedCart);
+		     			     addProdToCart(updatedCart);
 					} else {
-					// Change localstorage after removing the product
-					localStorage.setItem('cart', JSON.stringify(removeProduct));
+							// Change localstorage after removing the product
+							localStorage.setItem('cart', JSON.stringify(removeProduct));
 					}
-
-					// Remove attribute style from all the cart products
-					modelNo.removeAttribute('style');
- 
+							// Remove attribute style from all the cart products
+							modelNo.removeAttribute('style');
 			},2500);
 		} 
 	})		
@@ -206,7 +202,18 @@ handleProductQuantityChange(e,cartProductId) {
 			}
 		}
 	}
+
+	// If user is signed in and data was fetched, send data to user db
+	if(this.props.userIsSignedIn && this.props.userDbInfo !== null) {
+			 let updatedCart = {id: this.props.userDbInfo.ref.value.id, cart: cart};
+ 			     // Send new data to function
+ 			     addProdToCart(updatedCart);
+		} else {
+			// Change localstorage after removing the product
+			localStorage.setItem('cart', JSON.stringify(cart));
+		}
 }
+
 
 handleBlurInputQuantity(e,cartProductId) {
 	let cart = [...this.props.cart];
@@ -218,9 +225,17 @@ handleBlurInputQuantity(e,cartProductId) {
 	 	 // Find product by index, and change totalAmount
 	 	 cart[elementsIndex] = {...cart[elementsIndex], totalAmount: cart[elementsIndex].quantity * cart[elementsIndex].price};
 
-	 	this.props.setCart({ cart: cart })
-		// Push cart to localstorage to be used on every mount
-		localStorage.setItem('cart', JSON.stringify(cart));
+	 	 this.props.setCart({ cart })
+
+	 	// Update userDb if user is signed in. Otherwise, update localstorage
+	 	if(this.props.userIsSignedIn && this.props.userDbInfo !== null) {
+ 			let updatedCart = {id: this.props.userDbInfo.ref.value.id, cart: cart};
+ 			     // Send new data to function
+ 			     addProdToCart(updatedCart);
+		} else {
+			// Change localstorage after removing the product
+			localStorage.setItem('cart', JSON.stringify(cart));
+		}
 	},1500);
 }
 
@@ -232,7 +247,8 @@ getTotalCartAmount() {
 	if(totalCartAmount) {
 		this.props.setTotalCartAmount({ totalCartAmount })
 	}
-	return totalCartAmount;
+	// Return recalculated total cart amount
+	return parseFloat(totalCartAmount.toFixed(2));
 }
 
 getTotalCartSaveUpPercent() {
@@ -241,7 +257,7 @@ getTotalCartSaveUpPercent() {
 		totalCartSaveUpAmount = []; 
 	// Map through cart, if oldPrice => calculate oldprice - price and push result to totalCartSaveUpAmount
 	for(let c in cart) {
-		if(cart[c].oldPrice !== null) {
+		if(cart[c].oldPrice !== undefined) {
 			let saveUp  = cart[c].oldPrice - cart[c].price;
 			totalCartSaveUpAmount.push(parseFloat(saveUp.toFixed(2)));
 		}
@@ -254,8 +270,13 @@ getTotalCartSaveUpPercent() {
 
 	render() {
  		
- 		if(this.props.userIsSignedIn && this.props.userDbInfo === null) {
- 			return (<span>Loading...</span>)
+ 		// While user is loading and userDb is null, display loading effect
+ 		if(this.props.userIsSignedIn === null && this.props.userDbInfo === null) {
+ 			return (<div className='account_loading_modal'>
+						<div className='row justify-content-center h-100'>
+							<div className='acc_load_mod my-auto'><div></div><div></div><div></div><div></div></div>
+						</div>
+					</div>)
  		}
 
 		return (
@@ -329,13 +350,13 @@ getTotalCartSaveUpPercent() {
 																<div className='cart_prod_info_secrow col-12'>
 																	<div className='cprod_inf_quant'>
 																		Cantitate:
-																		<input type='text'
-																			   value={cartProduct.quantity}
-																			   onBlur={(e) => this.handleBlurInputQuantity(e,cartProduct.id)}
-																			   onChange={(e) => this.handleProductQuantityChange(e,cartProduct.id)}
-																			   maxLength='2'/>
+																		<input type      = 'text'
+																			   value     = {cartProduct.quantity}
+																			   onBlur    = {(e) => this.handleBlurInputQuantity(e,cartProduct.id)}
+																			   onChange  = {(e) => this.handleProductQuantityChange(e,cartProduct.id)}
+																			   maxLength = '2'/>
 																	</div>
-																	<span className='cprod_inf_refresh'><span>Actualizeaza</span></span>
+																	<span className='cprod_inf_refresh'><span onClick={() => { window.location.reload() }}>Actualizeaza</span></span>
 																	<span className='cprod_inf_available'><i className='far fa-check-circle'></i> Produs disponsibil</span>
 																	<span className='cprod_inf_size'>Marime: <span>{cartProduct.selectedSize}</span></span>
 																	<span className='cprod_inf_color'>Culoare: <span style={{"backgroundColor": cartProduct.color}}></span></span>
@@ -344,11 +365,17 @@ getTotalCartSaveUpPercent() {
 														</div>
 														{/* Cart product right */}
 														<div className='cart_product_right col-12 col-lg-2'>
-															{cartProduct.oldPrice !== null && (
+															{/* If product has no offer to calculate, do not render oldPrice & saveUppercent */}
+															{cartProduct.oldPrice !== undefined && (
 															<span className='cart_prod_oldprice'>{cartProduct.oldPrice} lei</span>
 															)}
+
+															{/* Total cart product amount after calculation */}
 															<span className='cart_prod_price'>{cartProduct.totalAmount.toFixed(2)} lei</span>
+
+															{cartProduct.oldPrice !== undefined && (
 															<span className='cart_prod_discount ml-auto'>-{cartProduct.saveUpPercent}%</span>
+															)}
 														</div>	
 													</div>
 														{/* Cart product actions */}
@@ -356,6 +383,7 @@ getTotalCartSaveUpPercent() {
 														<div className='d-xs-none col-sm-block col-md-3 col-lg-2 col_act_one'></div>
 														<div className='cart_product_actions col-12 col-md-8'>
 															<span className='card_prod_act card_prod_act_wishbtn' onClick={(e)=>this.cartAddToWishlist(e,cartProduct)}>
+																{/* Change wishlisted icon if product was added to wishlist or not */}
 																{cartProduct.addedToWishlistFromCart ? (
 																	<i className='fas fa-heart'></i>
 																):(

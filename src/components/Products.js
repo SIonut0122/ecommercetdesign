@@ -15,7 +15,8 @@ const mapStateToProps = state => {
           propsFilteredTerms : state.propsFilteredTerms,
           openMobileSearch   : state.openMobileSearch,
           searchResults      : state.searchResults,
-          searchInput        : state.searchInput
+          searchInput        : state.searchInput,
+
         };
 };
 
@@ -32,32 +33,30 @@ class connectedProducts extends React.Component {
   constructor(props) {
     super(props)
       this.state = {
-         filterCategory : [{catRo: 'Barbati',catEng: 'men'},{catRo: 'Femei',catEng: 'women'},{catRo: 'Copii',catEng: 'children'}],
-         filterColors   : [{colorRo:'Alb',colorEng:'white'},{colorRo:'Negru',colorEng:'black'},{colorRo:'Albastru',colorEng:'blue'},{colorRo:'Rosu',colorEng:'red'},{colorRo:'Verde',colorEng:'green'},{colorRo:'Galben',colorEng:'yellow'},{colorRo:'Maro',colorEng:'brown'},{colorRo:'Mov',colorEng:'purple'},{colorRo:'Roz',colorEng:'pink'}],
-         filterSize     : ['XS','S','M','L','XL','XXL','3XL'],
-         filterMaterial : [{matEng: 'cotton',matRo: 'Bumbac'},{matEng: 'polyester',matRo: 'Poliester'},{matEng: 'organic',matRo: 'Organic'}],
-         filterNeckType : [{neckTypeEng: 'roundneck', neckTypeRo: 'Guler rotund'},{neckTypeEng: 'vneck', neckTypeRo: 'decolteu in V'},{neckTypeEng: 'withcollar', neckTypeRo: 'Cu guler'},{neckTypeEng: 'hooded', neckTypeRo: 'Cu glugă'}],
-         filterPrint    : [{printEng: 'message', printRo: 'Cu mesaj'},{printEng: 'grafic', printRo: 'Grafic'}],
+         filterCategory   : [{catRo: 'Barbati',catEng: 'men'},{catRo: 'Femei',catEng: 'women'},{catRo: 'Copii',catEng: 'children'}],
+         filterColors     : [{colorRo:'Alb',colorEng:'white'},{colorRo:'Negru',colorEng:'black'},{colorRo:'Albastru',colorEng:'blue'},{colorRo:'Rosu',colorEng:'red'},{colorRo:'Verde',colorEng:'green'},{colorRo:'Galben',colorEng:'yellow'},{colorRo:'Maro',colorEng:'brown'},{colorRo:'Mov',colorEng:'purple'},{colorRo:'Roz',colorEng:'pink'},{colorRo:'Argintiu',colorEng:'silver'},{colorRo:'Gri',colorEng:'gray'},{colorRo:'Auriu',colorEng:'gold'},{colorRo:'Azur',colorEng:'azure'},{colorRo:'Bleumarin',colorEng:'navy'},{colorRo:'Kaki',colorEng:'khaki'},{colorRo:'Verde deschis',colorEng:'lightgreen'},{colorRo:'Coral',colorEng:'coral'},{colorRo:'Fuchsia',colorEng:'fuchsia'}],
+         filterSize       : ['XS','S','M','L','XL','XXL','3XL'],
+         filterMaterial   : [{matEng: 'cotton',matRo: 'Bumbac'},{matEng: 'polyester',matRo: 'Poliester'},{matEng: 'organic',matRo: 'Organic'}],
+         filterNeckType   : [{neckTypeEng: 'roundneck', neckTypeRo: 'Guler rotund'},{neckTypeEng: 'vneck', neckTypeRo: 'decolteu in V'},{neckTypeEng: 'withcollar', neckTypeRo: 'Cu guler'},{neckTypeEng: 'hooded', neckTypeRo: 'Cu glugă'}],
+         filterPrint      : [{printEng: 'message', printRo: 'Cu mesaj'},{printEng: 'graphic', printRo: 'Grafic'}],
 
-         filteredTerms : [],
-         sortByPrice   : null, 
-         sortByNewer   : false,
-
-         selectedProducts : props.selectedProductsProps,
-         totalSelProducts : props.totalSelProducts,
-         propsPathName    : " "+props.pathName,
-         searchResulted: this.props.searchResulted, // If returns true, searchProducts component is rendered
+         filteredTerms    : [],                          // Collected filtered terms - to be displayed filters with map (Active filters: color,gender,category,etc.)
+         filterIsLoading  : false,                       // When filter was checked/unchecked, display loading products filter
+         selectedProducts : props.selectedProductsProps, // Returned component products
+         totalSelProducts : props.totalSelProducts,      // Used when filters are on as a total products (Displayed: 3 of 25 products (totalSel))
+         propsPathName    : " "+props.pathName,          // 
+         searchResulted   : this.props.searchResulted,   // If returns true, searchProducts component is rendered
 
          passingTags: {
            category: { men: false, women: false, children: false },
            price:    { lowHigh: false, highLow: false },
            newer:    { newer: false},
-           color:    { white: false, black: false,brown: false,yellow: false,pink: false,purple: false,red: false, green: false },
+           color:    { white: false, black: false, brown: false, yellow: false, pink: false, purple: false, red: false, green: false, silver: false, gray: false, gold: false, orange: false, navy: false, khaki: false, lightgreen: false, coral: false, fuchsia: false },
            gender:   { girl: false, boy: false },
            material: { cotton: false, polyester: false, organic: false },
            size:     { XS: false, S: false, M: false, L: false, XL: false, XXL: false, '3XL': false },
            necktype: { roundneck: false, withcollar: false, vneck: false, hooded: false},
-           print:    { messsage: false, grafic: false}
+           print:    { messsage: false, graphic: false}
          },
          collectedTrueKeys: null
       }
@@ -77,6 +76,7 @@ componentDidMount() {
   // Use this to recheck active filters panel inputs. Leaving the page cause unchecking all filters inputs.
   this.recheckCheckboxFilterInputs();
 
+
 }
 
 
@@ -87,6 +87,13 @@ recheckCheckboxFilterInputs() {
   if(this.props.propsFilteredTerms.length > this.state.filteredTerms.length) {
       // Set new state if filtered terms props is higher than the actual state to be used on displaying filtered products
       this.setState({ passingTags: this.props.propsPassingTags, filteredTerms: this.props.propsFilteredTerms })
+      
+      // Use this props to comunicate filters through components while new components are rendered. Maintain same filter results;
+      setTimeout(() => {
+      this.props.setPassingTags({ propsPassingTags: this.state.passingTags })
+      this.props.setFilteredTerms({ propsFilteredTerms: this.state.filteredTerms})
+      },500);
+
         // Select all filters checkboxes
         let checkboxes           = document.querySelectorAll('.dprod_filter_label');
          // Map through active filtered props terms and create an array with the romanian words filters
@@ -192,8 +199,10 @@ setFilter(value, filterProp, roValueName) {
     }
     // Enable filters (set to true) clicked filter
     this.setState( prevState => ({
-       filteredTerms,
-       passingTags: {
+      // Display loading products filter effect
+      filterIsLoading: true,
+      filteredTerms,
+      passingTags: {
         ...prevState.passingTags, // Get, set prevState and inside passingTags search for the filter propriety 
         [filterProp]: {          // Get prevState of filter prop and set it to false (ex: color: {".green": false})
           ...prevState.passingTags[filterProp],
@@ -208,7 +217,8 @@ setFilter(value, filterProp, roValueName) {
       // Set with delay to leave time to update
       this.props.setFilteredTerms({ propsFilteredTerms: filteredTerms }) 
       this.props.setPassingTags({ propsPassingTags: this.state.passingTags })
-    },300);  
+      this.setState({ filterIsLoading: false })
+    },1500);  
 }
 
 
@@ -225,7 +235,7 @@ filteredCollected = () => {
 
       // Loop through clicked boolean filters and add to collectedTrueKeys object any true value
 
-      const { category, color, material, size, necktype, print } = this.state.passingTags;
+      const { category, color, material, size, necktype, print } = this.props.propsPassingTags;
 
       for (let categoryKey in category) {
         if (category[categoryKey]) collectedTrueKeys.category.push(categoryKey);
@@ -271,12 +281,11 @@ searchProducts = () => {
    
       // Takes in all product list and filter to return the filtered product list.
       const filteredProducts = this.multiPropsFilter(this.state.selectedProducts,this.filteredCollected());
-
-    // Return product by name; If the search input is not empty, use it and see if
-       // resulted product includes the input text
+      // Return product by name; If the search input is not empty, use it and see if
+      // resulted product includes the input text
       return filteredProducts.filter(product => {
-        // Return product name which includes value from search input
-        return product.name;
+      // Return product name which includes value from search input
+      return product.name;
       });
 }
 
@@ -284,6 +293,8 @@ searchProducts = () => {
 clearFilterTag(term) {
     // Remove clicked filter tag
     this.setState(prevState => ({
+    // Display loading products filter effect
+    filterIsLoading: true,
     // Remove filter tag from the showing list 
     filteredTerms: [...prevState.filteredTerms].filter((el) => el.filPropValue !== term.filPropValue),
     // Search inside passingTags for the 'term.filPropValue' and set it to false
@@ -309,6 +320,13 @@ clearFilterTag(term) {
       }
     }
   }
+
+  // Use this props to comunicate filters through components while new components are rendered. Maintain same filter results;
+  setTimeout(() => {
+  this.props.setPassingTags({ propsPassingTags: this.state.passingTags })
+  this.props.setFilteredTerms({ propsFilteredTerms: this.state.filteredTerms})
+  this.setState({ filterIsLoading: false })
+  },500);
 }
 
 
@@ -318,6 +336,8 @@ clerAllFilters() {
   // Loop through passingTags and set all filters to false
     for(let k in term) {
       this.setState(prevState => ({
+        // Display loading products filter effect
+        filterIsLoading: true,
         passingTags: {
           ...prevState.passingTags,
           [term[k].filProp]: {
@@ -338,6 +358,12 @@ clerAllFilters() {
         checkbox[c].childNodes[0].checked = false;
     }
   }
+  // Use this props to comunicate filters through components while new components are rendered. Maintain same filter results;
+   setTimeout(() => {
+    this.props.setPassingTags({ propsPassingTags: this.state.passingTags })
+    this.props.setFilteredTerms({ propsFilteredTerms: this.state.filteredTerms})
+    this.setState({ filterIsLoading: false })
+  },500);
 }
 
 toggleDisplayFilter(e,filterTitle) {
@@ -436,6 +462,8 @@ handleOpenSortBy(e) {
 }
 
 sortBy = (filterProp, pick, unpick) =>  {
+
+  // Get filterProp, activate filterprop and disable the rest
   switch(filterProp) {
     case 'price':
       this.setState(
@@ -470,32 +498,64 @@ sortBy = (filterProp, pick, unpick) =>  {
         }), () => this.sortProducts('default')
       )
   }  
+
+
+  // Use this props to comunicate filters through components while new components are rendered. Maintain same filter results;
+  setTimeout(() => {
+  this.props.setPassingTags({ propsPassingTags: this.state.passingTags })
+  this.props.setFilteredTerms({ propsFilteredTerms: this.state.filteredTerms})
+  },500);
 }
 
 sortProducts = sortArgument => {
-        if (sortArgument === "lowHigh" && this.state.passingTags.price.lowHigh) {
-        
-        this.state.selectedProducts.sort((x, y) => x.price - y.price);
-        this.setState({ sortByPrice: true, sortByNewer: false }) // Only to update state render
-
-      } else if ( sortArgument === "highLow" && this.state.passingTags.price.highLow) {
-        
-        this.state.selectedProducts.sort( (x, y) => y.price - x.price );
-        this.setState({ sortByPrice: false, sortByNewer: false }) // Only to update state render
-
-      } else if (sortArgument === 'newer' && this.state.passingTags.newer.newer) {
-           
-        this.state.selectedProducts.sort((a, b) => b.new - a.new);
-        this.setState({ sortByNewer: true })
-      } else {
-         // Default order; Order by id
-        this.state.selectedProducts.sort( (x, y) => x.id - y.id );
-        this.setState({ sortByPrice: null, sortByNewer: false }) // Only to update state render
-      } 
+    if (sortArgument === "lowHigh" && this.state.passingTags.price.lowHigh) {
+    // Low - high sort
+    this.setState({ selectedProducts: this.state.selectedProducts.sort((x, y) => x.price - y.price) })
+    } else if ( sortArgument === "highLow" && this.state.passingTags.price.highLow) {
+    // High - low sort
+    this.setState({ selectedProducts: this.state.selectedProducts.sort( (x, y) => y.price - x.price) })
+    } else if (sortArgument === 'newer' && this.state.passingTags.newer.newer) {
+    // By new products
+    this.setState({ selectedProducts: this.state.selectedProducts.sort((a, b) => b.new - a.new)})
+    } else {
+    // Default order; Order by id
+    this.setState({ selectedProducts: this.state.selectedProducts.sort( (x, y) => x.pNo - y.pNo ) })
+    } 
 }
 
 
+renderFilterColors() {
 
+  let totalColorsList = [],
+      products        = this.state.selectedProducts;
+
+  // Collect a list with all product colors 
+  for(let c in products) {
+    products[c].colors.forEach(col => {
+      if(!totalColorsList.includes(col)) {
+        totalColorsList.push(col)
+      }
+    });
+  }
+
+   // Map through filterColors. If filter color word exists inside products, make it available inside filter colors list
+   let colorFiltersList = this.state.filterColors.map((el,ind) => {
+    if(totalColorsList.includes(el.colorEng)) {
+      return ( <span className='d_prodcont_filter_box'>
+          <label key={ind}  className='custom-checkbox dprod_filter_label' onChange={(e) => this.setFilter(el.colorEng,'color',el.colorRo)}>
+            <input className='custom-control-input d_prodcont_filter_checkbox' type='checkbox'/>
+            <span className='custom-control-label'>
+                <span>{el.colorRo}</span>
+                {/* Calculate how many products have this color and render number beside color filter name */}
+                <span className='prod_fil_no'>{this.displayProductFilterNumber(el.colorEng,'color')}</span>
+            </span>
+          </label>
+        </span>
+      )}
+  })
+   return colorFiltersList;
+
+}
 
 
 
@@ -506,6 +566,29 @@ sortProducts = sortArgument => {
     this.props.setSelectedProducts({ selectedProducts: filteredResultedProducts })
     // Set document title
     document.title = this.state.propsPathName+' | Tshirtdesign';
+
+    // Before displaying products, check 'Sort by' props and filter them 
+    // Maintain sort by filters when rerendering
+      let propsPassingTags = this.props.propsPassingTags,
+          sortByName       = '';
+
+    if(propsPassingTags.price.lowHigh) {
+      filteredResultedProducts.sort((x, y) => x.price - y.price);
+      sortByName = 'Pret crescator';
+    } else if(propsPassingTags.price.highLow) {
+      filteredResultedProducts.sort( (x, y) => y.price - x.price);
+      sortByName = 'Pret descrescator';
+    } else if(propsPassingTags.newer.newer) {
+      filteredResultedProducts.sort((a, b) => b.new - a.new);
+      sortByName = 'Cel mai nou';
+    } else {
+      filteredResultedProducts.sort( (x, y) => x.pNo - y.pNo );
+      sortByName = '';
+    }
+
+    // Render 'Gender' filter only on 'New' and 'Search' components
+    let newOrSearchComponentActive = this.state.searchResulted || this.state.propsPathName === ' Noutăți';
+
 
     return (
         <div>
@@ -582,22 +665,22 @@ sortProducts = sortArgument => {
                         <div className='sort_by_dropdown' onClick={(e) => {e.stopPropagation()}}>
                             <div className='row justify-content-center'>
                               <label className="custom-control custom-radio" onChange={(e)=>this.sortBy('price','lowHigh','highLow')}>
-                                <input type="radio" name="myfilter_radio" defaultChecked={this.state.passingTags.price.lowHigh ? true : false} className="sortby_prop custom-control-input"></input>
+                                <input type="radio" name="myfilter_radio" defaultChecked={this.props.propsPassingTags.price.lowHigh ? true : false} className="sortby_prop custom-control-input"></input>
                                 <div className="custom-control-label">Pret crescator </div>
                               </label>
 
                               <label className="custom-control custom-radio" onChange={(e)=>this.sortBy('price','highLow','lowHigh')}>
-                                <input type="radio" name="myfilter_radio" defaultChecked={this.state.passingTags.price.highLow ? true : false} className="sortby_prop custom-control-input"></input>
+                                <input type="radio" name="myfilter_radio" defaultChecked={this.props.propsPassingTags.price.highLow ? true : false} className="sortby_prop custom-control-input"></input>
                                 <div className="custom-control-label">Pret descrescator</div>
                               </label>
 
                               <label className="custom-control custom-radio" onChange={(e)=>this.sortBy('newer')}>
-                                <input type="radio" name="myfilter_radio" defaultChecked={this.state.sortByNewer ? true : false} className="sortby_prop custom-control-input"></input>
+                                <input type="radio" name="myfilter_radio" defaultChecked={this.props.propsPassingTags.newer.newer ? true : false} className="sortby_prop custom-control-input"></input>
                                 <div className="custom-control-label">Cel mai nou</div>
                               </label>
 
                               <label className="custom-control custom-radio" onChange={(e)=>this.sortBy('default')}>
-                                <input type="radio" name="myfilter_radio" defaultChecked={!this.state.passingTags.price.lowHigh && !this.state.passingTags.price.highLow && !this.state.sortByNewer ? true : false} className="sortby_prop custom-control-input"></input>
+                                <input type="radio" name="myfilter_radio" defaultChecked={!this.props.propsPassingTags.price.lowHigh && !this.props.propsPassingTags.price.highLow && !this.props.propsPassingTags.newer.newer ? true : false} className="sortby_prop custom-control-input"></input>
                                 <div className="custom-control-label">Ordine implicita</div>
                               </label>
                            </div>
@@ -606,6 +689,9 @@ sortProducts = sortArgument => {
                       </div> {/* End of Filter and order by */}
                     </div>   
                   )}
+                  
+
+                  {/* FILTERS RIGHT PANEL */}
 
                   <div className='row justify-content-center'>
                     <div className='d_prodcont_filters d_prodcont_sec col-md-4 col-lg-4 col-xl-3' onClick={()=>this.openMobileFilter()}>
@@ -623,12 +709,27 @@ sortProducts = sortArgument => {
                             </svg>
                         </span>
 
-
-                      {/* Display active filters */}
+                        {/* If sortBy was selected, display 'Sort by' right panel*/}
+                        {sortByName.length > 0 && (
+                         <div className='d_prodcont_active_filters'>
+                            <span className='d_prodcont_actfil_title'>
+                              <strong>Sortare dupa</strong>
+                            </span>
+                            <span className='d_pc_acfil_fil' onClick={(e) => this.sortBy('default')}>
+                              <svg class="bi bi-x" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M11.854 4.146a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708-.708l7-7a.5.5 0 0 1 .708 0z"/>
+                                <path fill-rule="evenodd" d="M4.146 4.146a.5.5 0 0 0 0 .708l7 7a.5.5 0 0 0 .708-.708l-7-7a.5.5 0 0 0-.708 0z"/>
+                              </svg>
+                              {sortByName}
+                            </span>
+                          </div>
+                        )}
+                        
+                        {/* Display active filters */}
                         {this.state.filteredTerms.length > 0 && (
                           <div className='d_prodcont_active_filters'>
                             <span className='d_prodcont_actfil_title'>
-                              Filtre active 
+                              <strong>Filtre active</strong>
                               <span>({this.state.filteredTerms.length})</span>
                               <span className='d_prodcont_removefilters_all' title='Sterge toate filtrele' onClick={() => this.clerAllFilters()}>Sterge tot</span>
                             </span>
@@ -645,8 +746,8 @@ sortProducts = sortArgument => {
                         )}
 
 
-                          {/* Category filter panel */}
-                          {this.state.searchResulted && (
+                        {/* Category filter panel - Display only when searchResulted is active or newProducts component is rendered (propsPathname === ' Noutati') */}
+                        {newOrSearchComponentActive && (
                           <div className='d_prodcont_filter_panel'>
                             <span className='d_prodcont_filter_title'>Categorie <img src={filterArrow} alt='' onClick={(e)=>this.toggleDisplayFilter(e,'Culoare')}/></span>
                               <div className='dprodcont_wrap_filter_names dprodc_wfiltname_colors'>
@@ -663,24 +764,14 @@ sortProducts = sortArgument => {
                                 )}
                               </div>
                           </div>
-                          )}
+                        )}
 
 
                           {/* Color filter panel */}
                           <div className='d_prodcont_filter_panel'>
                             <span className='d_prodcont_filter_title'>Culoare <img src={filterArrow} alt='' onClick={(e)=>this.toggleDisplayFilter(e,'Culoare')}/></span>
                               <div className='dprodcont_wrap_filter_names dprodc_wfiltname_colors'>
-                                {this.state.filterColors.map((el,ind) =>
-                                  <span className='d_prodcont_filter_box'>
-                                    <label key={ind}  className='custom-checkbox dprod_filter_label' onChange={(e) => this.setFilter(el.colorEng,'color',el.colorRo)}>
-                                      <input className='custom-control-input d_prodcont_filter_checkbox' type='checkbox'/>
-                                      <span className='custom-control-label'>
-                                          <span>{el.colorRo}</span>
-                                          <span className='prod_fil_no'>{this.displayProductFilterNumber(el.colorEng,'color')}</span>
-                                      </span>
-                                    </label>
-                                  </span>
-                                )}
+                                {this.renderFilterColors()}
                               </div>
                           </div>
 
@@ -761,11 +852,21 @@ sortProducts = sortArgument => {
                       </div>
                     </div>
 
-                    <div className='d_prodcont_displayproducts d_prodcont_sec col-12 col-md-8 col-lg-8 col-xl-9'>
-                      <RenderProducts products={this.searchProducts()} totalSelProducts={this.state.totalSelProducts}/>
-                    </div>
-                  </div>
+                    {/* DISPLAY PRODUCTS CONTAINER */}
 
+                    <div className='d_prodcont_displayproducts d_prodcont_sec col-12 col-md-8 col-lg-8 col-xl-9'>
+
+                      {/* Loading filtered products effect only if filterd products length > 0 - Avoid displaying filter loading when there is no products to display */}
+                      {this.state.filterIsLoading && filteredResultedProducts.length > 0 && (
+                        <span className='d_pc_dp_load_filder_modal'></span>
+                      )}
+
+                      {/* Send data to be rendered*/}
+                      <RenderProducts products={filteredResultedProducts} totalSelProducts={this.state.totalSelProducts}/>
+                      
+                    </div>
+                  
+                  </div>
                 </div>
               </div>
 
