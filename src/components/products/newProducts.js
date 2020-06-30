@@ -36,6 +36,9 @@ class connectedNewProducts extends React.Component {
 		if(this.props.newProductsDataDb === null) {
 			this.fetchWomenProducts();
 	 	}  
+	 	
+	 	// Scoll to top on every mount
+		window.scrollTo(0, 0);
 	}
 
 	componentWillUnmount() {

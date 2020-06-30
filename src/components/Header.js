@@ -351,10 +351,8 @@ renderUsername() {
 }
 
 handleNavMenuLinkClick() {
-	// Scroll to top on every change
-	if(document.contains(document.querySelector('.nav_path_cont'))) {
- 		document.querySelector('.nav_path_cont').scrollIntoView({behavior: "auto", block: "center"});
- 	}
+	// Scoll to top on every mount
+	window.scrollTo(0, 0);
 }
 
 	render() {
@@ -399,8 +397,6 @@ handleNavMenuLinkClick() {
 					    {/* Header social media col */}
 					    <div className='row'>
 					    	<div className='header_social_col col-12'>
-					    		<i className='fab fa-facebook'></i>
-					    		<i className='fab fa-instagram'></i>
 					    		<i className='fas fa-phone'></i>
 					    		<span className='h_social_phone'>0727 464 5671</span>
 					    		<i className='fab fa-whatsapp'></i>

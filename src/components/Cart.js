@@ -41,6 +41,8 @@ componentDidMount() {
 	 if(this.props.userIsSignedIn !== null && this.props.userDbInfo === null) {
 		this.populateCart();
 	}
+	// Scoll to top on every mount
+	window.scrollTo(0, 0);
 }
 
 populateCart() {
@@ -236,7 +238,7 @@ handleBlurInputQuantity(e,cartProductId) {
 			// Change localstorage after removing the product
 			localStorage.setItem('cart', JSON.stringify(cart));
 		}
-	},1500);
+	},1000);
 }
 
 getTotalCartAmount() {
@@ -278,6 +280,7 @@ getTotalCartSaveUpPercent() {
 						</div>
 					</div>)
  		}
+
 
 		return (
 				<div>

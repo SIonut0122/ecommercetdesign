@@ -4,6 +4,9 @@ import   Footer from './components/Footer';
 import { HashRouter , Router, Route, Switch } from 'react-router-dom'; 
 import './css/Main.css';
 
+
+
+import Homepage                   from './components/Homepage';
 import ProductInfo                   from './components/ProductInfo';
 import menProducts                   from './components/products/menProducts';
 import womenProducts                   from './components/products/womenProducts';
@@ -45,7 +48,7 @@ class Main extends React.Component {
                        <Route  path='/dashboard/addproduct'      component={addProduct}/>
                        <Route   path='/dashboard/activeorders'   component={activeOrders}/>
 
-                      <Route  exact path='/'                     component={Login} />
+                      <Route  exact path='/'                     component={Homepage} />
                       <Route  path='/search/:id'                 component={searchProducts} />
                       <Route  path='/productinfo/:id'      component={ProductInfo} />
                       <Route  path='/products/men'               component={menProducts} />

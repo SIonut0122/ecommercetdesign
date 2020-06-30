@@ -1,9 +1,9 @@
-import React                  from 'react';
-import Products               from '../Products';
+import   React                from 'react';
+import   Products             from '../Products';
 import { client, q          } from '../../fauna/db';
 import { connect            } from "react-redux";
 import { setWomenProductsDb } from '../../actions';
-import getAllWomenProducts from './getAllWomenProducts';
+import   getAllWomenProducts  from './getAllWomenProducts';
  
 
 const mapStateToProps = state => {
@@ -26,6 +26,9 @@ class connectedWomenProducts extends React.Component {
 	 	 if(this.props.womenProductsDataDb === null) {
 	 	 	this.fetchWomenProducts();
 	 	 }
+
+	 	// Scoll to top on every mount
+		window.scrollTo(0, 0);
 	}
 
 	componentWillUnmount() {

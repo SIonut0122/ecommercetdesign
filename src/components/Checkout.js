@@ -4,7 +4,6 @@ import { Link, Redirect               } from 'react-router-dom';
 import cashOnDeliveryIcon from '../images/cash-on-delivery.png';
 import expressDelivery from '../images/express_delivery.png';
 import { connect }            from "react-redux";
-import logo2 from '../images/pants2.jpg';
 import { v4 as uuidv4 } from 'uuid';
  import { client, q } from '../fauna/db';
 
@@ -102,8 +101,8 @@ handleDeliverySelect(e,courierType,courierPrice) {
 }
 
 scrollToTop() {
-	// Scroll to top (user checkout steps as a target)
- 	document.querySelector('.checkout_wrap_steps').scrollIntoView({behavior: "auto", block: "center"});
+	// Scoll to top on every mount
+	window.scrollTo(0, 0);
 }
 
 handleAddressName(e) {

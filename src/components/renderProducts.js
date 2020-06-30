@@ -1,7 +1,6 @@
 import React from 'react';
 import '../css/Products.css';
  import { Link               } from 'react-router-dom';
-import logo2 from '../images/pants2.jpg';
 import { connect }            from "react-redux";
  import { setWishList } from '../actions';
  import { addProdToWishlist } from '../fauna/addProdToWishlist';
@@ -178,8 +177,8 @@ addProductToWishlist(e) {
 					if(parseFloat(el.innerHTML) === currpage) {
 						el.classList.add('pag_active');
 
-						// Scroll to top on every page change (target orderby button)
-					 	document.querySelector('.h_orderby_button').scrollIntoView({behavior: "auto", block: "center"});
+						// Scoll to top on every page change
+						window.scrollTo(0, 0);
 					 	 
 					} else {
 						el.classList.remove('pag_active');

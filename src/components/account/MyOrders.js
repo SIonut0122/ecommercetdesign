@@ -2,7 +2,6 @@ import React from 'react';
 import '../../css/Account.css';
 import { Link,Redirect               } from 'react-router-dom'
 import AccountMenu from './AccountMenu';
-import logo2 from '../../images/pants2.jpg';
 import { connect }            from "react-redux";
 
 

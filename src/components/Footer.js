@@ -118,10 +118,10 @@ handleHeightFooterMenu(e) {
 									<div className='footer_cowrap_links_sect'>
 										<span className='footer_cowrap_links_title'>Magazin <i className='fas fa-plus' onClick={(e)=>this.handleHeightFooterMenu(e)}></i></span>
 										<ul className='footer_corwap_ul'>
-											<li><Link to={'/producst/women'}>Femei</Link></li>
-											<li><Link to={'/producst/men'}>Barbati</Link></li>
-											<li><Link to={'/producst/children'}>Copii</Link></li>
-											<li><Link to={'/producst/women'}>TDesign Home</Link></li>
+											<li><Link to={'/products/women'}>Femei</Link></li>
+											<li><Link to={'/products/men'}>Barbati</Link></li>
+											<li><Link to={'/products/children'}>Copii</Link></li>
+											<li><Link to={'/'}>TDesign Home</Link></li>
 										</ul>
 									</div>
 									<div className='footer_cowrap_links_sect'>
@@ -129,8 +129,7 @@ handleHeightFooterMenu(e) {
 
 										<ul>
 											<li><Link to={'/'}>Cariere TDesign</Link></li>
-											<li><Link to={'/'}>Despre TDesign</Link></li>
-											<li><Link to={'/'}>Copii</Link></li>
+											<li><Link to={'/contact'}>Despre TDesign</Link></li>
 											<li><Link to={'/'}>Relatii cu investitorii</Link></li>
 											<li><Link to={'/'}>Protectia consumatorilor</Link></li>
 										</ul>
@@ -142,7 +141,7 @@ handleHeightFooterMenu(e) {
 										<ul>
 											<li><Link to={'/'}>Serviciu clienti</Link></li>
 											<li><Link to={'/account'}>Contul meu</Link></li>
-											<li><Link to={'/'}>Localizare magazin</Link></li>
+											<li><Link to={'/contact'}>Localizare magazin</Link></li>
 											<li><Link to={'/contact'}>Contact</Link></li>
 										</ul>
 									</div>

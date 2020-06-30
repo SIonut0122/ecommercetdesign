@@ -2,7 +2,6 @@ import React from 'react';
 import '../css/Wishlist.css';
 import { Link               } from 'react-router-dom';
 import { setWishList } from '../actions';
-import logo2 from '../images/pants2.jpg';
 import { connect }            from "react-redux";
  import { addProdToWishlist } from '../fauna/addProdToWishlist';
  import { addProdToCart } from '../fauna/addProdToCart';

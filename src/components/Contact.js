@@ -6,7 +6,7 @@ import   GoogleMapReact       from 'google-map-react';
 class Contact extends React.Component {
 
 	state = {
-			        center          : {lat: 44.79, lng: 10.32},
+			        center          : {lat: 44.421143, lng: 26.093942},
                     zoom            : 9,
 	}
 

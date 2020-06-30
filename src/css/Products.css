@@ -22,7 +22,7 @@ body {
   min-height: 30px;
   margin: 33px 0 0 0;
   padding: 10px 0 30px 0;
-  font-size: 14px; }
+  font-size: 15px; }
 
 .nav_path_cont a {
   text-decoration: none; }
@@ -276,7 +276,7 @@ body {
     .d_prodcont_filter_box label:hover {
       cursor: pointer; }
       .d_prodcont_filter_box label:hover .custom-control-label::before {
-        border: 1px solid #007bff; }
+        border: 1px solid #007bff !important; }
   .d_prodcont_filter_box .d_prodcont_filter_checkbox {
     position: relative;
     margin-left: 7px;

@@ -26,6 +26,9 @@ class connectedMenProducts extends React.Component {
 	 	 if(this.props.menProductsDataDb === null) {
 	 	 	this.fetchMenProducts();
 	 	 }
+	 	 
+	 	// Scoll to top on every mount
+		window.scrollTo(0, 0);
 	}
 	
 	componentWillUnmount() {

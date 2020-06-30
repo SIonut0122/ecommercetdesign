@@ -18,56 +18,6 @@ $blueLightColor: #007bff;
 	transform: translateY(-50%);
 }
 
-@media screen and (max-width:575.5px) {
-	.hsc_col_logo {
-		order: 2;
-		min-width: 250px !important;
-		padding-bottom: 5px;
-		padding-top:5px;
-	}
-	.hsc_col_acc {
-		order: 1;
-	}
-	.hsc_col_logo_hambmenu {
-		display: block !important;
-	}
-	.hsc_col_logo_img {
-		margin-left: 60px !important;
-	}
-	/* Header account icons */
-	.hsc_col_acc {
-		height: 48px !important;
-		background-color: $blackColor;
-		margin-top: 8px !important;
-	}
-	.hsccol_acc_cont {
-		height: 100% !important;
-		margin-top: 9px;
-	}
-	.hsc_col_acc .hsccol_acc_icon {
-		margin: 0 5px 0 5px;
-		width: 30px !important;
-		height: 30px !important;
-	}
-	.hsscol_fav_icon_no,
-	.hsscol_cart_icon_no {
-		top: -5px !important;
-		right: -5px !important;
-		width: 13px !important;
-		height: 13px !important;
-		font-size: 8px !important;
-	}
-	/* Nav menu div */
-	.head_nav_menu {
-		display: none !important;
-	}
-}
-
-@media screen and (max-width:991.2px) {
-	.nav_m_search {
-		display: none !important;
-	}
-}
 
 .header_container {
 	position: fixed;
@@ -184,17 +134,16 @@ $blueLightColor: #007bff;
 	margin-top:5px;
 }
 
-.header_social_col .fa-facebook,
-.fa-instagram {
-	margin: 0 3px 0 3px;
-	cursor: pointer;
-}
 
 .header_social_col .fa-phone,
 .fa-whatsapp {
 	font-size: 13px;
-	margin: 0 3px 0 10px;
+	margin: 0 3px 0 3px;
 	color: #424242;
+}
+
+.header_social_col .fa-whatsapp {
+	margin-left:8px;
 }
 
 .header_social_col .h_social_phone,
@@ -204,13 +153,7 @@ $blueLightColor: #007bff;
 	color: #424242;
 }
 
-.header_social_col .fa-facebook:hover {
-	color: #333CEC;
-}
 
-.header_social_col .fa-instagram:hover {
-	color: #711DC0;
-}
 
 .head_wrap_admin_cpanel {
 	display: block;
@@ -337,7 +280,7 @@ $blueLightColor: #007bff;
 	width: 40px;
 	height: 40px;
 	border-radius: 50%;
-	border: 1px solid $grayColorBorder;
+	border: 1px solid $grayColorInside;
 	margin: 7px 5px 0 5px;
 	cursor: pointer;
 	z-index: 3;
@@ -368,6 +311,7 @@ $blueLightColor: #007bff;
 	text-align: center;
 	color: #fff;
 	font-size: 11px;
+	pointer-events: none;
 }
 
 .wish_no_added {
@@ -711,4 +655,62 @@ $blueLightColor: #007bff;
 .hmob_menu_cplink {
 	border-top: 1px solid $grayColorBorder;
 	border-bottom: 1px solid $grayColorBorder;
+}
+
+@media screen and (max-width:575.5px) {
+	.hsc_col_logo {
+		order: 2;
+		min-width: 250px;
+		padding-bottom: 5px;
+		padding-top:5px;
+	}
+	.hsc_col_acc {
+		order: 1;
+	}
+	.hsc_col_logo_hambmenu {
+		display: block;
+	}
+	.hsc_col_logo_img {
+		margin-left: 60px;
+	}
+	/* Header account icons */
+	.hsc_col_acc {
+		height: 48px;
+		background-color: $blackColor;
+		margin-top: 8px;
+	 
+
+	}
+	.hsccol_acc_cont {
+		height: 100%;
+		margin-top: 10px;
+	 
+	}
+	.hsc_col_acc .hsccol_acc_icon {
+		margin: 0 6px 0 6px;
+		width: 33px;
+		height: 33px;
+	}
+
+	.hsscol_fav_icon_no,
+	.hsscol_cart_icon_no {
+		top: -7px;
+		right: -11px;
+		width: 20px;
+		height: 18px;
+		line-height: 18px;
+		font-size: 8px;
+		z-index: 2;
+	}
+
+	/* Nav menu div */
+	.head_nav_menu {
+		display: none;
+	}
+}
+
+@media screen and (max-width:991.2px) {
+	.nav_m_search {
+		display: none !important;
+	}
 }

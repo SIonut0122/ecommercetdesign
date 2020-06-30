@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link                  } from 'react-router-dom';
 import { FacebookShareButton  } from 'react-share';
-import logo2 from '../images/pants2.jpg';
 import '../css/ProductInfo.css';
  
 
@@ -63,13 +62,10 @@ class connectedProductInfo extends React.Component {
 componentDidMount() {
 	// Search a product with the desired url id
 	 this.fetchAllProductsData();
-
-	 // Scroll to top on every change
-	if(document.contains(document.querySelector('.nav_path_cont'))) {
- 		document.querySelector('.nav_path_cont').scrollIntoView({behavior: "auto", block: "center"});
- 	}
-
+	// Scoll to top on every mount
+	window.scrollTo(0, 0);
 }
+
 
 componentDidUpdate(prevProps) {
 	// Listen to params url id changes and if prevState id !== this.id, call function
@@ -89,7 +85,6 @@ async fetchAllProductsData() {
 
 	// If products data was not fetched before, start fetching all data
 	if(this.props.menProductsDataDb === null || this.props.womenProductsDataDb === null) {
-		console.log('NO DATA HERE, FETCHING...');
 			let getMen = await getAllMenProducts
 			.then((menProdData) => {
 				// Collect inside menProductsData only menProds data
@@ -109,7 +104,6 @@ async fetchAllProductsData() {
 			
 			// If all data was fetched before, collect in into one array and send it to display
 	} else if(this.props.menProductsDataDb !== null && this.props.womenProductsDataDb !== null) {
-		console.log('DATA IS HERE, nothing to fetch...');
 			allProductsDataDb = [...newArray, ...this.props.menProductsDataDb, ...this.props.womenProductsDataDb];
 			this.displayProductInfo(allProductsDataDb);
 	}
@@ -139,12 +133,10 @@ async fetchWomenProductsData(menProductsData) {
 
 
 displayProductInfo(allProductsDataDb) {
-	console.log('Trying to dispay product');
     let allProductsData = allProductsDataDb;
   	// Loop through all products for the URL PARAM ID and get products info
  	for(let p in allProductsData) {
  		if(allProductsData[p].id === this.props.match.params.id) {
- 			console.log(allProductsData[p]);
  			// Restore profile image to product (Hovering changes profile image before click)
  			allProductsData[p].img = allProductsData[p].moreImages[0];
  			// Set found product to true and product info to be displayed
@@ -320,7 +312,6 @@ addProductToCart(product) {
 		     updatedCart = {id: id, cart: cart};
 			 addProdToCart(updatedCart)
 		 } else {	
-		 	console.log('add prod to localstorage');
 		 // Push cart to localstorage to be used on every mount
 		 localStorage.setItem('cart', JSON.stringify(cart));
 		}
@@ -412,6 +403,8 @@ saveUpTo() {
 		                  </span>
 		                </div>    
 	                </div>
+
+	                {() => this.scrollToTop()}
 
 	                <div className='row justify-content-center'>
 	                	<div className='productinfo_container col-11'>
