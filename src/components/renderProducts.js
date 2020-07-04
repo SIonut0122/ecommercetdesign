@@ -1,9 +1,9 @@
-import React from 'react';
+import   React               from 'react';
 import '../css/Products.css';
- import { Link               } from 'react-router-dom';
-import { connect }            from "react-redux";
- import { setWishList } from '../actions';
- import { addProdToWishlist } from '../fauna/addProdToWishlist';
+import { Link              } from 'react-router-dom';
+import { connect           } from "react-redux";
+import { setWishList       } from '../actions';
+import { addProdToWishlist } from '../fauna/addProdToWishlist';
  
 
 
@@ -22,17 +22,16 @@ function mapDispatchToProps(dispatch) {
 }
 
 
-
 class connectedRenderProducts extends React.Component {
 	constructor(props) {
 		super(props);
 
 		this.state = {
-			products: props.products,
-			checkedWishlistedProducts: true,
-			currentPage: 1,
-			productsPerPage: 15,
-			loadingPage: false
+			products                  : props.products,
+			checkedWishlistedProducts : true,
+			currentPage               : 1,
+			productsPerPage           : 15,
+			loadingPage               : false
 		}
 	}
 
@@ -57,8 +56,6 @@ componentDidUpdate(prevProps) {
 		// Set this to false to stop calling this of every update
 		this.setState({ checkedWishlistedProducts: false })
 	}
-
-
 }
 
 checkWishlistProducts() {
@@ -195,9 +192,9 @@ addProductToWishlist(e) {
 		      products            = this.state.products.slice(indexOfFirstProduct, indexOfLastProduct),
 			  // Divide prooducts length by the products per page state, and push resulted pageNumbers to array
 		      pageNumbers = [];
-		for(let i=1; i <= Math.ceil(this.state.products.length / this.state.productsPerPage); i++) {
-			pageNumbers.push(i);
-		}
+			  for(let i=1; i <= Math.ceil(this.state.products.length / this.state.productsPerPage); i++) {
+				pageNumbers.push(i);
+			  }
 
 
 		return (

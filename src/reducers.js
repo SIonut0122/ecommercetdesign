@@ -17,6 +17,7 @@ import { SIGNED_WITH_GOOGLE }  from "./constants/action-types";
 import { USER_DB_INFO }  from "./constants/action-types";
 import { MEN_PRODUCTS_DB }  from "./constants/action-types";
 import { WOMEN_PRODUCTS_DB }  from "./constants/action-types";
+import { CHILDREN_PRODUCTS_DB }  from "./constants/action-types";
 import { NEW_PRODUCTS_DB }  from "./constants/action-types";
 
 
@@ -38,6 +39,7 @@ import { NEW_PRODUCTS_DB }  from "./constants/action-types";
 
          menProductsDataDb: null,
          womenProductsDataDb: null,
+         childrenProductsDataDb: null,
          newProductsDataDb: null,
 
 
@@ -128,6 +130,11 @@ import { NEW_PRODUCTS_DB }  from "./constants/action-types";
         case WOMEN_PRODUCTS_DB:
            return Object.assign({}, state, {
           womenProductsDataDb: action.payload.womenProductsDataDb
+        });
+        break;
+        case CHILDREN_PRODUCTS_DB:
+           return Object.assign({}, state, {
+          childrenProductsDataDb: action.payload.childrenProductsDataDb
         });
         break;
          case NEW_PRODUCTS_DB:

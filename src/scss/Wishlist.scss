@@ -65,7 +65,6 @@ $redColor: #FF3E3E;
 	position: relative;
 	display: block;
 	background-color: #fff;
-	padding-bottom: 50px;
 }
 
 /* Wishlist title */
@@ -96,19 +95,25 @@ $redColor: #FF3E3E;
  
 
 }
+.wishlist_info_bottom {
+	margin-top:40px;
+	font-size: 12px;
+	min-width: 100%;
+	padding: 7px;
+}
 .wish_product_box {
  	position: relative;
 	width: 50%;
 	max-width: 250px;
 	max-height: auto;
-	margin-top:10px;
 	transition: 0.2s;
+	margin:10px 0 20px 0;
  
 }
  
 .wish_product_box img {
 	width: 80%;
-	max-height: 270px;
+	max-height: 215px;
 	display: inline-block;
 	cursor: pointer;
 	transition: 0.1s;
@@ -134,7 +139,11 @@ $redColor: #FF3E3E;
 	color: $redColor;
 	font-weight: normal;
 }
- 
+.wishprod_outofstock {
+	min-width: 100%;
+	text-align: center;
+	color: $redColor;
+}
 .wish_remove_prod {
 	position: absolute;
 	font-size: 20px;

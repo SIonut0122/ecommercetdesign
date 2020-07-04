@@ -1,10 +1,10 @@
-import React from 'react';
+import   React            from 'react';
+import   AccountMenu      from './AccountMenu';
+import { Link, Redirect } from 'react-router-dom';
+import { setUserDbInfo  } from '../../actions';
+import { connect        } from "react-redux";
+import { client, q      } from '../../fauna/db';
 import '../../css/Account.css';
-import AccountMenu from './AccountMenu';
-import { Link, Redirect               } from 'react-router-dom';
- import { setUserDbInfo } from '../../actions';
-import { connect }            from "react-redux";
- import { client, q } from '../../fauna/db';
 
 
 
@@ -14,15 +14,12 @@ const mapStateToProps = state => {
   		  userInfo          : state.userInfo,
   		  signedWithGoogle  : state.signedWithGoogle,
   		  userDbInfo        : state.userDbInfo
-
         };
 };
 
 
 function mapDispatchToProps(dispatch) {
-  return {
-            setUserDbInfo       : userDB      => dispatch(setUserDbInfo(userDB))
-        };
+  return { setUserDbInfo : userDB => dispatch(setUserDbInfo(userDB)) };
 }
 
 
@@ -76,6 +73,8 @@ class connectedAccount extends React.Component {
 		this.updateStateWithUserDbInfo(this.props.userDbInfo.data);
 		console.log('Account info: Called from didMount');
 	}
+	// Scoll to top on every mount
+	window.scrollTo(0, 0);
 }
 
 
@@ -371,7 +370,7 @@ handleSignOut() {
 		                <div className='nav_path_cont col-11'>
 		                 <span>
 		                 	<Link to={'/'} className='nav_path_home'>
-		                  	Acasa 
+		                  	Acasă 
 		                  	</Link>
 		                  	/ 
 		                  	Contul meu
@@ -387,7 +386,7 @@ handleSignOut() {
 								<span className='account_title col-11'>
 									<span>Contul meu</span>
 									<span className='acc_title_signout_btn' onClick={()=>this.handleSignOut()}>
-										Iesi din cont <i className="fas fa-sign-out-alt"></i>
+										Ieși din cont <i className="fas fa-sign-out-alt"></i>
 									</span>
 								</span>
 							</div>
@@ -414,7 +413,7 @@ handleSignOut() {
 										<div className='acc_prof_wrap_inputs'>
 
 											{/* Email address */}
-											<span className='acc_profinputs_title'>Adresa de email (Logare in Magazin)</span>
+											<span className='acc_profinputs_title'>Adresă de email (Logare in Magazin)</span>
 											<span className='acc_profinput_wrap'>
 												<input type='text'
 													   disabled
@@ -423,7 +422,7 @@ handleSignOut() {
 													   value={this.props.userInfo !== null && this.props.userInfo.email}/>
 											</span>
 											{this.state.emailAddressErrMsg && (
-											<span className='acc_profinputs_err_msg'>Adresa de email invalida</span>
+											<span className='acc_profinputs_err_msg'>Adresă de email invalidă</span>
 											)}
 
 
@@ -478,7 +477,7 @@ handleSignOut() {
 
 
 											{/* Password */}
-											<span className='acc_profinputs_title'>Parola</span>
+											<span className='acc_profinputs_title'>Parolă</span>
 											<span className='acc_profinput_wrap'>
 												<input type='password'
 													   className='acc_profinp_password'
@@ -487,18 +486,18 @@ handleSignOut() {
 													   {...disableEnable}/>
 											</span>
 											{this.state.updatePasswordErrMsg && (
-											<span className='acc_profinputs_err_msg'>Parola invalida</span>
+											<span className='acc_profinputs_err_msg'>Parolă invalidă</span>
 											)}
 											{this.state.passwordMatchErrMsg && (
 											<span className='acc_profinputs_err_msg'>Parolele nu coincid</span>
 											)}
 											{this.state.changePassReauthentication && (
-											<span className='acc_profinputs_err_msg'>Pentru a actualiza parola, relogheaza-te</span>
+											<span className='acc_profinputs_err_msg'>Pentru a actualiza parola, reloghează-te</span>
 											)}
 
 
 											{/* Confirm Password */}
-											<span className='acc_profinputs_title'>Repeta parola</span>
+											<span className='acc_profinputs_title'>Repetă parola</span>
 											<span className='acc_profinput_wrap'>
 												<input type='password'
 													   className='acc_profinp_password'
@@ -507,27 +506,27 @@ handleSignOut() {
 													   {...disableEnable}/>
 											</span>
 											{this.state.updateConfPassErrMsg && (
-											<span className='acc_profinputs_err_msg'>Parola nu este identica</span>
+											<span className='acc_profinputs_err_msg'>Parola nu este identică</span>
 											)}
 											{this.state.passwordMatchErrMsg && (
 											<span className='acc_profinputs_err_msg'>Parolele nu coincid</span>
 											)}
 											{this.state.changePassMinSixChar && (
-											<span className='acc_profinputs_err_msg'>Parola trebuie sa aiba minimum 6 caractere</span>
+											<span className='acc_profinputs_err_msg'>Parola trebuie să aiba minimum 6 caractere</span>
 											)}
 
 
 											{/* Save profile updates button */}
-											<span className='acc_updateprofile_btn' onClick={() =>this.handleSaveUpdatesBtn()}>Salveaza modificarile</span>
+											<span className='acc_updateprofile_btn' onClick={() =>this.handleSaveUpdatesBtn()}>Salvează modificările</span>
 											
 											{/* Save profile updates confirm message */}
 											{this.state.confirmProfileUpdates && (
-											<span className='acc_updateprofil_confirm_msg'>* Modificarile au fost salvate</span>
+											<span className='acc_updateprofil_confirm_msg'>* Modificările au fost salvate</span>
 											)}
 
 											{/* Save shipping updates error message */}
 											{this.state.confirmProfileUpdatesError && (
-											<span className='acc_updateprofil_error_msg'>* A intervenit o eroare. Reincearca.</span>
+											<span className='acc_updateprofil_error_msg'>* A intervenit o eroare. Reîncearcă.</span>
 											)}
 
 

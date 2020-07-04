@@ -1,51 +1,50 @@
-import React from 'react';
+import   React            from 'react';
+import { connect }        from 'react-redux';
+import { Link, Redirect } from 'react-router-dom'
+import { setUserDbInfo  } from '../actions';
+import { client, q      } from '../fauna/db';
 import '../css/Register.css'
-import { connect }            from 'react-redux';
-import { Link, Redirect           } from 'react-router-dom'
- import { setUserDbInfo } from '../actions';
- import { client, q } from '../fauna/db';
 
 
  
 const mapStateToProps = state => {
-  return {  
-  		  userIsSignedIn   : state.userIsSignedIn
-        };
+  return { userIsSignedIn   : state.userIsSignedIn };
 };
 
 function mapDispatchToProps(dispatch) {
-  return {
-          setUserDbInfo : userDB  => dispatch(setUserDbInfo(userDB))
-        };
+  return { setUserDbInfo : userDB  => dispatch(setUserDbInfo(userDB)) };
 }
 
 
 class connectedRegister extends React.Component {
 
 		state = {
-			regEmail: '',
-			regEmailValid: false,
-			regEmailErrMsg: false,
-			regLastName: '',
-			regLastNameValid: false,
-			regLastNameErrMsg: false,
-			regName: '',
-			regNameValid: false,
-			regNameErrMsg: false,
-			regPassword: '',
-			regPasswordValid: false,
-			regPasswordErrMsg: false,
-			regSex: null,
-			regAcceptNewsletter: false,
-			regAcceptTerms: false,
-			regAcceptTermsErrMsg:false,
-
-			regNewAccountLoad: false,
-			registerEmailAlreadyInUse: false
+			regEmail                  : '',
+			regEmailValid             : false,
+			regEmailErrMsg            : false,
+			regLastName               : '',
+			regLastNameValid          : false,
+			regLastNameErrMsg         : false,
+			regName                   : '',
+			regNameValid              : false,
+			regNameErrMsg             : false,
+			regPassword               : '',
+			regPasswordValid          : false,
+			regPasswordErrMsg         : false,
+			regSex                    : null,
+			regAcceptNewsletter       : false,
+			regAcceptTerms            : false,
+			regAcceptTermsErrMsg      : false,
+			regNewAccountLoad         : false,
+			registerEmailAlreadyInUse : false
 		}
 
 
 
+componentDidMount() {
+	// Scoll to top on every mount
+	window.scrollTo(0, 0);
+}
 
 handleRegEmail(e) {
 	let regEmailValue  = e.target.value,
@@ -100,11 +99,11 @@ handleRegName(e) {
 }
 
 handleRegPassword(e) {
- 	let regPasswordValue  = e.target.value,
+ 	let regPasswordValue = e.target.value,
    		   // Check password length to be higher than 4
-      checkValueLength = regPasswordValue.length > 4,
+      checkValueLength   = regPasswordValue.length > 4,
    		   // Check for blank spaces
-      checkWhiteSpaces = regPasswordValue.trim().length === regPasswordValue.length;
+      checkWhiteSpaces   = regPasswordValue.trim().length === regPasswordValue.length;
 
     	// If password value match, setstate value 
     if(checkValueLength && checkWhiteSpaces) {
@@ -177,8 +176,7 @@ handleRegisterBtn() {
  		this.setState({ regAcceptTermsErrMsg: true })
  		break;
  		default:
- 
- 		
+ 		// If everything is good, create account
  		this.createAccount();
  	}
 }
@@ -274,10 +272,10 @@ googlePlusConnect() {
 	                <div className='nav_path_cont col-11'>
 	                 <span>
 	                 	<Link to={'/'} className='nav_path_home'>
-	                  	Acasa 
+	                  	Acasă 
 	                  	</Link>
 	                  	/ 
-	                  	Inregistrare
+	                  	Înregistrare
 	                  </span>
 	                </div>    
                 </div>
@@ -289,7 +287,7 @@ googlePlusConnect() {
 						{this.state.regNewAccountLoad && (
 						<div className='register_loading_modal'>
 							<div className='reg_load_modal'>
-								<span>Se creeaza contul</span>
+								<span>Se creează contul</span>
 								<div className='reg_load_eff'>
 									<div></div><div></div><div></div><div></div>
 								</div>
@@ -300,7 +298,7 @@ googlePlusConnect() {
 						{/* Wishlist title */}
 						<div className='row justify-content-center'>
 							<span className='wishlist_title col-11'>
-								Inregistrare
+								Înregistrare
 							</span>
 						</div>
 
@@ -333,7 +331,7 @@ googlePlusConnect() {
 							 	<span className='reg_err_msg'>Email invalid</span>
 							 	)}
 							 	{this.state.registerEmailAlreadyInUse && (
-							 	<span className='reg_err_msg'>Acest email este deja inregistrat</span>
+							 	<span className='reg_err_msg'>Acest email este deja înregistrat</span>
 							 	)}
 
 
@@ -373,7 +371,7 @@ googlePlusConnect() {
 
 							 	{/* Password reg input */}
 								<span className='reg_input_wrapper'>
-									<label>Parola *</label>
+									<label>Parolă *</label>
 									<input type         = 'password' 
 										   className    = 'reg_txt_input reg_txt_input_pass'
 										   autoComplete = 'off'
@@ -386,7 +384,7 @@ googlePlusConnect() {
 									<i className='far fa-eye reg_showhide_icon' title='Show / Hide password' onClick={(e) => this.showHidePassword(e)}></i>
 								</span>
 								{this.state.regPasswordErrMsg && (
-							 	<span className='reg_err_msg'>Parola invalida</span>
+							 	<span className='reg_err_msg'>Parolă invalidă</span>
 							 	)}
 
 
@@ -406,8 +404,8 @@ googlePlusConnect() {
 									<label className='custom-checkbox'>
 									  <input className='custom-control-input' type='checkbox' onChange={(e) => { this.setState({ regAcceptNewsletter: e.target.checked })}}/>
 									  <div className='custom-control-label reg_newsletter_txt'>
-									  		Sunt de acord să primesc de la tshirtdesign S.A. (tshirtdesign.ro) pe adresa de email, informaţii 
-											comerciale referitoare la această companie, precum și a partenerilor ei, în conformitate cu <span>regulamentul</span>. 
+									  		Sunt de acord să primesc de la tshirtdesign S.A. pe adresa de email, informaţii 
+											comerciale referitoare la această companie, precum și a partenerilor ei, în conformitate cu <Link to={'/terms'} target='_blank' rel='noopener noreferrer'>regulamentul</Link>. 
 									  </div>
 									</label>
 								</div>
@@ -418,15 +416,15 @@ googlePlusConnect() {
 									<label className='custom-checkbox'>
 									  <input className='custom-control-input' type='checkbox' onChange={(e) => { this.setState({ regAcceptTerms: e.target.checked })}}/>
 									  <div className='custom-control-label reg_terms_txt'>
-									  		Am citit și sunt de acord cu <span>Regulamentul</span> magazinului.  
+									  		Am citit și sunt de acord cu <Link to={'/terms'} target='_blank' rel='noopener noreferrer'>Regulamentul</Link> magazinului.  
 									  </div>
 									</label>
 								</div>
 								{this.state.regAcceptTermsErrMsg && (
-								<span className='reg_err_msg'>Trebuie sa accepti regulamentul magazinului</span>
+								<span className='reg_err_msg'>Trebuie să accepți regulamentul magazinului</span>
 								)}
 
-								<span className='reg_createacc_btn' onClick={()=>this.handleRegisterBtn()}>Inregistreaza-te</span>
+								<span className='reg_createacc_btn' onClick={()=>this.handleRegisterBtn()}>Înregistrează-te</span>
 
 							</div>
 						</div>

@@ -1,11 +1,11 @@
 import React from 'react';
 import Products             from '../Products';
-import { setWomenProductsDb,setMenProductsDb, setNewProductsDb} from '../../actions';
+import { setWomenProductsDb,setMenProductsDb, setNewProductsDb, setChildrenProductsDb} from '../../actions';
 import { client, q          } from '../../fauna/db';
 import { connect            } from "react-redux";
 import getAllWomenProducts from './getAllWomenProducts';
 import getAllMenProducts from './getAllMenProducts';
-
+import getAllChildrenProducts from './getAllChildrenProducts';
 
 
 const mapStateToProps = state => {
@@ -18,9 +18,10 @@ const mapStateToProps = state => {
 
 
 function mapDispatchToProps(dispatch) {
-  return { setWomenProductsDb : womenProdDb => dispatch(setWomenProductsDb(womenProdDb)),
-  		   setMenProductsDb   : menProdDb   => dispatch(setMenProductsDb(menProdDb)),
-  		   setNewProductsDb   : newProdDb   => dispatch(setNewProductsDb(newProdDb)) 
+  return { setWomenProductsDb    : womenProdDb    => dispatch(setWomenProductsDb(womenProdDb)),
+  		   setMenProductsDb      : menProdDb      => dispatch(setMenProductsDb(menProdDb)),
+  		   setChildrenProductsDb : childrenProdDb => dispatch(setChildrenProductsDb(childrenProdDb)),
+  		   setNewProductsDb      : newProdDb      => dispatch(setNewProductsDb(newProdDb)) 
   		};
 }
 
@@ -73,6 +74,22 @@ class connectedNewProducts extends React.Component {
 		     	// Set state to concat for results
 		     	this.setState({ menProductsData })
 		     	// Call function to concat all results and display only new products
+		     	this.fetchChildrenProducts();
+		})
+		 // If error returned, continue displaynewresults with already fetched data
+		  .catch((error) => { console.log('Error while fetching data: ', error.message); this.fetchChildrenProducts();})
+	}
+
+	async fetchChildrenProducts() {
+		let get = await  getAllChildrenProducts
+		.then((resp) => {
+				// Collect inside menProductsData only menProds data
+		     	let childrenProductsData = [];
+		     	resp.forEach(el => childrenProductsData.push(el.data));
+		     	this.props.setChildrenProductsDb({ childrenProductsDataDb: childrenProductsData })
+		     	// Set state to concat for results
+		     	this.setState({ childrenProductsData })
+		     	// Call function to concat all results and display only new products
 		     	this.displayNewResults();
 		})
 		 // If error returned, continue displaynewresults with already fetched data
@@ -83,7 +100,7 @@ class connectedNewProducts extends React.Component {
 	displayNewResults() {
 		let newResults = [],
 			// Concat fetched data, filter only new elements and set new products order numbers
-			concatNewResults = [...newResults, ...this.state.menProductsData, ...this.state.womenProductsData],
+			concatNewResults = [...newResults, ...this.state.menProductsData, ...this.state.womenProductsData, ...this.state.childrenProductsData],
 			// Get only new products
 			getOnlyNewProducts = concatNewResults.filter(el => el.new);
 			// Set order from  0 to getOnlyNewproducts.length;

@@ -348,7 +348,7 @@ updateUserDbShippData(newShippingData,id) {
 
 
 											{/* Shipp Street address */}
-											<span className='acc_profinputs_title'>Numele strazii</span>
+											<span className='acc_profinputs_title'>Numele străzii</span>
 											<span className='acc_profinput_wrap'>
 												<input type='text'
 													   className='acc_profinp_shippstreeetname'
@@ -356,12 +356,12 @@ updateUserDbShippData(newShippingData,id) {
 													   value={this.state.shippStreetAddr}/>
 											</span>
 											{this.state.shippStreetAddrErrMsg && (
-											<span className='acc_profinputs_err_msg'>Adresa invalida</span>
+											<span className='acc_profinputs_err_msg'>Adresă invalidă</span>
 											)}
 
 
 											{/* Shipp postal code */}
-											<span className='acc_profinputs_title'>Cod postal</span>
+											<span className='acc_profinputs_title'>Cod poștal</span>
 											<span className='acc_profinput_wrap'>
 												<input type='text'
 													   maxLength='10'
@@ -370,13 +370,13 @@ updateUserDbShippData(newShippingData,id) {
 													   value={this.state.shippPostalCode}/>
 											</span>
 											{this.state.shippPostalCodeErrMsg && (
-											<span className='acc_profinputs_err_msg'>Cod Postal invalid</span>
+											<span className='acc_profinputs_err_msg'>Cod poștal invalid</span>
 											)}
 											<a target='_blank' rel='noopener noreferrer' href='https://www.posta-romana.ro/cauta-cod-postal.html' className='check_postal_code'>Cauta cod postal <i className='fas fa-angle-right'></i></a>
 
 
 											{/* Shipp city */}
-											<span className='acc_profinputs_title'>Oras</span>
+											<span className='acc_profinputs_title'>Oraș</span>
 											<span className='acc_profinput_wrap'>
 												 <select className="custom-select form-control acc_profinp_shippcity" onChange={(e)=>this.updateShippCity(e)}>
 												    {this.state.city.map((el,ind) =>
@@ -386,11 +386,11 @@ updateUserDbShippData(newShippingData,id) {
 											</span>
 										 
 											{this.state.shippCityErrMsg && (
-											<span className='acc_profinputs_err_msg'>Oras invalid</span>
+											<span className='acc_profinputs_err_msg'>Oraș invalid</span>
 											)}
 
 										{/* Shipp village */}
-											<span className='acc_profinputs_title'>Sat / comuna / sat</span>
+											<span className='acc_profinputs_title'>Sat / comună</span>
 											<span className='acc_profinput_wrap'>
 												<input type='text'
 													   className='acc_profinp_shippvillage'
@@ -398,11 +398,11 @@ updateUserDbShippData(newShippingData,id) {
 													   value={this.state.shippVillage}/>
 											</span>
 											{this.state.shippVillageErrMsg && (
-											<span className='acc_profinputs_err_msg'>Camp invalid</span>
+											<span className='acc_profinputs_err_msg'>Câmp invalid</span>
 											)}
 
 										 	{/* Shipp additional info */}
-											<span className='acc_profinputs_title'>Informatii aditionale</span>
+											<span className='acc_profinputs_title'>Informații adiționale</span>
 											<span className='acc_profinput_wrap'>
 												<input type='text'
 													   className='acc_profinp_shippadditinfo'
@@ -412,16 +412,16 @@ updateUserDbShippData(newShippingData,id) {
 
 									 
 											{/* Save shipping updates button */}
-											<span className='acc_updateprofile_btn' onClick={() =>this.updateShippingDataBtn()}>Salveaza modificarile</span>
+											<span className='acc_updateprofile_btn' onClick={() =>this.updateShippingDataBtn()}>Salvează modificările</span>
 											
 											{/* Save shipping updates confirm message */}
 											{this.state.confirmShippingUpdates && (
-											<span className='acc_updateprofil_confirm_msg'>* Modificarile au fost salvate</span>
+											<span className='acc_updateprofil_confirm_msg'>* Modificările au fost salvate</span>
 											)}
 
 											{/* Save shipping updates error message */}
 											{this.state.confirmShippingUpdatesError && (
-											<span className='acc_updateprofil_error_msg'>* A intervenit o eroare. Reincearca.</span>
+											<span className='acc_updateprofil_error_msg'>* A intervenit o eroare. Reîncearcă.</span>
 											)}
 
 

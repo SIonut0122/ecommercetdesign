@@ -127,6 +127,8 @@ $blackColor: #202020;
 	width: auto;
 	display: inline-flex;
 	justify-content: center;
+	border-bottom:1px solid $grayColorBorder;
+	padding-bottom: 30px;
 
 	i {
 		font-size: 27px;

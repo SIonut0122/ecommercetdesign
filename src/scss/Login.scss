@@ -19,14 +19,6 @@ $redColor: #FF3E3E;
 	transform: translateY(-50%);
 }
 
-@media screen and (max-width:370.5px) {
-	.log_input_wrapper,
-	.login_err_msg,
-	.login_button,
-	.log_with_google_plus_button {
-		width: 100% !important;
-	}
-}
 
 @media screen and (max-width:767.5px) {
 	.login_cont_wrap,
@@ -230,7 +222,7 @@ $redColor: #FF3E3E;
 }
 }
 
-
+ 
 
 .log_regtitle_benefits {
 	width: 50%;
@@ -262,6 +254,11 @@ $redColor: #FF3E3E;
 	color: $logGrayColor;
 	font-size: 23px;
 	opacity: 0.7;
+}
+.log_register_benefitsbox {
+	.fa-user {
+		margin-right:13px;
+	}
 }
 
 
@@ -414,3 +411,20 @@ $redColor: #FF3E3E;
 .forgotpass_snet_msg {
 	color: #2A9D2F;
 }
+
+
+@media screen and (max-width:370.5px) {
+	.log_input_wrapper,
+	.login_err_msg,
+	.login_button,
+	.log_with_google_plus_button {
+		width: 100%;
+	}
+}
+
+@media screen and (max-width:400px) {
+	.log_register_button {
+		width: 250px;
+	}
+}
+

@@ -1,15 +1,12 @@
-import React from 'react';
+import   React            from 'react';
+import { Link, Redirect } from 'react-router-dom';
+import { connect        } from "react-redux";
 import '../css/Login.css';
-import { Link, Redirect               } from 'react-router-dom';
-import { connect }            from "react-redux";
  
  
 
 const mapStateToProps = state => {
-  return {  
-  		  userIsSignedIn   : state.userIsSignedIn,
-
-        };
+  return { userIsSignedIn   : state.userIsSignedIn };
 };
 
 
@@ -17,27 +14,27 @@ const mapStateToProps = state => {
 class connectedLogin extends React.Component {
 
 	state = {
-			loginLoadingEffect: true,
-			openForgotPassCont: false,
-			loginEmail: '',
-			loginEmailValid: false,
-			invalidLoginEmailMsg: false,
-			loginPassword: '',
-			loginPasswordValid: false,
-			invalidLoginPassMsg: false,
-			forgotPassEmailInput: '',
-			forgotPassErrMsg: false,
-			forgotPassConfirmMsg: false,
+			loginLoadingEffect   : true,
+			openForgotPassCont   : false,
+			loginEmail           : '',
+			loginEmailValid      : false,
+			invalidLoginEmailMsg : false,
+			loginPassword        : '',
+			loginPasswordValid   : false,
+			invalidLoginPassMsg  : false,
+			forgotPassEmailInput : '',
+			forgotPassErrMsg     : false,
+			forgotPassConfirmMsg : false,
 
 	}
 
 componentDidMount() {
-
+	// Display loading effect for 1 sec
 	 setTimeout(() => { this.setState({ loginLoadingEffect: false }) },1000);
 }
 
-/* Login section */
 
+/* Login section */
 handleLoginEmail(e) {
   let loginEmailValue = e.target.value,
       // Check loginEmailValue length to be higher than 0
@@ -173,7 +170,6 @@ handleResetPasswordBtn() {
 }
 
 
-
 /* Sign in methods */
 
 signIn() {
@@ -193,8 +189,8 @@ let provider = new firebase.auth.GoogleAuthProvider();
 	// Open popup window to signin Google+
 	firebase.auth().signInWithPopup(provider).then((result) => {
 	 // Console.log results if you need info about user
-	/* window.location.reload();*/
-	console.log('USER IS SIGNED IN');
+	 	// Referesh after log in
+	   window.location.reload();
 	}).catch(function(error) {
 		console.log(error);
 	});
@@ -223,7 +219,7 @@ let provider = new firebase.auth.GoogleAuthProvider();
 	                <div className='nav_path_cont col-11'>
 	                 <span>
 	                 	<Link to={'/'} className='nav_path_home'>
-	                  	Acasa 
+	                  	Acasă 
 	                  	</Link>
 	                  	/ 
 	                  	Conectare
@@ -248,7 +244,7 @@ let provider = new firebase.auth.GoogleAuthProvider();
 									<div className='login_cont_wrap'>
 										<span className='log_title_font'>Ai deja cont ?</span>
 										<span className='log_title_font_two'>
-											Conecteaza-te <span className='log_subtitle_font'>pentru a gestiona comenzile cu usurinta!</span>
+											Conectează-te <span className='log_subtitle_font'>pentru a gestiona comenzile cu ușurință!</span>
 										</span>
 										{/* Login inputs */}
 										<div className='row justify-content-center'>
@@ -265,7 +261,7 @@ let provider = new firebase.auth.GoogleAuthProvider();
 															   onChange     = {(e) => this.handleLoginEmail(e)}
 															   onFocus      = {(e) => this.onLoginFocus(e)} 
 															   onBlur       = {(e) => this.onLoginBlur(e)}
-															   onKeyDown   = {(e) => this.handleLoginInputKey(e)}>
+															   onKeyDown    = {(e) => this.handleLoginInputKey(e)}>
 														</input>
 													</span>
 												</div>
@@ -288,7 +284,7 @@ let provider = new firebase.auth.GoogleAuthProvider();
 															   onChange     = {(e) => this.handleLoginPassword(e)}
 															   onFocus 		= {(e) => this.onLoginFocus(e)} 
 															   onBlur       = {(e) => this.onLoginBlur(e)}
-															   onKeyDown   = {(e) => this.handleLoginInputKey(e)}>
+															   onKeyDown    = {(e) => this.handleLoginInputKey(e)}>
 														</input>
 														
 														<i className='far fa-eye log_showhide_icon' title='Show / Hide password' onClick={(e) => this.showHidePassword(e)}></i>
@@ -298,7 +294,7 @@ let provider = new firebase.auth.GoogleAuthProvider();
 												{/* User not found or invalid pass */}
 												{this.state.invalidLoginPassMsg && (
 												<div className='row justify-content-center'>
-													<span className='login_err_msg'>Utilizator inexistent sau parola gresita</span>
+													<span className='login_err_msg'>Utilizator inexistent sau parolă greșită</span>
 												</div>
 												)}
 												<div className='row justify-content-center'>
@@ -307,10 +303,10 @@ let provider = new firebase.auth.GoogleAuthProvider();
 
 												{/* Login button */} 
 												<div className='row justify-content-center'>
-													<span className='login_button' onClick={()=>this.handleLoginBtn()}>Conecteaza-te</span>
+													<span className='login_button' onClick={()=>this.handleLoginBtn()}>Conectează-te</span>
 												</div> 
 												<div className='row justify-content-center'>
-													<span className='log_title_or'>Sau conecteaza-te cu</span>
+													<span className='log_title_or'>Sau conectează-te cu</span>
 												</div>
 												{/* Google plus button */ }
 												<div className='row justify-content-center'>
@@ -335,16 +331,16 @@ let provider = new firebase.auth.GoogleAuthProvider();
 											<span className='log_title_font'>Prima ta vizita ?</span>
 										</div>
 										<div className='row justify-content-center'>
-											<Link to={'/register'} className='log_register_button'>Inregistreaza-te</Link>
+											<Link to={'/register'} className='log_register_button'>Înregistrează-te</Link>
 										</div>
 										<div className='row justify-content-center'>
-											<span className='log_regtitle_benefits col-11'>Si vei beneficia de:</span>
+											<span className='log_regtitle_benefits col-11'>Și vei beneficia de:</span>
 										</div>
 										<div className='row justify-content-center'>
 											<div className='log_register_benefitsbox col-11'>
-												<span><i className='fas fa-percent'></i> Discounturi si multe alte oferte</span>
-												<span><i className='far fa-user'></i>Gestioneaza si actualizeaza datele tale personale</span>
-												<span><i className='fas fa-history'></i>Acces usor la istoricul comenzilor</span>
+												<span><i className='fas fa-percent'></i> Discounturi și multe alte oferte</span>
+												<span><i className='far fa-user'></i>Gestionează și actualizează datele tale personale</span>
+												<span><i className='fas fa-history'></i>Acces ușor la istoricul comenzilor</span>
 											</div>
 										</div>
 									</div>
@@ -389,7 +385,7 @@ let provider = new firebase.auth.GoogleAuthProvider();
 							)}
 							{this.state.forgotPassConfirmMsg && (
 							<div className='row'>
-								<span className='forgotpass_snet_msg'>Noua parola a fost trimisa la e-mailul indicat.</span>
+								<span className='forgotpass_snet_msg'>Noua parolă a fost trimisă la e-mailul indicat.</span>
 							</div>
 							)}
 							<div className='row'>

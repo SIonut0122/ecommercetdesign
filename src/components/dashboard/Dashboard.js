@@ -4,6 +4,9 @@ import { setMenProductsDb, setWomenProductsDb,setSearchInput } from '../../actio
 import { connect }            from "react-redux";
 import getAllWomenProducts from '../products/getAllWomenProducts';
 import getAllMenProducts from '../products/getAllMenProducts';
+import getAllChildrenProducts from '../products/getAllChildrenProducts';
+
+
 
 import menProductsData from '../../data/men';
 import womenProductsData from '../../data/women';
@@ -20,16 +23,10 @@ import { Link, Redirect               } from 'react-router-dom';
 const mapStateToProps = state => {
   return { 
   		 userIsSignedIn   : state.userIsSignedIn,
-  		  userDbInfo       : state.userDbInfo
+  		 userDbInfo       : state.userDbInfo
   		};
 };
 
-
-function mapDispatchToProps(dispatch) {
-  return {  
-
-  		};
-}
 
 
 class connectedDashboard extends React.Component {
@@ -115,19 +112,39 @@ async fetchMenProducts() {
 		     	let menProdDataWithRefId = menProductsFetchedData.map(el => el.data);
 		     	// Set state to concat for results
 		     	this.setState({ menProductsFetchedData: menProdDataWithRefId }, () => {
-		     	// Call function to concat all results and display only new products
-		     	this.renderProd(); 
-		     	})
-
-		      
+		     		this.fetchChildrenProducts();
+		     	})      
 		     })
 		// If error returned, continue displaynewresults with already fetched data
 		 .catch((error) => { console.log('Error while fetching men products data: ', error.message);})
 }
 
+async fetchChildrenProducts() {
+		// Collect all men products
+		let get = await getAllChildrenProducts
+		.then((resp) => {
+			console.log(resp);
+				// Collect inside childrenProductsFetchedData only menProds data
+		     	let childrenProductsFetchedData = [];
+		     	resp.forEach(el => childrenProductsFetchedData.push(el));
+		     	// Set refId from (product data -> ref.value.id);
+		     	childrenProductsFetchedData.forEach(el => el.data.refId = el.ref.value.id );
+		     	// Extract only data from object product
+		     	let childrenProdDataWithRefId = childrenProductsFetchedData.map(el => el.data);
+		     	// Set state to concat for results
+		     	this.setState({ childrenProductsFetchedData: childrenProdDataWithRefId }, () => {
+			     	// Call function to concat all results and display only new products
+			     	this.renderProd(); 
+		     	})
+		      
+		     })
+		// If error returned, continue displaynewresults with already fetched data
+		 .catch((error) => { console.log('Error while fetching children products data: ', error.message);})
+}
+
 renderProd() {
 	// Assign new product number from low to high 
-	let orderpNo = [...this.state.menProductsFetchedData, ...this.state.womenProductsFetchedData];
+	let orderpNo = [...this.state.menProductsFetchedData, ...this.state.womenProductsFetchedData, ...this.state.childrenProductsFetchedData];
 
 	this.setState({ resultedProducts: orderpNo, displayedProducts: this.state.menProductsFetchedData})
  }
@@ -150,6 +167,9 @@ searchById(e) {
 			case 'Femei': 
 			this.setState({ displayedProducts: this.state.resultedProducts.filter(el => el.category === 'women') })
 			break;
+			case 'Copii': 
+			this.setState({ displayedProducts: this.state.resultedProducts.filter(el => el.category === 'children') })
+			break;
 			case 'Toate': 
 			this.setState({ displayedProducts: this.state.resultedProducts })
 			break;
@@ -170,6 +190,9 @@ selectProductsMenu(e) {
 		break;
 		case 'Women': 
 		this.setState({ displayedProducts: this.state.resultedProducts.filter(el => el.category === 'women') })
+		break;
+		case 'Children': 
+		this.setState({ displayedProducts: this.state.resultedProducts.filter(el => el.category === 'children') })
 		break;
 		case 'All': 
 		this.setState({ displayedProducts: this.state.resultedProducts })
@@ -218,6 +241,11 @@ updateThisProductBtn(prodToUpdate) {
 		this.restoreProductCategory();	
 		this.restoreDefaultProductIsNew();
 		this.restoreDefaultPrint();
+
+		if(prodToUpdate.subcategory !== undefined && prodToUpdate.category === 'children') {
+			// Check children subcategory checkbox
+			this.restoreProductSubCategory();
+		} 
 	},1000);
 }
 closeUpdateThisProduct() {
@@ -376,11 +404,13 @@ updateProductCategory(e,category) {
 	categoryCheckboxes.forEach(el => el.checked = false);
 	// Check this checkbox
 	e.target.checked = true;
+
 	// Set new category
 	this.setState(prevState => ({
 		product:{
 			...prevState.product,
-			category: category
+			category: category,
+			subcategory: category !== 'children' ? null : this.state.product.subcategory 
 		}
 	}))
 }
@@ -395,6 +425,7 @@ restoreProductCategory() {
 			// Get input label innerHtml value
 			let inputLabelValue = el.nextElementSibling.innerHTML;
 
+				console.log(inputLabelValue);
 			// Check romanian word inside input label which is displayed on dashboard
 			// If input value match predefined romanian word
 			if(inputLabelValue === 'Femei') {
@@ -402,12 +433,13 @@ restoreProductCategory() {
 				// If empty, check checkbox
 				if(defaultCategory === 'women') {
 					el.checked = true;
+					console.log(inputLabelValue);
 				}
 			} else if (inputLabelValue === 'Barbati') {
 				if(defaultCategory === 'men') {
 					el.checked = true;
 				}
-			} else {
+			} else if(inputLabelValue === 'Copii') {
 				// If defaultCategory is not equal with 'femei','barbati' then check children checkbox
 				if(defaultCategory === 'children') {
 					el.checked = true;
@@ -419,6 +451,65 @@ restoreProductCategory() {
 			product:{
 				...prevState.product,
 				category: defaultCategory
+			}
+		}))
+}
+
+
+/* ______ Update product subcategory ______ */
+
+
+updateProductSubCategory(e,subcategory) {
+	console.log(subcategory);
+	let subCategoryCheckboxes = document.querySelectorAll('.upprod_subcateg_cls');
+	// Uncheck all subcategory checkboxes
+	subCategoryCheckboxes.forEach(el => el.checked = false);
+	// Check this checkbox
+	e.target.checked = true;
+	// Set new subcategory
+	this.setState(prevState => ({
+		product:{
+			...prevState.product,
+			subcategory: subcategory
+		}
+	}))
+}
+
+restoreProductSubCategory() {
+		// Select all category checkboxes
+	let subcategoryProductCheckboxes = document.querySelectorAll('.upprod_subcateg_cls'),
+	    defaultSubCategory           = this.state.copyOfProduct.subcategory;
+		// Uncheck all subcategory checkboxes
+		subcategoryProductCheckboxes.forEach(el => { 
+			el.checked = false
+			// Get input label innerHtml value
+			let inputLabelValue = el.nextElementSibling.innerHTML;
+
+				console.log(inputLabelValue);
+			// Check romanian word inside input label which is displayed on dashboard
+			// If input value match predefined romanian word
+			if(inputLabelValue === 'Baieti') {
+				// Check english product word
+				// If empty, check checkbox
+				if(defaultSubCategory === 'boys') {
+					el.checked = true;
+				}
+			} else if (inputLabelValue === 'Fete') {
+				if(defaultSubCategory === 'girls') {
+					el.checked = true;
+				}
+			} else if(inputLabelValue === 'Unisex') {
+				// If defaultCategory is not equal with 'femei','barbati' then check children checkbox
+				if(defaultSubCategory === 'unisex') {
+					el.checked = true;
+				}
+			}
+		})
+		// Set default subcategory
+		this.setState(prevState => ({
+			product:{
+				...prevState.product,
+				subcategory: defaultSubCategory
 			}
 		}))
 }
@@ -1138,7 +1229,7 @@ applyChangesToProduct() {
 					 							<label className='custom-control custom-checkbox'>
 												  <input className='custom-control-input upprod_categ_cls' type='checkbox' onChange={(e) => this.updateProductCategory(e,'women')}/>
 												  <div className='custom-control-label'>
-												  	Femeie
+												  	Femei
 												  </div>
 												</label>
 
@@ -1156,10 +1247,39 @@ applyChangesToProduct() {
 												  </div>
 												</label>
 											</div>
-											{/* Restore default profile img */}
+											{/* Restore default category */}
 					 						<span className='dash_update_prof_cancel_btn' onClick={(e)=>this.restoreProductCategory()}>Anuleaza</span>
 
+					 						{/* Product Category */}
+					 						{this.state.product.category === 'children' && (
+					 						<React.Fragment>
+					 						<span className='dash_update_subtitle'>Subcategorie articol</span>
+					 						<div className='dash_update_product_category'>
+					 							<label className='custom-control custom-checkbox'>
+												  <input className='custom-control-input upprod_subcateg_cls' type='checkbox' onChange={(e) => this.updateProductSubCategory(e,'boys')}/>
+												  <div className='custom-control-label'>
+												  	Baieti
+												  </div>
+												</label>
 
+												<label className='custom-control custom-checkbox ml-3'>
+												  <input className='custom-control-input upprod_subcateg_cls' type='checkbox' onChange={(e) => this.updateProductSubCategory(e,'girls')}/>
+												  <div className='custom-control-label'>
+												  	Fete
+												  </div>
+												</label>
+
+												<label className='custom-control custom-checkbox ml-3'>
+												  <input className='custom-control-input upprod_subcateg_cls' type='checkbox' onChange={(e) => this.updateProductSubCategory(e,'unisex')}/>
+												  <div className='custom-control-label'>
+												  	Unisex
+												  </div>
+												</label>
+											</div>
+											{/* Restore default category */}
+					 						<span className='dash_update_prof_cancel_btn' onClick={(e)=>this.restoreProductSubCategory()}>Anuleaza</span>
+					 						</React.Fragment>
+					 						)}
 
 											{/* New product select */}
 				 							<span className='dash_update_subtitle'>Articol nou in stoc?</span>
@@ -1380,5 +1500,5 @@ applyChangesToProduct() {
 
  
 
-const Dashboard = connect(mapStateToProps,mapDispatchToProps)(connectedDashboard);
+const Dashboard = connect(mapStateToProps,null)(connectedDashboard);
 export default Dashboard;

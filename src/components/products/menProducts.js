@@ -70,7 +70,7 @@ class connectedMenProducts extends React.Component {
 					  <Products 
 					  	selectedProductsProps = {this.props.menProductsDataDb} 
 					  	totalSelProducts      = {this.props.menProductsDataDb}
-					  	pathName              = 'Tricouri barbati'
+					  	pathName              = 'Tricouri bărbați'
 					  />
 				</div>
 		)

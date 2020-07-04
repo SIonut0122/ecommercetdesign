@@ -281,6 +281,9 @@ getTotalCartSaveUpPercent() {
 					</div>)
  		}
 
+ 		// Check if saveUp !== 0
+ 		let saveUp = this.getTotalCartSaveUpPercent();
+
 
 		return (
 				<div>
@@ -290,10 +293,10 @@ getTotalCartSaveUpPercent() {
 		                <div className='nav_path_cont col-11'>
 		                 <span>
 		                 	<Link to={'/'} className='nav_path_home'>
-		                  	Acasa
+		                  	Acasă
 		                  	</Link>
 		                  	/ 
-		                  	Cosul tau
+		                  	Coșul tău
 		                  </span>
 		                </div>    
 	                </div>
@@ -316,18 +319,20 @@ getTotalCartSaveUpPercent() {
 									{/* Empty cart box message */}
 									<div className='row justify-content-center'>
 										<div className='empty_cart_msg_box'>
-											<span className='cart_title_font'><i className='fas fa-shopping-bag'></i>Coșul tau esti gol</span>
-											<span className='cart_subtitle_font'>Vizualizează oferta noastră si vezi ce iti place :)</span>
-											<Link to={'/'} className='cart_back_btn'>Pagina principală</Link>
+											 
+											  <span className='cart_title_font'><i className='fas fa-shopping-bag'></i>Coșul tău este gol</span>
+											  <span className='cart_subtitle_font'>Vizualizează oferta noastră și vezi ce îți place :)</span>
+											  <Link to={'/'} className='cart_back_btn'>Pagina principală</Link>
+											 
 										</div>
 									</div>
 									{/* Down info */}
 									<div className='row justify-content-center'>
 										<div className='empty_cart_info col-10'>
-											<span className='cart_title_font_two'>Iti lipsesc produsele din cos ?</span>
+											<span className='cart_title_font_two'>Îți lipsesc produsele din coș ?</span>
 											<span className='cart_subtitle_font'>Asigură-te că ești conectat la cont.</span>
 											<span className='cart_subtitle_font'>Conectarea va sincroniza coșul de cumpărături cu celelalte device-uri.</span>
-											<span className='cart_subtitle_font'>Pentru clienții neconectați, produsele vor rămâne în coș zece zile.</span>
+											<span className='cart_subtitle_font'>Pentru clienții neconectați, produsele vor rămâne în coș o săptămână.</span>
 										</div>
 									</div>
 								</div>
@@ -359,9 +364,9 @@ getTotalCartSaveUpPercent() {
 																			   onChange  = {(e) => this.handleProductQuantityChange(e,cartProduct.id)}
 																			   maxLength = '2'/>
 																	</div>
-																	<span className='cprod_inf_refresh'><span onClick={() => { window.location.reload() }}>Actualizeaza</span></span>
+																	<span className='cprod_inf_refresh'><span onClick={() => { window.location.reload() }}>Actualizează</span></span>
 																	<span className='cprod_inf_available'><i className='far fa-check-circle'></i> Produs disponsibil</span>
-																	<span className='cprod_inf_size'>Marime: <span>{cartProduct.selectedSize}</span></span>
+																	<span className='cprod_inf_size'>Mărime: <span>{cartProduct.selectedSize}</span></span>
 																	<span className='cprod_inf_color'>Culoare: <span style={{"backgroundColor": cartProduct.color}}></span></span>
 																</div>
 															</div>
@@ -392,11 +397,11 @@ getTotalCartSaveUpPercent() {
 																):(
 																	<i className='far fa-heart'></i>
 																)}
-																Adauga la wishlist
+																Adaugă la wishlist
 															</span>
 															<span className='card_prod_act card_prod_remove' onClick={(e)=>this.cartRemoveProduct(e,cartProduct.id)}>
 															 	<i className='far fa-times-circle'></i>
-																Sterge
+																Șterge
 															</span>
 														</div>
 													</div>
@@ -420,7 +425,7 @@ getTotalCartSaveUpPercent() {
 															<input type='text' placeholder='Cod promotional'/>
 														</span>
 														<div className='row justify-content-center'>
-															<span className='cart_bottom_applycpn'>Aplica</span>
+															<span className='cart_bottom_applycpn'>Aplică</span>
 														</div>
 													</div>
 												</div>
@@ -431,7 +436,7 @@ getTotalCartSaveUpPercent() {
 														  <path fillRule="evenodd" d="M5.854 4.646a.5.5 0 010 .708L3.207 8l2.647 2.646a.5.5 0 01-.708.708l-3-3a.5.5 0 010-.708l3-3a.5.5 0 01.708 0z" clipRule="evenodd"/>
 														  <path fillRule="evenodd" d="M2.5 8a.5.5 0 01.5-.5h10.5a.5.5 0 010 1H3a.5.5 0 01-.5-.5z" clipRule="evenodd"/>
 														</svg>
-														Inapoi la cumparaturi
+														Înapoi la cumpărături
 													</Link>
 												</div>
 											</div>
@@ -440,7 +445,7 @@ getTotalCartSaveUpPercent() {
 													{/* Cart bottom totals */}
 													<div className='cart_bottom_totals'>
 															<div className='cart_subtotal cart_sbt'>
-																<span className='cart_label'>Suma</span>
+																<span className='cart_label'>Sumă</span>
 																<span className='cart_value'>{this.getTotalCartAmount()}</span>
 															</div>
 															<div className='cart_deliver cart_sbt'>
@@ -451,10 +456,12 @@ getTotalCartSaveUpPercent() {
 																<span className='cart_label'>Total</span>
 																<span className='cart_value'>{this.getTotalCartAmount()}</span>
 															</div>
+															{saveUp !== 0 && (
 															<div className='cart_savings cart_sbt'>
-																<span className='cart_label'>Economisesti</span>
+																<span className='cart_label'>Economisești</span>
 																<span className='cart_value'>{this.getTotalCartSaveUpPercent()} lei</span>
 															</div>
+															)}
 															<Link to={'/checkout'} className='cart_totals_proceed_btn' onClick={() => { this.props.setCartIsLoaded({ cartIsLoaded: true }) }}>Mergi la casa</Link>
 															<span className='cart_totals_underbtn_note'>* 30 de zile pentru returnare gratuită</span>
 													</div>
@@ -466,10 +473,10 @@ getTotalCartSaveUpPercent() {
 								{/* Bottom info note */}
 								<div className='row justify-content-center'>
 									<div className='cart_bottom_info col-10'>
-										<span className='cart_bottom_info_title'>Probleme in procesarea produselor?</span>
+										<span className='cart_bottom_info_title'>Probleme în procesarea produselor?</span>
 										<span className='cart_bottom_info_subtitle'>Trimite-ne un email la 
 											<a href='mailto:contact@thsirtdesign.ro'> contact@thsirtdesign.ro </a>
-											si iti vom raspunde in maxim 24h.
+											și îți vom răspunde în maxim 24h.
 										</span>
 									</div>
 								</div>

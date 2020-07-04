@@ -1,32 +1,38 @@
-import React from 'react';
+import   React                 from 'react';
+import   AccountMenu           from './AccountMenu';
+import { Link,Redirect }       from 'react-router-dom'
+import { connect }             from "react-redux";
 import '../../css/Account.css';
-import { Link,Redirect               } from 'react-router-dom'
-import AccountMenu from './AccountMenu';
-import { connect }            from "react-redux";
-
-
 
 
 
 const mapStateToProps = state => {
   return {  
-  		  userIsSignedIn   : state.userIsSignedIn,
-  		  userDbInfo:  state.userDbInfo 
+  		  userIsSignedIn : state.userIsSignedIn,
+  		  userDbInfo     : state.userDbInfo 
         };
 };
 
 class connectedMyOrders extends React.Component {
 
 	state = {
-			componentIsLoading: true,
-			ordersEmpty: false,
+			componentIsLoading : true,
+			ordersEmpty        : false,
 	}
 
 
 componentDidMount() {
-	
+	// Display loading effect for 1 sec	
 	setTimeout(() => { this.setState({ componentIsLoading: false })},1000)
+	// Scoll to top on every mount
+	window.scrollTo(0, 0);
 }
+
+
+
+
+
+
 
 	render() {
 		
@@ -43,6 +49,8 @@ componentDidMount() {
 
 		// Set document title if user is logged in
 		document.title = 'Comenzile mele - Tshirt Design';
+
+
 		return (
 				<div>
 					{/* Navigation */}
@@ -50,7 +58,7 @@ componentDidMount() {
 		                <div className='nav_path_cont col-11'>
 		                 <span>
 		                 	<Link to={'/'} className='nav_path_home'>
-		                  	Acasa 
+		                  	Acasă 
 		                  	</Link>
 		                  	/ 
 		                  	Contul meu
@@ -91,7 +99,7 @@ componentDidMount() {
 												{this.props.userDbInfo.data.myorders === undefined || !this.props.userDbInfo.data.myorders.length > 0 ? (
 												<div className='acc_myorders_empty col-12'>
 													<span className='acc_myorders_empty_title'>Nu ai plasat nicio comandă</span>
-													<Link to={'/'}>Continuati cumparaturile</Link>
+													<Link to={'/'}>Continuați cumpărăturile</Link>
 												</div>
 												) : (
 												<div className='acc_myorders_wrap col-12'>
@@ -103,7 +111,7 @@ componentDidMount() {
 																<Link to={`/productinfo/${order.productId}`} className='acc_ord_prodinfo_title'>{order.name}</Link> 
 																<span className='acc_ord_prodinfo_delivered'>Comandat pe: <span>{order.completedOrderDate}, ora: {order.completedOrderHour}</span></span>
 																<span className='acc_ord_prodinfo_delivered'>Id produs: <span>{order.productId}</span></span>
-																<span className='acc_ord_prodinfo_delivered'>Id tranzactie: <span>{order.transactionId}</span></span>
+																<span className='acc_ord_prodinfo_delivered'>Id tranzacție: <span>{order.transactionId}</span></span>
 																<span className='acc_ord_prodinfo_price'>{order.totalAmount} lei <span>( {order.quantity} articole )</span></span>
 															</span>
 														</div>

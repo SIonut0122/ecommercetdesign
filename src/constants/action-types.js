@@ -25,6 +25,7 @@ export const USER_SIGNED_IN = 'USER_SIGNED_IN';
 
   export const MEN_PRODUCTS_DB = 'MEN_PRODUCTS_DB';
   export const WOMEN_PRODUCTS_DB = 'WOMEN_PRODUCTS_DB';
+     export const CHILDREN_PRODUCTS_DB = 'CHILDREN_PRODUCTS_DB';
    export const NEW_PRODUCTS_DB = 'NEW_PRODUCTS_DB';
  
  

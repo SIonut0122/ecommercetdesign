@@ -100,16 +100,17 @@ $greenColor: #289b38;
 	min-height: 400px;
 	border:1px solid $grayColorBorder;
 	margin-top:30px;
-	padding:50px 0 50px 0;
+	padding:50px auto 50px auto;
 }
 .empty_cart_msg_box {
 	position: relative;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	width: 380px;
+	width: 370px;
 	min-height: 150px;
 	padding: 5px;
+	margin-top:30px;
  	
 }
 .cart_title_font {
@@ -122,7 +123,7 @@ $greenColor: #289b38;
 .cart_subtitle_font {
 	font-size: 13.5px;
 	margin-top:5px;
-	width: 100%;
+	min-width: 100%;
 	text-align: center;
 }
 .cart_back_btn {
@@ -153,7 +154,7 @@ $greenColor: #289b38;
 
 .empty_cart_info {
 	min-height: 40px;
-	margin-top:30px;
+	margin:30px 0 30px 0;
 	border-top:1px solid $grayColorBorder;
 	display: flex;
 	flex-direction: column;

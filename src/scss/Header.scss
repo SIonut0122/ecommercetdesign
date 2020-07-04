@@ -198,6 +198,8 @@ $blueLightColor: #007bff;
 	min-height: 55px;
 	margin-bottom: 5px;
 
+ 
+
 }
 
 
@@ -205,14 +207,21 @@ $blueLightColor: #007bff;
 
 .hsc_col_logo {
 	display: inline-block;
+	margin-top:3px;
 }
 
 .hsc_col_logo_img {
-	border: solid $grayColorInside;
+ 
 	padding: 10px;
 	border-radius: 5px;
-	margin: 8px 0 3px 14px;
+	margin: 0 0 0 20px;
 	font-weight: bold;
+	width: 50px;
+	height: 55px;
+	background-image: url('../images/tlogo.png');
+	background-size: cover;
+	background-repeat: no-repeat;
+	z-index: 2;
 }
 
 .hsc_col_logo_hambmenu {
@@ -268,7 +277,9 @@ $blueLightColor: #007bff;
 	min-width: auto;
 	height: 55px;
 	padding: 0 30px 0 20px;
-	margin-right: 20px;
+	margin-right: 5px;
+
+
 }
 
 
@@ -347,7 +358,7 @@ $blueLightColor: #007bff;
 	font-weight: bold;
 	text-transform: uppercase;
 	margin:4.5px 0 0 0;
-	cursor: pointer;
+	cursor: pointer !important;
 	color: #fff;	 
 	height: 40px;
 	width: 95px;
@@ -359,6 +370,7 @@ $blueLightColor: #007bff;
     transform: skewX(-20deg);
     transition: 0.2s ease-in;
     border-right: 1px solid $grayColorBorder;
+    @include disable-select;
 
     &:hover {
 	text-decoration: none;
@@ -675,17 +687,25 @@ $blueLightColor: #007bff;
 	}
 	/* Header account icons */
 	.hsc_col_acc {
-		height: 48px;
+		min-height: 35px;
+ 
 		background-color: $blackColor;
 		margin-top: 8px;
-	 
+ 		padding: 10px;
+	  
 
 	}
 	.hsccol_acc_cont {
-		height: 100%;
-		margin-top: 10px;
+		height: auto;
+ 
+
 	 
 	}
+
+ 
+
+ 
+
 	.hsc_col_acc .hsccol_acc_icon {
 		margin: 0 6px 0 6px;
 		width: 33px;
@@ -697,10 +717,11 @@ $blueLightColor: #007bff;
 		top: -7px;
 		right: -11px;
 		width: 20px;
-		height: 18px;
-		line-height: 18px;
-		font-size: 8px;
+		height: 20px;
+		line-height: 16px;
+		font-size: 14px;
 		z-index: 2;
+
 	}
 
 	/* Nav menu div */

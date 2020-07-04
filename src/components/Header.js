@@ -1,18 +1,27 @@
-import React from 'react';
+import   React                  from 'react';
+import { connect             }  from "react-redux";
+import { client, q           }  from '../fauna/db';
+import { Link, Redirect      }  from 'react-router-dom'
+import { setSearchInput,
+		 setOpenMobileSearch, 
+		 setOpenMediumSearch,
+		 setSelectedProducts,
+		 setUserIsSignedIn,
+		 setUserInfo,
+		 setWishList, setCart,
+		 setSignedWithGoogle,
+		 setUserDbInfo        } from '../actions'; 
+import   getAllUsers            from '../fauna/getAllUsers'
+import   womenProductsData      from '../data/women';
+import   menProductsData        from '../data/men';
+import   childrenProductsData   from '../data/children';
 import '../css/Header.css';
-import { connect }            from "react-redux";
-import { Link, Redirect               } from 'react-router-dom'
-import { setSearchInput,setOpenMobileSearch, 
-		 setOpenMediumSearch,setSelectedProducts,
-		 setUserIsSignedIn,setUserInfo,
-		 setWishList, setCart,setSignedWithGoogle,
-		 setUserDbInfo } from '../actions';
- 
- import getAllUsers from '../fauna/getAllUsers'
- import { client, q } from '../fauna/db';
 
- import womenProductsData from '../data/women';
-  import menProductsData from '../data/men';
+
+
+
+
+
 
 const mapStateToProps = state => {
   return {  
@@ -74,15 +83,17 @@ componentDidMount() {
 	// Call function to initiate user session
 	this.authListener();
 
+
+
 /*// SEND DATA TO DB
 	client.query(
   q.Map(
-      menProductsData,
+      childrenProductsData,
     q.Lambda(
-      'men_products',
+      'children_products',
       q.Create(
-        q.Collection('men'),
-        {  data: q.Var('men_products') },
+        q.Collection('children'),
+        {  data: q.Var('children_products') },
       )
     ),
   )
@@ -420,9 +431,7 @@ handleNavMenuLinkClick() {
 									<div className='hsc_col_logo col-12 col-sm-3 col-lg-2 col-xl-2 hsc_one_col'>
 										<div className='row'>
 											<span className='hsc_col_logo_hambmenu' onClick={() => this.handleMobileMenu()}><i className='fas fa-bars'></i></span>
-											<span className='hsc_col_logo_img'>
-												T-SHIRT
-											</span>
+											<Link to={'/'} className='hsc_col_logo_img'></Link>
 											<i className='d-block d-sm-none fas fa-search hsc_col_search_mobile' onClick={() => this.openMobileSearch()}></i>
 										</div>
 									</div>
@@ -460,10 +469,10 @@ handleNavMenuLinkClick() {
 						<div className='row'>
 							<div className='head_nav_menu col-12'>
 								<div className='row justify-content-sm-start justify-content-md-center'>
-									<Link to={'/products/men'}      className='nav_menu_link nav_menu_men'><span>Barbati</span></Link>
+									<Link to={'/products/men'}      className='nav_menu_link nav_menu_men'><span>Bărbați</span></Link>
 									<Link to={'/products/women'}    className='nav_menu_link nav_menu_women'><span>Femei</span></Link>
-									<Link to={'/products/children'} className='nav_menu_link nav_menu_custom'><span>Copii</span></Link>
-									<Link to={'/products/new'}      className='nav_menu_link nav_menu_new'><span>Noutati</span></Link>
+									<Link to={'/products/children'} className='nav_menu_link nav_menu_children'><span>Copii</span></Link>
+									<Link to={'/products/new'}      className='nav_menu_link nav_menu_new'><span>Noutăți</span></Link>
 									<Link to={'/contact'}           className='nav_menu_link nav_menu_contact nav_mlink_men'><span>Contact</span></Link>
 
 									{/* Search bar on large breakpoint */}
@@ -512,12 +521,12 @@ handleNavMenuLinkClick() {
 									{!this.props.userIsSignedIn ? (
 									<div className='user_dropdown_menu_notsignedin'>
 										<span className='udrpmenu_nots_title'>Ai cont deja?</span>
-										<span className='udrpmenu_nots_subtitle'>Conecteaza-te pentru a-ti putea gestiona comenzile cu usurinta.</span>
-										<Link to={'/login'} className='udrpmenu_nots_btn'>Intra in cont</Link>
+										<span className='udrpmenu_nots_subtitle'>Conectează-te pentru a-ți putea gestiona comenzile cu usurință.</span>
+										<Link to={'/login'} className='udrpmenu_nots_btn'>Intră în cont</Link>
 
-										<span className='udrpmenu_nots_title udrpmenu_nots_firstvisit '>Prima vizita?</span>
-										<span className='udrpmenu_nots_subtitle'>Inregistreaza-te si profita de avantajele contului.</span>
-										<Link to={'/register'} className='udrpmenu_nots_btn udrpmenu_nots_regbtn'>Inregistreaza-te</Link>
+										<span className='udrpmenu_nots_title udrpmenu_nots_firstvisit '>Prima vizită?</span>
+										<span className='udrpmenu_nots_subtitle'>Înregistrează-te și profită de avantajele contului.</span>
+										<Link to={'/register'} className='udrpmenu_nots_btn udrpmenu_nots_regbtn'>Înregistrează-te</Link>
 									</div>
 									):(
 									<div className='user_dropdown_menu_signedin'>
@@ -547,12 +556,14 @@ handleNavMenuLinkClick() {
 						{this.state.openMobileMenu && (
 						<div className='row'>
 							<div className='head_mob_menu col-12'>
-								<Link to={'/products/men'}       className='h_mob_menu_btn' onClick={()=>this.handleMobileMenu()}>Barbati</Link>
+								<Link to={'/products/men'}       className='h_mob_menu_btn' onClick={()=>this.handleMobileMenu()}>Bărbați</Link>
 								<Link to={'/products/women'}     className='h_mob_menu_btn' onClick={()=>this.handleMobileMenu()}>Femei</Link>
 								<Link to={'/products/childrens'} className='h_mob_menu_btn' onClick={()=>this.handleMobileMenu()}>Copii</Link>
 								<Link to={'/products/customize'} className='h_mob_menu_btn' onClick={()=>this.handleMobileMenu()}>Customize</Link>
 								<Link to={'/products/contact'}   className='h_mob_menu_btn' style={{borderBottom:'1px solid transparent'}} onClick={()=>this.handleMobileMenu()}>Contact</Link>
+								{this.props.userIsSignedIn && this.props.userDbInfo !== null && this.props.userDbInfo.data.access_granted === 'mod' && (
 								<Link to={'/dashboard'}          className='h_mob_menu_btn hmob_menu_cplink' onClick={()=>this.handleMobileMenu()}>Panou de control</Link>
+								)}
 							</div>
 						</div>
 						)}

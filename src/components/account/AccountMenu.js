@@ -35,7 +35,7 @@ const AccountMenu = (props) => {
 						<div className='acc_menu_info'>
 							<span className='acc_menu_info_title'>Contact <span>Serviciul clienți</span></span>
 							<i className='fas fa-mobile-alt'></i>
-							<span className='acc_menu_info_schd'>Lu-Vi 10:00-17:00</span>
+							<span className='acc_menu_info_schd'>Lu-Vi 09:00-18:00</span>
 							<span className='acc_menu_info_phone'>0727 464 5671</span>
 						</div>
 						

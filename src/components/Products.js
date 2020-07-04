@@ -33,12 +33,13 @@ class connectedProducts extends React.Component {
   constructor(props) {
     super(props)
       this.state = {
-         filterCategory   : [{catRo: 'Barbati',catEng: 'men'},{catRo: 'Femei',catEng: 'women'},{catRo: 'Copii',catEng: 'children'}],
-         filterColors     : [{colorRo:'Alb',colorEng:'white'},{colorRo:'Negru',colorEng:'black'},{colorRo:'Albastru',colorEng:'blue'},{colorRo:'Rosu',colorEng:'red'},{colorRo:'Verde',colorEng:'green'},{colorRo:'Galben',colorEng:'yellow'},{colorRo:'Maro',colorEng:'brown'},{colorRo:'Mov',colorEng:'purple'},{colorRo:'Roz',colorEng:'pink'},{colorRo:'Argintiu',colorEng:'silver'},{colorRo:'Gri',colorEng:'gray'},{colorRo:'Auriu',colorEng:'gold'},{colorRo:'Azur',colorEng:'azure'},{colorRo:'Bleumarin',colorEng:'navy'},{colorRo:'Kaki',colorEng:'khaki'},{colorRo:'Verde deschis',colorEng:'lightgreen'},{colorRo:'Coral',colorEng:'coral'},{colorRo:'Fuchsia',colorEng:'fuchsia'}],
-         filterSize       : ['XS','S','M','L','XL','XXL','3XL'],
-         filterMaterial   : [{matEng: 'cotton',matRo: 'Bumbac'},{matEng: 'polyester',matRo: 'Poliester'},{matEng: 'organic',matRo: 'Organic'}],
-         filterNeckType   : [{neckTypeEng: 'roundneck', neckTypeRo: 'Guler rotund'},{neckTypeEng: 'vneck', neckTypeRo: 'decolteu in V'},{neckTypeEng: 'withcollar', neckTypeRo: 'Cu guler'},{neckTypeEng: 'hooded', neckTypeRo: 'Cu glugă'}],
-         filterPrint      : [{printEng: 'message', printRo: 'Cu mesaj'},{printEng: 'graphic', printRo: 'Grafic'}],
+         filterChildrenCategory : [{catRo: 'Baieti',catEng: 'boys'},{catRo: 'Fete',catEng: 'girls'},{catRo: 'Unisex',catEng: 'unisex'}],
+         filterCategory         : [{catRo: 'Barbati',catEng: 'men'},{catRo: 'Femei',catEng: 'women'},{catRo: 'Copii',catEng: 'children'}],
+         filterColors           : [{colorRo:'Alb',colorEng:'white'},{colorRo:'Negru',colorEng:'black'},{colorRo:'Albastru',colorEng:'blue'},{colorRo:'Rosu',colorEng:'red'},{colorRo:'Verde',colorEng:'green'},{colorRo:'Galben',colorEng:'yellow'},{colorRo:'Maro',colorEng:'brown'},{colorRo:'Mov',colorEng:'purple'},{colorRo:'Roz',colorEng:'pink'},{colorRo:'Argintiu',colorEng:'silver'},{colorRo:'Gri',colorEng:'gray'},{colorRo:'Auriu',colorEng:'gold'},{colorRo:'Azur',colorEng:'azure'},{colorRo:'Bleumarin',colorEng:'navy'},{colorRo:'Kaki',colorEng:'khaki'},{colorRo:'Verde deschis',colorEng:'lightgreen'},{colorRo:'Coral',colorEng:'coral'},{colorRo:'Fuchsia',colorEng:'fuchsia'}],
+         filterSize             : ['XS','S','M','L','XL','XXL','3XL'],
+         filterMaterial         : [{matEng: 'cotton',matRo: 'Bumbac'},{matEng: 'polyester',matRo: 'Poliester'},{matEng: 'organic',matRo: 'Organic'}],
+         filterNeckType         : [{neckTypeEng: 'roundneck', neckTypeRo: 'Guler rotund'},{neckTypeEng: 'vneck', neckTypeRo: 'decolteu in V'},{neckTypeEng: 'withcollar', neckTypeRo: 'Cu guler'},{neckTypeEng: 'hooded', neckTypeRo: 'Cu glugă'}],
+         filterPrint            : [{printEng: 'message', printRo: 'Cu mesaj'},{printEng: 'graphic', printRo: 'Grafic'}],
 
          filteredTerms    : [],                          // Collected filtered terms - to be displayed filters with map (Active filters: color,gender,category,etc.)
          filterIsLoading  : false,                       // When filter was checked/unchecked, display loading products filter
@@ -49,6 +50,7 @@ class connectedProducts extends React.Component {
 
          passingTags: {
            category: { men: false, women: false, children: false },
+           subcategory: { boys: false, girls: false, unisex: false },
            price:    { lowHigh: false, highLow: false },
            newer:    { newer: false},
            color:    { white: false, black: false, brown: false, yellow: false, pink: false, purple: false, red: false, green: false, silver: false, gray: false, gold: false, orange: false, navy: false, khaki: false, lightgreen: false, coral: false, fuchsia: false },
@@ -174,7 +176,15 @@ displayProductFilterNumber(e,type) {
         }
     }
     return n > 0 ? '('+n+')' : '';
-  }
+  } else if(type === 'subcategory') {
+    for(let c in products) {
+        if(products[c].subcategory === e) {
+          n++;
+        }
+    }
+    return n > 0 ? '('+n+')' : '';
+  } 
+
 }
 
 setFilter(value, filterProp, roValueName) {
@@ -218,27 +228,31 @@ setFilter(value, filterProp, roValueName) {
       this.props.setFilteredTerms({ propsFilteredTerms: filteredTerms }) 
       this.props.setPassingTags({ propsPassingTags: this.state.passingTags })
       this.setState({ filterIsLoading: false })
-    },1500);  
+    },700);  
 }
 
 
 
 filteredCollected = () => {
     const collectedTrueKeys = {
-      category  : [],
-      colors    : [],
-      material  : [],
-      size      : [],
-      necktype  : [],
-      print     : []
+      category    : [],
+      subcategory : [],
+      colors      : [],
+      material    : [],
+      size        : [],
+      necktype    : [],
+      print       : []
     };
 
       // Loop through clicked boolean filters and add to collectedTrueKeys object any true value
 
-      const { category, color, material, size, necktype, print } = this.props.propsPassingTags;
+      const { category, subcategory, color, material, size, necktype, print } = this.props.propsPassingTags;
 
       for (let categoryKey in category) {
         if (category[categoryKey]) collectedTrueKeys.category.push(categoryKey);
+      }
+      for (let subcategoryKey in subcategory) {
+        if (subcategory[subcategoryKey]) collectedTrueKeys.subcategory.push(subcategoryKey);
       }
       for (let colorKey in color) {
         if (color[colorKey]) collectedTrueKeys.colors.push(colorKey);
@@ -386,6 +400,14 @@ toggleDisplayFilter(e,filterTitle) {
     break;
     case 'Imprimeu': 
      document.querySelector('.dprodc_wfiltname_print').classList.toggle('filter_panel_hide');
+     e.target.classList.toggle('img_fil_arrow_active');
+    break;
+    case 'prodCategory': 
+     document.querySelector('.dprodc_wfiltname_prodCategory').classList.toggle('filter_panel_hide');
+     e.target.classList.toggle('img_fil_arrow_active');
+    break;
+    case 'childrenCat': 
+     document.querySelector('.dprodc_wfiltname_childcategory').classList.toggle('filter_panel_hide');
      e.target.classList.toggle('img_fil_arrow_active');
     break;
     default:
@@ -574,10 +596,10 @@ renderFilterColors() {
 
     if(propsPassingTags.price.lowHigh) {
       filteredResultedProducts.sort((x, y) => x.price - y.price);
-      sortByName = 'Pret crescator';
+      sortByName = 'Preț crescător';
     } else if(propsPassingTags.price.highLow) {
       filteredResultedProducts.sort( (x, y) => y.price - x.price);
-      sortByName = 'Pret descrescator';
+      sortByName = 'Preț descrescător';
     } else if(propsPassingTags.newer.newer) {
       filteredResultedProducts.sort((a, b) => b.new - a.new);
       sortByName = 'Cel mai nou';
@@ -603,7 +625,7 @@ renderFilterColors() {
                     <div className='nav_path_cont nav_viewprod_path col-12'>
                      <span>
                       <Link to={'/'} className='nav_path_home'>
-                        Acasa 
+                        Acasă 
                         </Link>
                         /  
                         {this.state.propsPathName}
@@ -648,7 +670,7 @@ renderFilterColors() {
                             <div className='row'>
                               <div className='h_orderby_button ml-auto' onClick={(e)=>this.handleOpenSortBy(e)}>
                                 
-                                <span className='horderby_txt'>Sortare dupa
+                                <span className='horderby_txt'>Sortare după
                                   {/* Down arrow */}
                                   <svg className="bi bi-caret-down-fill sortby_caret_down" width="14px" height="14px" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 01.753 1.659l-4.796 5.48a1 1 0 01-1.506 0z"/>
@@ -666,12 +688,12 @@ renderFilterColors() {
                             <div className='row justify-content-center'>
                               <label className="custom-control custom-radio" onChange={(e)=>this.sortBy('price','lowHigh','highLow')}>
                                 <input type="radio" name="myfilter_radio" defaultChecked={this.props.propsPassingTags.price.lowHigh ? true : false} className="sortby_prop custom-control-input"></input>
-                                <div className="custom-control-label">Pret crescator </div>
+                                <div className="custom-control-label">Preț crescător </div>
                               </label>
 
                               <label className="custom-control custom-radio" onChange={(e)=>this.sortBy('price','highLow','lowHigh')}>
                                 <input type="radio" name="myfilter_radio" defaultChecked={this.props.propsPassingTags.price.highLow ? true : false} className="sortby_prop custom-control-input"></input>
-                                <div className="custom-control-label">Pret descrescator</div>
+                                <div className="custom-control-label">Preț descrescător</div>
                               </label>
 
                               <label className="custom-control custom-radio" onChange={(e)=>this.sortBy('newer')}>
@@ -681,7 +703,7 @@ renderFilterColors() {
 
                               <label className="custom-control custom-radio" onChange={(e)=>this.sortBy('default')}>
                                 <input type="radio" name="myfilter_radio" defaultChecked={!this.props.propsPassingTags.price.lowHigh && !this.props.propsPassingTags.price.highLow && !this.props.propsPassingTags.newer.newer ? true : false} className="sortby_prop custom-control-input"></input>
-                                <div className="custom-control-label">Ordine implicita</div>
+                                <div className="custom-control-label">Ordine implicită</div>
                               </label>
                            </div>
                         </div>
@@ -701,7 +723,7 @@ renderFilterColors() {
                         {/* Close mobile filter */}
                         <span className='mob_prodcont_filters_close'>
                             {this.state.filteredTerms.length > 0 && (
-                            <span className='mob_prodcont_fil_results' onClick={()=>this.openMobileFilter()}>Arata produsele: {filteredResultedProducts.length}</span>
+                            <span className='mob_prodcont_fil_results' onClick={()=>this.openMobileFilter()}>Aratâ produsele: {filteredResultedProducts.length}</span>
                             )}
                             <svg class="bi bi-x" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg" onClick={()=>this.openMobileFilter()}>
                               <path fillRule="evenodd" d="M11.854 4.146a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708-.708l7-7a.5.5 0 0 1 .708 0z"/>
@@ -713,7 +735,7 @@ renderFilterColors() {
                         {sortByName.length > 0 && (
                          <div className='d_prodcont_active_filters'>
                             <span className='d_prodcont_actfil_title'>
-                              <strong>Sortare dupa</strong>
+                              <strong>Sortare după</strong>
                             </span>
                             <span className='d_pc_acfil_fil' onClick={(e) => this.sortBy('default')}>
                               <svg class="bi bi-x" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -749,8 +771,8 @@ renderFilterColors() {
                         {/* Category filter panel - Display only when searchResulted is active or newProducts component is rendered (propsPathname === ' Noutati') */}
                         {newOrSearchComponentActive && (
                           <div className='d_prodcont_filter_panel'>
-                            <span className='d_prodcont_filter_title'>Categorie <img src={filterArrow} alt='' onClick={(e)=>this.toggleDisplayFilter(e,'Culoare')}/></span>
-                              <div className='dprodcont_wrap_filter_names dprodc_wfiltname_colors'>
+                            <span className='d_prodcont_filter_title'>Categorie <img src={filterArrow} alt='' onClick={(e)=>this.toggleDisplayFilter(e,'prodCategory')}/></span>
+                              <div className='dprodcont_wrap_filter_names dprodc_wfiltname_prodCategory'>
                                {this.state.filterCategory.map((el,ind) =>
                                   <span className='d_prodcont_filter_box'>
                                     <label key={ind}  className='custom-checkbox dprod_filter_label' onChange={(e) => this.setFilter(el.catEng,'category',el.catRo)}>
@@ -766,6 +788,27 @@ renderFilterColors() {
                           </div>
                         )}
 
+                        
+                        {this.state.propsPathName === ' Tricouri copii' && (
+                          <div className='d_prodcont_filter_panel'>
+                            <span className='d_prodcont_filter_title'>Categorie <img src={filterArrow} alt='' onClick={(e)=>this.toggleDisplayFilter(e,'childrenCat')}/></span>
+                              <div className='dprodcont_wrap_filter_names dprodc_wfiltname_childcategory'>
+                               {this.state.filterChildrenCategory.map((el,ind) =>
+                                  <span className='d_prodcont_filter_box'>
+                                    <label key={ind}  className='custom-checkbox dprod_filter_label' onChange={(e) => this.setFilter(el.catEng,'subcategory',el.catRo)}>
+                                      <input className='custom-control-input d_prodcont_filter_checkbox' type='checkbox'/>
+                                      <span className='custom-control-label'>
+                                          <span>{el.catRo}</span>
+                                          <span className='prod_fil_no'>{this.displayProductFilterNumber(el.catEng,'subcategory')}</span>
+                                      </span>
+                                    </label>
+                                  </span>
+                                )}
+                              </div>
+                          </div>
+                          )}
+                         
+
 
                           {/* Color filter panel */}
                           <div className='d_prodcont_filter_panel'>
@@ -777,7 +820,7 @@ renderFilterColors() {
 
                           {/* Size filter panel */}
                           <div className='d_prodcont_filter_panel'>
-                           <span className='d_prodcont_filter_title'>Marime <img src={filterArrow} alt='' onClick={(e)=>this.toggleDisplayFilter(e,'Marime')}/></span>
+                           <span className='d_prodcont_filter_title'>Mărime <img src={filterArrow} alt='' onClick={(e)=>this.toggleDisplayFilter(e,'Marime')}/></span>
                              <div className='dprodcont_wrap_filter_names dprodc_wfiltname_size'>
                                {this.state.filterSize.map((size,ind) =>
                                   <span className='d_prodcont_filter_box'>
@@ -813,7 +856,7 @@ renderFilterColors() {
 
                           {/* Neck type filter panel */}
                            <div className='d_prodcont_filter_panel'>
-                            <span className='d_prodcont_filter_title'>Pe gat <img src={filterArrow} className='img_fil_arrow_active' alt='' onClick={(e)=>this.toggleDisplayFilter(e,'Pe gat')}/></span>
+                            <span className='d_prodcont_filter_title'>Pe gât <img src={filterArrow} className='img_fil_arrow_active' alt='' onClick={(e)=>this.toggleDisplayFilter(e,'Pe gat')}/></span>
                               <div className='dprodcont_wrap_filter_names dprodc_wfiltname_necktype filter_panel_hide'>
                                  {this.state.filterNeckType.map((necktype,ind) =>
                                   <span className='d_prodcont_filter_box'>

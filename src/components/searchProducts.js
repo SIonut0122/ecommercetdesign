@@ -3,26 +3,28 @@ import { connect            } from "react-redux";
 import Products              from './Products';
 
  
-import { setMenProductsDb, setWomenProductsDb,setSearchInput } from '../actions';
+import { setMenProductsDb, setWomenProductsDb, setChildrenProductsDb, setSearchInput } from '../actions';
 
 import getAllWomenProducts from './products/getAllWomenProducts';
 import getAllMenProducts from './products/getAllMenProducts';
-
+import getAllChildrenProducts from './products/getAllChildrenProducts';
  
 
 const mapStateToProps = state => {
   return { 
   		   menProductsDataDb   : state.menProductsDataDb,
-  		   womenProductsDataDb : state.womenProductsDataDb
+  		   womenProductsDataDb : state.womenProductsDataDb,
+  		   childrenProductsDataDb : state.childrenProductsDataDb
   		};
 };
 
 
 function mapDispatchToProps(dispatch) {
   return {  
-  			setMenProductsDb   : menProdDb => dispatch(setMenProductsDb(menProdDb)),
-  			setWomenProductsDb : womenProdDb => dispatch(setWomenProductsDb(womenProdDb)),
-  			setSearchInput      : inputValue  => dispatch(setSearchInput(inputValue))
+  			setMenProductsDb      : menProdDb => dispatch(setMenProductsDb(menProdDb)),
+  			setWomenProductsDb    : womenProdDb => dispatch(setWomenProductsDb(womenProdDb)),
+  			setChildrenProductsDb : childrenProdDb => dispatch(setChildrenProductsDb(childrenProdDb)),
+  			setSearchInput        : inputValue  => dispatch(setSearchInput(inputValue))
   		};
 }
 
@@ -35,7 +37,8 @@ class connectedSearchProducts extends React.Component {
     		searchResulted: false,
  			resultedProducts: null,
  			menProductsData: null,
- 			womenProductsData: null
+ 			womenProductsData: null,
+ 			childrenProductsData: null
     	}
 	}
 
@@ -73,27 +76,45 @@ async fetchWomenProducts() {
 		  .catch((error) => { console.log('Error while fetching data: ', error.message); this.fetchMenProducts(); })
 	}
 
-	async fetchMenProducts() {
-		// Collect all men products
-		let get = await getAllMenProducts
-		.then((resp) => {
-				// Collect inside menProductsData only menProds data
-		     	let menProductsData = [];
-		     	resp.forEach(el => menProductsData.push(el.data));
-		     	this.props.setMenProductsDb({ menProductsDataDb: menProductsData })
-		     	// Set state to concat for results
-		     	this.setState({ menProductsData })
-		     	// Call function to concat all results and display only new products
-		     	this.renderProd();
-		})
-		 // If error returned, continue displaynewresults with already fetched data
-		  .catch((error) => { console.log('Error while fetching data: ', error.message); this.renderProd();})
-	}
+async fetchMenProducts() {
+	// Collect all men products
+	let get = await getAllMenProducts
+	.then((resp) => {
+			// Collect inside menProductsData only menProds data
+	     	let menProductsData = [];
+	     	resp.forEach(el => menProductsData.push(el.data));
+	     	this.props.setMenProductsDb({ menProductsDataDb: menProductsData })
+	     	// Set state to concat for results
+	     	this.setState({ menProductsData })
+	     	
+	     	this.fetchChildrenProducts();
+	})
+	 // If error returned, continue displaynewresults with already fetched data
+	  .catch((error) => { console.log('Error while fetching data: ', error.message); this.fetchChildrenProducts()})
+}
+
+async fetchChildrenProducts() {
+	// Collect all men products
+	let get = await getAllChildrenProducts
+	.then((resp) => {
+			// Collect inside menProductsData only menProds data
+	     	let childrenProductsData = [];
+	     	resp.forEach(el => childrenProductsData.push(el.data));
+	     	this.props.setChildrenProductsDb({ childrenProductsDataDb: childrenProductsData })
+	     	// Set state to concat for results
+	     	this.setState({ childrenProductsData })
+	     	// Call function to concat all results and display only new products
+	     	this.renderProd();	     		
+
+	})
+	 // If error returned, continue displaynewresults with already fetched data
+	  .catch((error) => { console.log('Error while fetching data: ', error.message); this.renderProd();})
+}
 
 renderProd() {
 	// Concat all products data inside one array 
 	let newArray = [],
-		totalProducts = [...newArray, ...this.state.menProductsData, ...this.state.womenProductsData],
+		totalProducts = [...newArray, ...this.state.menProductsData, ...this.state.womenProductsData, ...this.state.childrenProductsData],
 		// Map through all products and search inside title if contains typed query id
 		resultedProducts = totalProducts.filter((prod) => prod.name.toLowerCase().includes(this.props.match.params.id));	 	 
       

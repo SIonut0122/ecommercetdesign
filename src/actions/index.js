@@ -16,7 +16,7 @@ import { SIGNED_WITH_GOOGLE }  from "../constants/action-types";
 import { USER_DB_INFO }  from "../constants/action-types";
 import { MEN_PRODUCTS_DB }  from "../constants/action-types";
 import { WOMEN_PRODUCTS_DB }  from "../constants/action-types";
-
+import {CHILDREN_PRODUCTS_DB }  from "../constants/action-types";
 import { NEW_PRODUCTS_DB }  from "../constants/action-types";
  
  
@@ -28,6 +28,9 @@ export function setWomenProductsDb(payload) {
 }
 export function setMenProductsDb(payload) {
   return { type: MEN_PRODUCTS_DB, payload };
+}
+export function setChildrenProductsDb(payload) {
+  return { type: CHILDREN_PRODUCTS_DB, payload };
 }
 export function setUserDbInfo(payload) {
   return { type: USER_DB_INFO, payload };

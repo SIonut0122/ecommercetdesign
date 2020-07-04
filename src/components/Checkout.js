@@ -8,17 +8,18 @@ import { v4 as uuidv4 } from 'uuid';
  import { client, q } from '../fauna/db';
 
 import { setCart,setUserDbInfo } from '../actions';
+
 import getAllWomenProducts from './products/getAllWomenProducts';
 import getAllMenProducts from './products/getAllMenProducts';
-
+import getAllChildrenProducts from './products/getAllChildrenProducts';
 
 
 const mapStateToProps = state => {
   return {  
-          cart : state.cart,
-          totalCartAmount: state.totalCartAmount,
-          cartIsLoaded: state.cartIsLoaded, // Use this to avoid accessing checkout with manually URL. If true, from cart - proceed.
-          userDbInfo:   state.userDbInfo
+          cart            : state.cart,
+          totalCartAmount : state.totalCartAmount,
+          cartIsLoaded    : state.cartIsLoaded, // Use this to avoid accessing checkout with manually URL. If true, from cart - proceed.
+          userDbInfo      : state.userDbInfo
         };
 };
 
@@ -34,45 +35,46 @@ class connectedCheckout extends React.Component {
 
 
 	state ={
-		deliveryMethodLoading: false,
-		deliveryChecked: false,
-		city: ['Judet *','Alba','Arad','Argeș','Bacău','Bihor','Bistrița-Năsăud','Botoșani','Brașov','Brăila','Buzău','Caraș-Severin','Călărași','Cluj', 'Constanța','Covasna','Dâmbovița','Dolj','Galați','Giurgiu','Gorj','Harghita','Hunedoara','Ialomița','Iași','Ilfov','Maramureș', 'Mehedinți','Mureș','Neamț','Olt','Prahova','Satu Mare','Sălaj','Sibiu','Suceava','Teleorman','Timiș','Tulcea','Vaslui','Vâlcea', 'Vrancea'],
-		courierType: '',
-		courierPrice: '',
-		cart: null,
-		chkAddressLoading: false,
 
-		addressName: '',
-		addressNameValid: false,
-		invalidNameMsg: false,
-		addressLastName: '',
-		addressLastNameValid: false,
-		invalidLastNameMsg: false,
-		addressPhone: '',
-		addressPhoneValid: false,
-		invalidPhoneMsg: false,
-		addressStreet: '',
-		addressStreetValid: false,
-		invalidStreetMsg: false,
-		addressCity: '',
-		addressCityValid: false,
-		invalidCityMsg: false,
-		addressSubCity: '',
-		addressSubCityValid: false,
-		invalidSubCityMsg: false,
-		addressAdditionalInfo: '',
-		addressInputsValid: false,
+		deliveryMethodLoading       : false,
+		deliveryChecked             : false,
+		city                        : ['Judet *','Alba','Arad','Argeș','Bacău','Bihor','Bistrița-Năsăud','Botoșani','Brașov','Brăila','Buzău','Caraș-Severin','Călărași','Cluj', 'Constanța','Covasna','Dâmbovița','Dolj','Galați','Giurgiu','Gorj','Harghita','Hunedoara','Ialomița','Iași','Ilfov','Maramureș', 'Mehedinți','Mureș','Neamț','Olt','Prahova','Satu Mare','Sălaj','Sibiu','Suceava','Teleorman','Timiș','Tulcea','Vaslui','Vâlcea', 'Vrancea'],
+		courierType                 : '',
+		courierPrice                : '',
+		cart                        : null,
+		chkAddressLoading           : false,
 
-		chkPaymentLoading:false,
-		paymentChecked: false,
-		paymentMsgError: false,
-		payementAgreeTerms: false,
-		addressAndPaymentFinished: false,
-		completedOrderDate: null,
-		completedOrderHour: null,
+		addressName                 : '',
+		addressNameValid            : false,
+		invalidNameMsg              : false,
+		addressLastName             : '',
+		addressLastNameValid        : false,
+		invalidLastNameMsg          : false,
+		addressPhone                : '',
+		addressPhoneValid           : false,
+		invalidPhoneMsg    			: false,
+		addressStreet      			: '',
+		addressStreetValid 			: false,
+		invalidStreetMsg   			: false,
+		addressCity        			: '',
+		addressCityValid   			: false,
+		invalidCityMsg              : false,
+		addressSubCity              : '',
+		addressSubCityValid         : false,
+		invalidSubCityMsg           : false,
+		addressAdditionalInfo       : '',
+		addressInputsValid          : false,
 
-		totalCartAmount: this.props.totalCartAmount,
-		totalCartAmountWithDelivery: this.props.totalCartAmount, 
+		chkPaymentLoading           :false,
+		paymentChecked              : false,
+		paymentMsgError             : false,
+		payementAgreeTerms          : false,
+		addressAndPaymentFinished   : false,
+		completedOrderDate          : null,
+		completedOrderHour          : null,
+
+		totalCartAmount             : this.props.totalCartAmount,
+		totalCartAmountWithDelivery : this.props.totalCartAmount, 
 	
 	}
 
@@ -434,37 +436,42 @@ async modifyProductsAvailableNumber(activeOrders) {
 
 			let getWomen = getAllWomenProducts
 				.then((respWomen) => {
-					// Collect all products into one array
-					let womenProductData = respWomen.map(el => el.data),
-						concat 			 = [],
-						allProducts      = [...concat,...menProductData, ...womenProductData];
+					// Collect only data without database post reference
+					let womenProductData = respWomen.map(el => el.data);
+					
+					let getChildren = getAllChildrenProducts
+						.then((respChildren) => {
+							// Collect only data without database post reference
+							let childrenProductData = respChildren.map(el => el.data);
+
+							let concat 		= [],
+						        allProducts = [...concat,...menProductData, ...womenProductData, ...childrenProductData];
 						
-						// Map through user's orders
-						for(let c in activeOrders) {
-							// Search inside allproducts for the matching product to get updated data
-							let getRefId = allProducts.forEach(el => {
-								if(activeOrders[c].orderedProductRefId === el.refId) {
-									// If product match with client's order id, update ordered product 'availableProductNo' from database
-										// availableProductNo product minus user's ordered product quantity
-											// In this way, every database availableProductNo will be recalculated depending of user's product ordered
-									 client.query(
-									  q.Update(
-									    q.Ref(q.Collection(el.category), el.refId),
-									    { data: { availableProductNo: el.availableProductNo - activeOrders[c].quantity } },
-									  )
-									)
-									.then((updated) => console.log(''))
-									.catch((err) => console.log('EROARE ACI'))
+							// Map through user's orders
+							for(let c in activeOrders) {
+								// Search inside allproducts for the matching product to get updated data
+								let getRefId = allProducts.forEach(el => {
+									if(activeOrders[c].orderedProductRefId === el.refId) {
+										// If product match with client's order id, update ordered product 'availableProductNo' from database
+											// availableProductNo product minus user's ordered product quantity
+												// In this way, every database availableProductNo will be recalculated depending of user's product ordered
+										 client.query(
+										  q.Update(
+										    q.Ref(q.Collection(el.category), el.refId),
+										    { data: { availableProductNo: el.availableProductNo - activeOrders[c].quantity } },
+										  )
+										)
+										.then((updated) => console.log(''))
+										.catch((err) => console.log('EROARE ACI'))
 
-								}
-							})
-						}
-						// Payment loading modal off & confirm state (addressAndPaymentFinished) validated
-						this.setState({chkPaymentLoading: false, addressAndPaymentFinished: true })
-
+									}
+								})
+							}
+							// Payment loading modal off & confirm state (addressAndPaymentFinished) validated
+							this.setState({chkPaymentLoading: false, addressAndPaymentFinished: true })
+						})
 				})
 		})
-
 }
 
 
@@ -538,7 +545,7 @@ fillAddressDelivery() {
 		}
 		if(this.state.cart === null) {
 			return (
-					<span>Loading...</span>
+					<span>Încărcare ...</span>
 				)
 		}
 		// Style for checkout header steps
@@ -560,23 +567,23 @@ fillAddressDelivery() {
 								<div className='checkout_wrap_steps col-12 col-md-9'>
 									<div className='row  justify-content-center'>
 										<div className='chk_step_box'>
-											<span className='chkstep_icon' style={this.state.deliveryChecked ? stepCheckedIcon : stepUncheckedIcon}>1</span>
-											<span className='chkstep_txt'  style={this.state.deliveryChecked ? stepCheckedText : stepUncheckedText}>Livrare</span>
+											<span className='chkstep_icon' style={this.state.deliveryChecked           ? stepCheckedIcon      : stepUncheckedIcon}>1</span>
+											<span className='chkstep_txt'  style={this.state.deliveryChecked           ? stepCheckedText      : stepUncheckedText}>Livrare</span>
 										</div>
-										<span className='chk_separator'    style={this.state.deliveryChecked ? stepCheckedSeparator : stepUncheckedSeparator}></span>
+										<span className='chk_separator'    style={this.state.deliveryChecked           ? stepCheckedSeparator : stepUncheckedSeparator}></span>
 										 <div className='chk_step_box'>
-											<span className='chkstep_icon' style={this.state.addressInputsValid ? stepCheckedIcon : stepUncheckedIcon}>2</span>
-											<span className='chkstep_txt'  style={this.state.addressInputsValid ? stepCheckedText : stepUncheckedText}>Adresa</span>
+											<span className='chkstep_icon' style={this.state.addressInputsValid        ? stepCheckedIcon      : stepUncheckedIcon}>2</span>
+											<span className='chkstep_txt'  style={this.state.addressInputsValid        ? stepCheckedText      : stepUncheckedText}>Adresa</span>
 										</div>
-										<span className='chk_separator'    style={this.state.addressInputsValid ? stepCheckedSeparator : stepUncheckedSeparator}></span>
+										<span className='chk_separator'    style={this.state.addressInputsValid        ? stepCheckedSeparator : stepUncheckedSeparator}></span>
 										 <div className='chk_step_box'>
-											<span className='chkstep_icon' style={this.state.addressAndPaymentFinished ? stepCheckedIcon : stepUncheckedIcon}>3</span>
-											<span className='chkstep_txt'  style={this.state.addressAndPaymentFinished ? stepCheckedText : stepUncheckedText}>Plata</span>
+											<span className='chkstep_icon' style={this.state.addressAndPaymentFinished ? stepCheckedIcon      : stepUncheckedIcon}>3</span>
+											<span className='chkstep_txt'  style={this.state.addressAndPaymentFinished ? stepCheckedText      : stepUncheckedText}>Plata</span>
 										</div>
 										<span className='chk_separator'    style={this.state.addressAndPaymentFinished ? stepCheckedSeparator : stepUncheckedSeparator}></span>
 										 <div className='chk_step_box'>
-											<span className='chkstep_icon' style={this.state.addressAndPaymentFinished ? stepCheckedIcon : stepUncheckedIcon}>4</span>
-											<span className='chkstep_txt'  style={this.state.addressAndPaymentFinished ? stepCheckedText : stepUncheckedText}>Sumar</span>
+											<span className='chkstep_icon' style={this.state.addressAndPaymentFinished ? stepCheckedIcon      : stepUncheckedIcon}>4</span>
+											<span className='chkstep_txt'  style={this.state.addressAndPaymentFinished ? stepCheckedText      : stepUncheckedText}>Sumar</span>
 										</div>
 									
 									</div>
@@ -600,7 +607,7 @@ fillAddressDelivery() {
 																<div className='chk-wrap-lds-ring'><div></div><div></div><div></div><div></div></div>
 															</div>
 														)}
-														<span className='chk_sec_title'>Metoda de livrare</span>
+														<span className='chk_sec_title'>Metodă de livrare</span>
 
 														{/* Normal delivery */}
 														<div className='chk_deliver_select'>
@@ -613,7 +620,7 @@ fillAddressDelivery() {
 															</div>
 															<div className='chk_check_del_info'>
 																<span>Curier clasic</span>
-																<span>3-5 zile lucratoare</span>
+																<span>3-5 zile lucrătoare</span>
 																<span>9.99 RON</span>
 															</div>
 														</div>
@@ -629,7 +636,7 @@ fillAddressDelivery() {
 															</div>
 															<div className='chk_check_del_info'>
 																<span>Curier express</span>
-																<span>1-3 zile lucratoare</span>
+																<span>1-3 zile lucrătoare</span>
 																<span>14.99 RON</span>
 															</div>
 														</div>
@@ -640,7 +647,7 @@ fillAddressDelivery() {
 																  <path fillRule="evenodd" d="M5.854 4.646a.5.5 0 010 .708L3.207 8l2.647 2.646a.5.5 0 01-.708.708l-3-3a.5.5 0 010-.708l3-3a.5.5 0 01.708 0z" clipRule="evenodd"/>
 																  <path fillRule="evenodd" d="M2.5 8a.5.5 0 01.5-.5h10.5a.5.5 0 010 1H3a.5.5 0 01-.5-.5z" clipRule="evenodd"/>
 																</svg>
-																Inapoi la cos
+																Înapoi la coș
 															</Link>
 														</div>
 													</React.Fragment>
@@ -657,7 +664,7 @@ fillAddressDelivery() {
 																<div className='chk-wrap-lds-ring'><div></div><div></div><div></div><div></div></div>
 															</div>
 														)}
-														<span className='chk_sec_title'>Adresa de livrare</span>
+														<span className='chk_sec_title'>Adresă de livrare</span>
 
 														{/* LAST NAME */}
 														<span className='chk_addr_wrapinput'>
@@ -676,7 +683,7 @@ fillAddressDelivery() {
 														)}
 														{/* ADDRESS NAME */}
 														<span className='chk_addr_wrapinput'>
-															<label className='chk_inp_label'>Name *</label>
+															<label className='chk_inp_label'>Nume *</label>
 															<input type     = 'text' 
 															   className    = 'chk_addr_input'
 															   autoComplete = 'off'
@@ -691,7 +698,7 @@ fillAddressDelivery() {
 														)}
 														{/* ADDRESS PHONE */}
 														<span className='chk_addr_wrapinput'>
-															<label className='chk_inp_label'>Numar telefon *</label>
+															<label className='chk_inp_label'>Număr telefon *</label>
 															<input type     = 'text' 
 															   className    = 'chk_addr_input'
 															   autoComplete = 'off'
@@ -703,11 +710,11 @@ fillAddressDelivery() {
 															</input>
 														</span>
 														{this.state.invalidPhoneMsg && (
-														<span className='chk_addr_err_msg'>Numar telefon invalid</span>
+														<span className='chk_addr_err_msg'>Număr telefon invalid</span>
 														)}
 														{/* STREET ADDRESS  */}
 														<span className='chk_addr_wrapinput'>
-															<label className='chk_inp_label'>Adresa completa *</label>
+															<label className='chk_inp_label'>Adresă completă *</label>
 															<input type     = 'text' 
 															   className    = 'chk_addr_input'
 															   autoComplete = 'off'
@@ -717,9 +724,9 @@ fillAddressDelivery() {
 															   onBlur       = {()  => this.onAddressBlur()}>
 															</input>
 														</span>
-														<span className='chk_addr_note'>Ex: Strada, numar, bloc, apartament, cod postal</span>
+														<span className='chk_addr_note'>Ex: Stradă, număr, bloc, apartament, cod poștal</span>
 														{this.state.invalidStreetMsg && (
-														<span className='chk_addr_err_msg'>Adresa invalida</span>
+														<span className='chk_addr_err_msg'>Adresă invalidă</span>
 														)}
 														{/* ADDRESS CITY */}
 														<span className='chk_addr_wrapinput'>
@@ -735,7 +742,7 @@ fillAddressDelivery() {
 
 														{/* ADDRESS COUNTIES */}
 														<span className='chk_addr_wrapinput'>
-															<label className='chk_inp_label'>Oras / comuna / sat *</label>
+															<label className='chk_inp_label'>Oraș / comună / sat *</label>
 															<input type     = 'text' 
 															   className    = 'chk_addr_input'
 															   autoComplete = 'off'
@@ -746,11 +753,11 @@ fillAddressDelivery() {
 															</input>
 														</span>
 														{this.state.invalidSubCityMsg && (
-														<span className='chk_addr_err_msg'>Camp invalid</span>
+														<span className='chk_addr_err_msg'>Câmp invalid</span>
 														)}
 														{/* ADDRESS ADDITIONAL INFo */}
 														<span className='chk_addr_wrapinput'>
-															<label className='chk_inp_label_addinfo'>Informatii aditionale (optional)</label>
+															<label className='chk_inp_label_addinfo'>Informații adiționale (opțional)</label>
 															<input type     = 'text' 
 															   className    = 'chk_addr_input chk_add_inp_addinfo'
 															   autoComplete = 'off'
@@ -768,10 +775,10 @@ fillAddressDelivery() {
 																  <path fillRule="evenodd" d="M5.854 4.646a.5.5 0 010 .708L3.207 8l2.647 2.646a.5.5 0 01-.708.708l-3-3a.5.5 0 010-.708l3-3a.5.5 0 01.708 0z" clipRule="evenodd"/>
 																  <path fillRule="evenodd" d="M2.5 8a.5.5 0 01.5-.5h10.5a.5.5 0 010 1H3a.5.5 0 01-.5-.5z" clipRule="evenodd"/>
 																</svg>
-																Inapoi
+																Înapoi
 															</span>
 															<Link to={'/checkout'} className='addr_chk_proceed_btn' onClick={() => this.handleAddrProceedBtn()}>
-																Continua
+																Continuă
 																<svg className="bi bi-arrow-right" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
 																  <path fillRule="evenodd" d="M10.146 4.646a.5.5 0 01.708 0l3 3a.5.5 0 010 .708l-3 3a.5.5 0 01-.708-.708L12.793 8l-2.647-2.646a.5.5 0 010-.708z" clipRule="evenodd"/>
 																  <path fillRule="evenodd" d="M2 8a.5.5 0 01.5-.5H13a.5.5 0 010 1H2.5A.5.5 0 012 8z" clipRule="evenodd"/>
@@ -792,7 +799,7 @@ fillAddressDelivery() {
 															<div className='chk-wrap-lds-ring'><div></div><div></div><div></div><div></div></div>
 														</div>
 														)}
-														<span className='chk_sec_title'>Metoda de plata</span>
+														<span className='chk_sec_title'>Metodă de plată</span>
 
 														<div className='chk_cashondelivery_option'>
 															<span className='chs_cashondel_check'>
@@ -805,7 +812,7 @@ fillAddressDelivery() {
 																<img src={cashOnDeliveryIcon} alt='Cash on delivery'/>
 															</span>
 															<span className='chs_cashondel_txt'>
-																 <span>Plata la livrare</span>
+																 <span>Plată la livrare</span>
 															</span>
 														</div>
 
@@ -815,7 +822,7 @@ fillAddressDelivery() {
 															<svg className="bi bi-exclamation-circle-fill" width="1.3em" height="1.3em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
 															  <path fillRule="evenodd" d="M16 8A8 8 0 110 8a8 8 0 0116 0zM8 4a.905.905 0 00-.9.995l.35 3.507a.552.552 0 001.1 0l.35-3.507A.905.905 0 008 4zm.002 6a1 1 0 100 2 1 1 0 000-2z" clipRule="evenodd"/>
 															</svg>
-															<span>Selecteaza metoda de livrare</span>
+															<span>Selectează metoda de livrare</span>
 														</span>
 														)}
 
@@ -823,7 +830,7 @@ fillAddressDelivery() {
 															<label className='custom-control custom-checkbox'>
 															  <input className='custom-control-input' type='checkbox' onChange={(e) => { this.setState({ payementAgreeTerms: e.target.checked })}}/>
 															  <div className='custom-control-label chk_seldel_agreeterms_txt'>
-															  	Atunci când apeși pe 'Plaseaza comanda', comanda ta va fi plasată. Când comanzi de pe Tshirtdesign.ro ești de acord cu <Link to={'/terms'} target='_blank' rel='noopener noreferrer'>Termenii și Condițiile</Link>.
+															  	Atunci când apeși pe 'Plasează comanda', comanda ta va fi plasată. Când comanzi de pe Tshirtdesign.ro ești de acord cu <Link to={'/terms'} target='_blank' rel='noopener noreferrer'>Termenii și Condițiile</Link>.
 															  </div>
 															</label>
 														</div>
@@ -835,12 +842,12 @@ fillAddressDelivery() {
 																  <path fillRule="evenodd" d="M5.854 4.646a.5.5 0 010 .708L3.207 8l2.647 2.646a.5.5 0 01-.708.708l-3-3a.5.5 0 010-.708l3-3a.5.5 0 01.708 0z" clipRule="evenodd"/>
 																  <path fillRule="evenodd" d="M2.5 8a.5.5 0 01.5-.5h10.5a.5.5 0 010 1H3a.5.5 0 01-.5-.5z" clipRule="evenodd"/>
 																</svg>
-																Inapoi
+																Înapoi
 															</span>
 															{this.state.paymentChecked && this.state.payementAgreeTerms ? (
 															/* Payment proceed available button */
 															<span className='addr_chk_proceed_btn' onClick={()=>this.handleFinishOrderBtn()}>
-																Plaseaza comanda
+																Plasează comandă
 																<svg className="bi bi-arrow-right" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
 																  <path fillRule="evenodd" d="M10.146 4.646a.5.5 0 01.708 0l3 3a.5.5 0 010 .708l-3 3a.5.5 0 01-.708-.708L12.793 8l-2.647-2.646a.5.5 0 010-.708z" clipRule="evenodd"/>
 																  <path fillRule="evenodd" d="M2 8a.5.5 0 01.5-.5H13a.5.5 0 010 1H2.5A.5.5 0 012 8z" clipRule="evenodd"/>
@@ -849,7 +856,7 @@ fillAddressDelivery() {
 															):(
 															/* Payment proceed unavailable button */
 															<span className='addr_chk_proceed_unavailable'>
-																Plaseaza comanda
+																Plasează comandă
 																<svg className="bi bi-arrow-right" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
 																  <path fillRule="evenodd" d="M10.146 4.646a.5.5 0 01.708 0l3 3a.5.5 0 010 .708l-3 3a.5.5 0 01-.708-.708L12.793 8l-2.647-2.646a.5.5 0 010-.708z" clipRule="evenodd"/>
 																  <path fillRule="evenodd" d="M2 8a.5.5 0 01.5-.5H13a.5.5 0 010 1H2.5A.5.5 0 012 8z" clipRule="evenodd"/>
@@ -873,10 +880,10 @@ fillAddressDelivery() {
 															  <path fillRule="evenodd" d="M15.354 2.646a.5.5 0 010 .708l-7 7a.5.5 0 01-.708 0l-3-3a.5.5 0 11.708-.708L8 9.293l6.646-6.647a.5.5 0 01.708 0z" clipRule="evenodd"/>
 															  <path fillRule="evenodd" d="M8 2.5A5.5 5.5 0 1013.5 8a.5.5 0 011 0 6.5 6.5 0 11-3.25-5.63.5.5 0 11-.5.865A5.472 5.472 0 008 2.5z" clipRule="evenodd"/>
 															</svg>
-															<span className='wr_chk_green'>Comanda realizata cu succes.</span>
-															<span className='wr_chk_green mb-5'>Multumim!</span>
+															<span className='wr_chk_green'>Comandă realizată cu succes.</span>
+															<span className='wr_chk_green mb-5'>Mulțumim!</span>
 															<div className='wr_chk_sum'>
-																<span className='wr_chk_sum_label'>ID Tranzactie:</span>
+																<span className='wr_chk_sum_label'>ID Tranzacție:</span>
 																<span className='wr_chk_sum_value'>{this.state.transactionId}</span>
 															</div>
 															<div className='wr_chk_sum'>
@@ -892,27 +899,27 @@ fillAddressDelivery() {
 																<span className='wr_chk_sum_value'>{this.state.addressPhone}</span>
 															</div>
 															<div className='wr_chk_sum'>
-																<span className='wr_chk_sum_label'>Adresa:</span>
+																<span className='wr_chk_sum_label'>Adresă:</span>
 																<span className='wr_chk_sum_value'>{this.state.addressStreet} {this.state.addressCity}</span>
 															</div>
 															<div className='wr_chk_sum'>
-																<span className='wr_chk_sum_label'>Comuna/oras/sat</span>
+																<span className='wr_chk_sum_label'>Comună/oraș/sat</span>
 																<span className='wr_chk_sum_value'>{this.state.addressSubCity}</span>
 															</div>
 															<div className='wr_chk_sum'>
-																<span className='wr_chk_sum_label'>Alte informatii</span>
+																<span className='wr_chk_sum_label'>Alte informații</span>
 																<span className='wr_chk_sum_value'>{this.state.addressAdditionalInfo.length > 0 ? this.state.addressAdditionalInfo : '-'}</span>
 															</div>
 															<div className='wr_chk_sum'>
-																<span className='wr_chk_sum_label'>Metoda livrare</span>
+																<span className='wr_chk_sum_label'>Metodă livrare</span>
 																<span className='wr_chk_sum_value'>{this.state.courierType === 'Curier clasic' ? 'Curier clasic ( 2-5 zile lucratoare )' : 'Curier express ( 1-3 zile lucratoare )'}</span>
 															</div>
 															<div className='wr_chk_sum'>
-																<span className='wr_chk_sum_label'>Metoda plata</span>
+																<span className='wr_chk_sum_label'>Metodă plată</span>
 																<span className='wr_chk_sum_value'>Ramburs</span>
 															</div>
 															<div className='wr_chk_sum wr_chk_sum_total_lab'>
-																<span className='wr_chk_sum_label'>Total plata</span>
+																<span className='wr_chk_sum_label'>Total plată</span>
 																<span className='wr_chk_sum_value'><strong>{this.state.totalCartAmountWithDelivery.toFixed(2)} lei</strong></span>
 															</div>
 														</div>
@@ -920,12 +927,12 @@ fillAddressDelivery() {
 														{/* Sumar info note */}
 														<div className='chk_sumar_info_note'>
 															<span className='chk_sumar_note'>
-																Poti urmarii detaliile comenzilor plasate in sectiunea 'Comenzile mele'.
+																Poți urmării detaliile comenzilor plasate in secțiunea 'Comenzile mele'.
 															</span>
 															<span className='chk_sumar_note'>
-																Daca ati intampinat probleme in procesarea comenzii, va rugam sa ne trimiteti 
+																Dacă ați întampinat probleme în procesarea comenzii, va rugăm să ne trimiteți 
 																un email la <a href='mailto:contact@tshirtdesign.ro'>contact@tdesign.ro </a> 
-																sau sa sunati la numarul de telefon <span className='sumar_infonote_phone'>0727 464 5671 </span>.
+																sau să sunați la numărul de telefon <span className='sumar_infonote_phone'>0727 464 5671 </span>.
 															</span>
 														</div>
 
@@ -936,7 +943,7 @@ fillAddressDelivery() {
 																  <path fillRule="evenodd" d="M5.854 4.646a.5.5 0 010 .708L3.207 8l2.647 2.646a.5.5 0 01-.708.708l-3-3a.5.5 0 010-.708l3-3a.5.5 0 01.708 0z" clipRule="evenodd"/>
 																  <path fillRule="evenodd" d="M2.5 8a.5.5 0 01.5-.5h10.5a.5.5 0 010 1H3a.5.5 0 01-.5-.5z" clipRule="evenodd"/>
 																</svg>
-																Pagina principala
+																Pagina principală
 															</Link>
 														</div>
 													</div>

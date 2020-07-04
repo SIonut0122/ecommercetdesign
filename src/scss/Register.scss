@@ -166,6 +166,12 @@ $redColor: #FF3E3E;
 	width: 50px;
 }
 
+
+@media screen and (max-width: 320px) {
+	.reg_with_google_plus_btn i {
+		display: none;
+	}
+}
 /* Register inputs */
 
 .reg_inputs {
@@ -289,12 +295,12 @@ $redColor: #FF3E3E;
 .reg_newsletter_txt,
 .reg_terms_txt {
 	cursor: pointer;
+ 
 }
-.reg_newsletter_txt span,
-.reg_terms_txt span {
+.reg_newsletter_txt a,
+.reg_terms_txt a {
 	font-weight: bold;
-	text-decoration: underline;
-	cursor: pointer;
+	@include disable-select;
 	&:hover {
 		opacity:0.9;
 	}

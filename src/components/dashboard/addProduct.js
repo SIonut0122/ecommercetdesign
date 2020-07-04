@@ -3,6 +3,7 @@ import React from 'react';
 import '../../css/Dashboard.css';
 import getAllWomenProducts from '../products/getAllWomenProducts';
 import getAllMenProducts from '../products/getAllMenProducts';
+import getAllChildrenProducts from '../products/getAllChildrenProducts';
   import { client, q } from '../../fauna/db';
 import { connect }            from "react-redux";
 import { Link, Redirect               } from 'react-router-dom'
@@ -122,9 +123,30 @@ addCategory(e) {
 		cat = 'children';
 	}
 
-
-	this.setState(prevState => ({ product: {...prevState.product, category: cat } }))
+	// Set subcategory null if category !== 'children'
+	this.setState(prevState => ({ product: {...prevState.product, 
+			category    : cat,
+			subcategory : cat !== 'children' ? null : this.state.product.subcategory  
+		}}))
 }
+
+addSubCategory(e) {
+	let subcategory = e.target.value;
+	let cat = '';
+	if(subcategory === 'Baieti') {
+		cat = 'boys';
+	} else if(subcategory === 'Fete') {
+		cat = 'girls';
+	} else {
+		cat = 'unisex';
+	}
+
+	let product = {...this.state.product};
+		product.subcategory = cat;
+		this.setState({ product })
+
+}
+
 
 addProductNew(e) {
 	let productIsNew;
@@ -366,18 +388,23 @@ addNewProductBtn() {
     if( newProduct.img.length                > 0 && newProduct.name.length  > 0 && newProduct.id.length    > 0 &&
         newProduct.category.length           > 0 && newProduct.price.length > 0 && newProduct.color.length > 0 &&
         newProduct.availableProductNo.length > 0 && newProduct.size.length  > 0) {
-    	// Add addred product date and convert string price to number
-    	newProduct.addedProductDate   = todayDate+' ora: '+hour;
-        newProduct.price 			  = parseFloat(newProduct.price);
-        newProduct.availableProductNo = parseFloat(newProduct.availableProductNo);
-        // If oldPrice was inserted, convert to number
-        if(newProduct.oldPrice.length > 0) {
-        	newProduct.oldPrice = parseFloat(newProduct.oldPrice);
-        } else {
-        	newProduct.oldPrice = null;
-        }
-        // Send new product with new added data, to add the pNo by fetching category data and count it
-    	this.getFullData(newProduct);
+    	
+    	if(newProduct.category === 'children' && newProduct.subcategory === undefined) {
+    		return;
+    	} else {
+	    	// Add addred product date and convert string price to number
+	    	newProduct.addedProductDate   = todayDate+' ora: '+hour;
+	        newProduct.price 			  = parseFloat(newProduct.price);
+	        newProduct.availableProductNo = parseFloat(newProduct.availableProductNo);
+	        // If oldPrice was inserted, convert to number
+	        if(newProduct.oldPrice.length > 0) {
+	        	newProduct.oldPrice = parseFloat(newProduct.oldPrice);
+	        } else {
+	        	newProduct.oldPrice = null;
+	        }
+	        // Send new product with new added data, to add the pNo by fetching category data and count it
+	    	this.getFullData(newProduct);
+    	}
     }
 
 }
@@ -404,7 +431,14 @@ async getFullData(newProduct) {
 		})
 		.catch((err) => { console.log('Error while trying to fetch womenData:'+ err); })
 	} else {
-		console.log('Children here');
+		let getChildren = await getAllChildrenProducts
+		.then((childData) => {
+			// Fetch all men products and set pNo to the newProd
+			let childrenProd = childData;
+				product.pNo  = childData.length + 1;
+				this.sendProductToDb(product);
+		})
+		.catch((err) => { console.log('Error while trying to fetch childrenData:'+ err); })
 	}
 
 }
@@ -527,6 +561,22 @@ sendProductToDb(product) {
 									    <option>Copii</option>
 									</select>
 								</span>
+
+								{/* Add product subcategory*/}
+								{this.state.product.category === 'children' && (
+								<React.Fragment>
+		 						<span className='dash_add_prod_subtitle'>Subcategorie articol*</span>
+		 						<span className='dash_addproduct_input_wrap'>
+									 <select className="custom-select form-control" onChange={(e)=>this.addSubCategory(e)}>
+									    <option></option>
+									    <option>Baieti</option>
+									    <option>Fete</option>
+									    <option>Unisex</option>
+									</select>
+								</span>
+								</React.Fragment>
+								)}
+
 
 								{/* Add product category*/}
 		 						<span className='dash_add_prod_subtitle'>Articol nou in stoc?</span>

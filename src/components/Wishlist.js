@@ -1,10 +1,10 @@
-import React from 'react';
+import   React               from 'react';
+import { Link              } from 'react-router-dom';
+import { setWishList 	   } from '../actions';
+import { connect           } from "react-redux";
+import { addProdToWishlist } from '../fauna/addProdToWishlist';
+import { addProdToCart     } from '../fauna/addProdToCart';
 import '../css/Wishlist.css';
-import { Link               } from 'react-router-dom';
-import { setWishList } from '../actions';
-import { connect }            from "react-redux";
- import { addProdToWishlist } from '../fauna/addProdToWishlist';
- import { addProdToCart } from '../fauna/addProdToCart';
 
 
 const mapStateToProps = state => {
@@ -18,23 +18,18 @@ const mapStateToProps = state => {
 
 
 function mapDispatchToProps(dispatch) {
-  return {
-  		  setWishList : products    => dispatch(setWishList(products))
-        };
+  return { setWishList : products => dispatch(setWishList(products)) };
 }
 
 
 class connectedWishlist extends React.Component {
 
 
-	state = {
-		
-	}
 
- componentDidMount() {
-
+componentDidMount() {
+	// Scoll to top on every mount
+	window.scrollTo(0, 0);
 }
-
 
 removeFromWishlistBtn(e,id) {
 	// Opacity 0.6 for clicked product / disable call to action from product
@@ -93,7 +88,7 @@ googlePlusConnect() {
 	render() {
 		// If user is signed in and userDbInfo props is still null, display 'loading effect'.
 		if(this.props.userIsSignedIn && this.props.userDbInfo === null) {
-			return(<span>Loading...</span>)
+			return(<span>Încărcare...</span>)
 		}
 
 
@@ -105,7 +100,7 @@ googlePlusConnect() {
 		                <div className='nav_path_cont col-11'>
 		                 <span>
 		                 	<Link to={'/'} className='nav_path_home'>
-		                  	Acasa 
+		                  	Acasă 
 		                  	</Link>
 		                  	/ 
 		                  	Wishlist
@@ -142,6 +137,8 @@ googlePlusConnect() {
 												<span className='wishprod_title'>{prod.name}</span>
 											</div>
 											{/* Wishlist product price /old price */}
+											{/* If product is not available, display 'Out of stock' message */}
+											{prod.availableProductNo !== 0 ? (
 											<div className='row justify-content-center'>
 												<span className='wishprod_price'>{prod.price} lei
 													{prod.oldPrice !== undefined && (
@@ -149,9 +146,20 @@ googlePlusConnect() {
 													)}
 												</span>
 											</div>
+											):(
+											<div className='row'>
+												<span className='wishprod_outofstock'>Stoc epuizat</span>
+											</div>
+											)}
 										</div>
 										)}
 
+									</div>
+
+									<div className='row'>
+										<span className='wishlist_info_bottom'>
+											* Articolele adăugate în wishlist vor ramane salvate pentru câteva zile chiar dacă nu ești înregistrat.
+										</span>	
 									</div>
 								</div>
 							</div>
@@ -167,7 +175,7 @@ googlePlusConnect() {
 													<span className='wishlist_subtitle_font'>Cum se folosește wishlist-ul?</span>
 													<span className='wshl_subpoint'>- Adăugarea unui produs la wishlist nu îl rezervă</span>
 													<span className='wshl_subpoint'>- Conținutul wishlist-ului este salvat automat</span>
-													<span className='wshl_subpoint'>- Conținutul wishlist-ului pentru clienții neînregistrați este păstrat pentru o lună de zile</span>
+													<span className='wshl_subpoint'>- Conținutul wishlist-ului pentru clienții neînregistrați este păstrat pentru o saptămână</span>
 													<span className='wshl_subpoint'>- Conținutul wishlist-ului pentru clienții înregistrați este păstrat până când aceștia îl vor șterge manual</span>
 												</div>
 											</div>
@@ -183,24 +191,24 @@ googlePlusConnect() {
 														<span className='wshl_subpoint_sectwo'>Conectează-te pentru a sincroniza conținutul coșului între device-uri</span>
 													</div>
 													<div className='row justify-content-center'>
-														<Link to={'/login'} className='wishlist_login_button'>Conecteaza-te</Link>
+														<Link to={'/login'} className='wishlist_login_button'>Conectează-te</Link>
 													</div>
 													{/* Register button */}
 													<div className='row justify-content-center'>
 														<span className='wishlist_subtitle_font mt-4'>Cont nou</span>
 													</div>
 													<div className='row justify-content-center'>
-														<span className='wshl_subpoint_sectwo'>Inregistreaza-te pentru a beneficia de multe oferte</span>
+														<span className='wshl_subpoint_sectwo'>Înregistrează-te pentru a beneficia de multe oferte</span>
 													</div>
 													<div className='row justify-content-center'>
-														<Link to={'/register'} className='wishlist_login_button wsh_register_btn'>Inregistreaza-te</Link>
+														<Link to={'/register'} className='wishlist_login_button wsh_register_btn'>Înregistrează-te</Link>
 													</div>
 													{/* Google plus button */ }
 													<div className='row justify-content-center'>
 														<span className='wishlist_subtitle_font mt-4'>SAU</span>
 													</div>
 													<div className='row justify-content-center'>
-														<span className='wshl_subpoint_sectwo'>Conecteaza-te rapid cu</span>
+														<span className='wshl_subpoint_sectwo'>Conectează-te rapid cu</span>
 													</div>
 													<div className='row justify-content-center'>
 														<span className='wishlist_google_plus_button' onClick={()=>this.googlePlusConnect()}>

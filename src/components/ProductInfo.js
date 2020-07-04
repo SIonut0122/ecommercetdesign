@@ -1,38 +1,43 @@
-import React from 'react';
+import   React                   from 'react';
 import { Link                  } from 'react-router-dom';
-import { FacebookShareButton  } from 'react-share';
+import { FacebookShareButton   } from 'react-share';
+import { connect               } from "react-redux";
+import { setWishList, setCart,
+		 setWomenProductsDb,
+		 setMenProductsDb,
+		 setChildrenProductsDb } from '../actions';
+import { client, q }             from '../fauna/db';
+import { addProdToCart }         from '../fauna/addProdToCart';
+import { addProdToWishlist }     from '../fauna/addProdToWishlist';
+import   getAllWomenProducts     from './products/getAllWomenProducts';
+import   getAllMenProducts       from './products/getAllMenProducts';
+import   getAllChildrenProducts  from './products/getAllChildrenProducts';
+import   PageNotFound            from './Pagenotfound';
 import '../css/ProductInfo.css';
- 
 
 
-import PageNotFound             from './Pagenotfound';
-import { connect }            from "react-redux";
-import { setWishList, setCart,setWomenProductsDb,setMenProductsDb } from '../actions';
-import { client, q } from '../fauna/db';
-import { addProdToCart } from '../fauna/addProdToCart';
-import { addProdToWishlist } from '../fauna/addProdToWishlist';
 
-import getAllWomenProducts from './products/getAllWomenProducts';
-import getAllMenProducts from './products/getAllMenProducts';
 
 
 const mapStateToProps = state => {
   return {  
-          wishList   : state.wishList,
-          cart       : state.cart,
-          userIsSignedIn : state.userIsSignedIn,
-          userDbInfo: state.userDbInfo,
-          menProductsDataDb: state.menProductsDataDb,
-          womenProductsDataDb: state.womenProductsDataDb
+          wishList               : state.wishList,
+          cart                   : state.cart,
+          userIsSignedIn         : state.userIsSignedIn,
+          userDbInfo             : state.userDbInfo,
+          menProductsDataDb      : state.menProductsDataDb,
+          womenProductsDataDb    : state.womenProductsDataDb,
+          childrenProductsDataDb : state.childrenProductsDataDb 
         };
 };
 
 function mapDispatchToProps(dispatch) {
   return {
-          setWishList : wishlist => dispatch(setWishList(wishlist)),
-          setCart     : cart     => dispatch(setCart(cart)),
-          setMenProductsDb : menProdDb => dispatch(setMenProductsDb(menProdDb)),
-          setWomenProductsDb : womenProdDb => dispatch(setWomenProductsDb(womenProdDb))
+          setWishList           : wishlist       => dispatch(setWishList(wishlist)),
+          setCart               : cart           => dispatch(setCart(cart)),
+          setMenProductsDb      : menProdDb      => dispatch(setMenProductsDb(menProdDb)),
+          setWomenProductsDb    : womenProdDb    => dispatch(setWomenProductsDb(womenProdDb)),
+          setChildrenProductsDb : childrenProdDb => dispatch(setChildrenProductsDb(childrenProdDb)),
         };
 }
 
@@ -43,6 +48,7 @@ class connectedProductInfo extends React.Component {
 
 	constructor(props) {
 		super(props);
+
 		this.state = {
 			productInfo        : null,
 			productInfoFound   : null,
@@ -52,9 +58,7 @@ class connectedProductInfo extends React.Component {
 			selectSizeErrMsg   : false,
 			saveUpPercent      : null,
 			backgroundPosition : '0% 0%',
-			allProductsDataDb: null
-
-
+			allProductsDataDb  : null
 		}
 
 }
@@ -83,8 +87,8 @@ componentDidUpdate(prevProps) {
 async fetchAllProductsData() {
 		let newArray = [], allProductsDataDb;
 
-	// If products data was not fetched before, start fetching all data
-	if(this.props.menProductsDataDb === null || this.props.womenProductsDataDb === null) {
+		// If products data was not fetched before, start fetching all data
+		if(this.props.menProductsDataDb === null || this.props.womenProductsDataDb === null || this.props.childrenProductsDataDb === null) {
 			let getMen = await getAllMenProducts
 			.then((menProdData) => {
 				// Collect inside menProductsData only menProds data
@@ -96,22 +100,23 @@ async fetchAllProductsData() {
 			     	});
 
 			     	this.props.setMenProductsDb({ menProductsDataDb: menProductsData })
-			     	// After fetchind mens data, call to fetch womenproductsdata
+			     	// After men data was fetched, call to fetch womenproductsdata
 			     	this.fetchWomenProductsData(menProductsData);
 
 			     	// if any erros while fetching men data, display error
 			}).catch((error) => console.log('Error while fetching menData: ', error.message))
-			
-			// If all data was fetched before, collect in into one array and send it to display
-	} else if(this.props.menProductsDataDb !== null && this.props.womenProductsDataDb !== null) {
-			allProductsDataDb = [...newArray, ...this.props.menProductsDataDb, ...this.props.womenProductsDataDb];
-			this.displayProductInfo(allProductsDataDb);
-	}
+				
+				// If all data was fetched before, collect in into one array and send it to display
+		} else if(this.props.menProductsDataDb !== null && this.props.womenProductsDataDb !== null && this.props.childrenProductsDataDb !== null) {
+				allProductsDataDb = [...newArray, ...this.props.menProductsDataDb, ...this.props.womenProductsDataDb, ...this.props.childrenProductsDataDb];
+				this.displayProductInfo(allProductsDataDb);
+		}
 
 }
 
 async fetchWomenProductsData(menProductsData) {
-	let newArray = [], allProductsDataDb;
+	let newArray    = [], allProductsDataDb,
+		menProdData = menProductsData;
 
 	// Then, fetch all womens products
  	let getWomen = await getAllWomenProducts
@@ -123,14 +128,37 @@ async fetchWomenProductsData(menProductsData) {
      		womenProductsData.push(el.data) 
      	});
      	this.props.setWomenProductsDb({ womenProductsDataDb: womenProductsData })
-
-     	// After fetchind men and woman data, collect all into one array and send it to display
-     	allProductsDataDb = [...newArray, ...menProductsData,...womenProductsData];
-     	this.displayProductInfo(allProductsDataDb);
+     	// After women data was fetched, call to fetch childrenproductsdata
+     	this.fetchChildrenProductsData(menProdData, womenProductsData);
 
  	}).catch((error) => console.log('Error while fetching womenData: ', error.message))
 }
 
+async fetchChildrenProductsData(menProductsData, womenProductsData) {
+	let newArray             = [], allProductsDataDb,
+		menProdData          = menProductsData,
+		womenProdData        = womenProductsData,       
+ 		childrenProductsData = [];
+		 
+	// Then, fetch all womens products
+ 	let getChildren = await getAllChildrenProducts
+ 	.then((childrenProdData) => {
+     	// Extract only data
+     	childrenProdData.forEach(el => {
+     		el.data.refId = el.ref.value.id; 
+     		childrenProductsData.push(el.data) 
+     		
+     		if(childrenProdData.length === childrenProductsData.length) {
+     		this.props.setChildrenProductsDb({ childrenProductsDataDb: childrenProductsData })
+	     	// After fetchind men and woman data, collect all into one array and send it to display
+	     	allProductsDataDb = [...newArray, ...menProdData, ...womenProdData, ...childrenProductsData];
+	     	this.displayProductInfo(allProductsDataDb);    		
+     		}
+     	});
+ 	}).catch((error) => console.log('Error while fetching childrenData: ', error.message))
+
+
+}
 
 displayProductInfo(allProductsDataDb) {
     let allProductsData = allProductsDataDb;
@@ -184,7 +212,7 @@ handleSelectSize(e) {
 	const productSizes = document.querySelectorAll('.prodinfo_wrsizes_sizevalue');
 		  productSizes.forEach((size) => { size.style.border = '2px solid #C6C6C6';size.style.color = 'inherit'; });
 		  e.target.style.border = '2px solid #007bff';
-		  e.target.style.color = ' #007bff';
+		  e.target.style.color  = ' #007bff';
 		  // Set selected color
 		  this.setState({ selectedSize: e.target.innerHTML })
 }
@@ -340,13 +368,13 @@ setPathName() {
 	if(this.state.productInfoFound) {
 		switch(this.state.productInfo.category) {
 			case "men":
-				return ( <span><Link to={'/products/men'}> Imbracaminte barbati</Link> / {this.state.productInfo.name}</span> );
+				return ( <span><Link to={'/products/men'}> Imbrăcaminte bărbați</Link> / {this.state.productInfo.name}</span> );
 				break;
 			case "women":
-				return ( <span><Link to={'/products/women'}> Imbracaminte femei</Link> / {this.state.productInfo.name}</span> );
+				return ( <span><Link to={'/products/women'}> Imbrăcaminte femei</Link> / {this.state.productInfo.name}</span> );
 				break;
 			case "children":
-				return ( <span><Link to={'/products/children'}> Imbracaminte copii</Link> / {this.state.productInfo.name}</span> );
+				return ( <span><Link to={'/products/children'}> Imbrăcaminte copii</Link> / {this.state.productInfo.name}</span> );
 				break;
 			default:
 				return;
@@ -367,7 +395,7 @@ saveUpTo() {
     const { left, top, width, height } = e.target.getBoundingClientRect(),
           x = (e.pageX - left) / width * 100,
           y = (e.pageY - top) / height * 100;
-    this.setState({ backgroundPosition: `${x}% ${y}%` })
+    this.setState({ imgHovering: true, backgroundPosition: `${x}% ${y}%` })
   }
 
 
@@ -385,9 +413,7 @@ saveUpTo() {
 
 
 		// Set new style for image zoom when productInfo !== null
-		let zoom_style = this.state.productInfo !== null ? {
-			 backgroundImage    : `url(${this.state.productInfo.img})`,
-   			 backgroundPosition : this.state.backgroundPosition} : {};
+		let zoom_style = this.state.productInfo !== null && this.state.imgHovering ? { backgroundImage : `url(${this.state.productInfo.img})`, backgroundPosition : this.state.backgroundPosition } : {};
 
 		return (
 				<div>
@@ -396,7 +422,7 @@ saveUpTo() {
 		                <div className='nav_path_cont col-11'>
 		                 <span>
 		                 	<Link to={'/'} className='nav_path_home'>
-		                  	Acasa 
+		                  	Acasă 
 		                  	</Link>
 		                  	/ 
 		                  	{this.setPathName()}
@@ -421,7 +447,7 @@ saveUpTo() {
 		                			<div className='prodinfo_sec_img prodinfo_section col-12 col-lg-6'>
 
 		                				{/* Product info profile image */}
-		                				<span className='prodinfo_img_prof' onMouseMove={(e) => this.handleImgMouseMove(e)} style={zoom_style}>
+		                				<span className='prodinfo_img_prof' onMouseMove={(e) => this.handleImgMouseMove(e)} onMouseOut={()=>{this.setState({ imgHovering: false })}} style={zoom_style}>
 		                				<img src={this.state.productInfo.img} alt=''/>
 		                				</span>
 		                				<div className='prodinfo_sec_img_gallery'>
@@ -457,7 +483,7 @@ saveUpTo() {
 		                				</div>
 
 		                				{/* Product model */}
-		                				<span className='prodinfo_prod_modelno'>Numar model: {this.state.productInfo.id}</span>
+		                				<span className='prodinfo_prod_modelno'>Număr model: {this.state.productInfo.id}</span>
 
 		                				{/* Product new icon */}
 		                				{this.state.productInfo.new && (
@@ -474,7 +500,7 @@ saveUpTo() {
 
 		                				{/* Save up to */}
 		                				{this.state.productInfo.oldPrice !== undefined && (
-		                				<span className='prodinfo_prod_saveupto'>Economisesti <span>{this.saveUpTo()} %</span></span>
+		                				<span className='prodinfo_prod_saveupto'>Economisești <span>{this.saveUpTo()} %</span></span>
 		                				)}
 
 		                				{/* Color */}
@@ -494,7 +520,7 @@ saveUpTo() {
 
 
 		                				{/* Sizes */}
-		                				<span className='prodinfo_prod_size_title'>Marime</span>
+		                				<span className='prodinfo_prod_size_title'>Mărime</span>
 		                				<div className='prodinfo_prod_wrap_sizes'>
 		                					{this.state.productInfo.size.map((size,ind) =>
 		                					<span key={ind} className='prodinfo_wrsizes_sizevalue' onClick={(e)=>this.handleSelectSize(e)}>{size}</span>
@@ -567,7 +593,7 @@ saveUpTo() {
 		                						<i className='fas fa-question'></i>
 		                						<span className='prodinfo_right_sect_title'>Intrebari despre produs</span>
 		                						<span className='prodinfo_right_sect_subtitle'>
-		                							Pentru orice intrebare despre produs, scrie-ne la <a href='mailto:contact@tdesign.ro'>contact@tdesign.ro</a> si iti vom raspunde in cel mai scurt timp.
+		                							Pentru orice întrebare despre produs, scrie-ne la <a href='mailto:contact@tdesign.ro'>contact@tdesign.ro</a> si iti vom raspunde in cel mai scurt timp.
 		                						</span>
 
 

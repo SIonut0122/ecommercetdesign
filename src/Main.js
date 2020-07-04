@@ -10,6 +10,7 @@ import Homepage                   from './components/Homepage';
 import ProductInfo                   from './components/ProductInfo';
 import menProducts                   from './components/products/menProducts';
 import womenProducts                   from './components/products/womenProducts';
+import childrenProducts                   from './components/products/childrenProducts';
 import newProducts                   from './components/products/newProducts';
 import Account                    from './components/account/Account';
 import MyOrders                 from './components/account/MyOrders';
@@ -53,6 +54,7 @@ class Main extends React.Component {
                       <Route  path='/productinfo/:id'      component={ProductInfo} />
                       <Route  path='/products/men'               component={menProducts} />
                       <Route  path='/products/women'             component={womenProducts} />
+                      <Route  path='/products/children'             component={childrenProducts} />
                       <Route  path='/products/new'               component={newProducts} />
                       <Route  exact path='/login'                component={Login} />
                        <Route exact path='/account'              component={Account} />

@@ -73,7 +73,7 @@ async getAllNewsletterEmails(email) {
 }
 
 async createNewNewsletterEmail(email) {
-	// Get today's date and sent new email to database
+	// Get today's date and send new email to database
 	let today  = new Date(),
 		dd     = String(today.getDate()).padStart(2, '0'),
 		mm     = String(today.getMonth() + 1).padStart(2, '0'), //January is 0!
@@ -119,19 +119,19 @@ handleHeightFooterMenu(e) {
 										<span className='footer_cowrap_links_title'>Magazin <i className='fas fa-plus' onClick={(e)=>this.handleHeightFooterMenu(e)}></i></span>
 										<ul className='footer_corwap_ul'>
 											<li><Link to={'/products/women'}>Femei</Link></li>
-											<li><Link to={'/products/men'}>Barbati</Link></li>
+											<li><Link to={'/products/men'}>Barbați</Link></li>
 											<li><Link to={'/products/children'}>Copii</Link></li>
 											<li><Link to={'/'}>TDesign Home</Link></li>
 										</ul>
 									</div>
 									<div className='footer_cowrap_links_sect'>
-										<span className='footer_cowrap_links_title'>Informatii corporative <i className='fas fa-plus' onClick={(e)=>this.handleHeightFooterMenu(e)}></i></span>
+										<span className='footer_cowrap_links_title'>Informații corporative <i className='fas fa-plus' onClick={(e)=>this.handleHeightFooterMenu(e)}></i></span>
 
 										<ul>
 											<li><Link to={'/'}>Cariere TDesign</Link></li>
 											<li><Link to={'/contact'}>Despre TDesign</Link></li>
-											<li><Link to={'/'}>Relatii cu investitorii</Link></li>
-											<li><Link to={'/'}>Protectia consumatorilor</Link></li>
+											<li><Link to={'/'}>Relații cu investitorii</Link></li>
+											<li><Link to={'/'}>Protecția consumatorilor</Link></li>
 										</ul>
 
 									</div>
@@ -139,7 +139,7 @@ handleHeightFooterMenu(e) {
 										<span className='footer_cowrap_links_title'>Ajutor <i className='fas fa-plus' onClick={(e)=>this.handleHeightFooterMenu(e)}></i></span>
 
 										<ul>
-											<li><Link to={'/'}>Serviciu clienti</Link></li>
+											<li><Link to={'/'}>Serviciul clienți</Link></li>
 											<li><Link to={'/account'}>Contul meu</Link></li>
 											<li><Link to={'/contact'}>Localizare magazin</Link></li>
 											<li><Link to={'/contact'}>Contact</Link></li>
@@ -148,17 +148,17 @@ handleHeightFooterMenu(e) {
 									<div className='footer_cowrap_links_sect footer_cowrap_links_last'>
 										<span className='footer_cowrap_links_title_last'>Devino membru</span>
 										<ul>
-											<li className='footer_cowrlink_regist'><Link to={'/register'}>Creeaza cont</Link></li>
-											<li className='foo_cowrlink_newslettertitle'>Aboneaza-te pentru promotii</li>
+											<li className='footer_cowrlink_regist'><Link to={'/register'}>Creează cont</Link></li>
+											<li className='foo_cowrlink_newslettertitle'>Abonează-te pentru promoții</li>
 											<li className='foo_cowrlink_nwlt_wrap_input'>
 												<input type='text' value={this.state.newsletterInput} placeholder='Email' onChange={(e)=>this.handleNewsletterChange(e)}/>
 											</li>
-											{this.state.newsletterConfirmMsg      && ( <li className='foo_newslett_msg newl_em_confirm'>Multumim pentru abonare!</li> )}
+											{this.state.newsletterConfirmMsg      && ( <li className='foo_newslett_msg newl_em_confirm'>Mulțumim pentru abonare!</li> )}
 											{this.state.newsletterInvalidEmailMsg && ( <li className='foo_newslett_msg newl_em_err'>Email invalid</li> )}
 											{this.state.newsletterAlreadyMsg      && ( <li className='foo_newslett_msg newl_em_err'>Email deja abonat</li> )}
-											{this.state.newsletterErrorCreate     && ( <li className='foo_newslett_msg newl_em_err'>Eroare. Reincercati.</li> )}
+											{this.state.newsletterErrorCreate     && ( <li className='foo_newslett_msg newl_em_err'>Eroare. Reîncercați.</li> )}
 
-											<li className='foo_newslett_btn' onClick={()=>this.handleNewsletterButton()}>Aboneaza-te!</li>
+											<li className='foo_newslett_btn' onClick={()=>this.handleNewsletterButton()}>Abonează-te!</li>
 										</ul>
 									</div>
 								</div>
