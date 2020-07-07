@@ -88,12 +88,12 @@ componentDidMount() {
 /*// SEND DATA TO DB
 	client.query(
   q.Map(
-      childrenProductsData,
+      womenProductsData,
     q.Lambda(
-      'children_products',
+      'women_products',
       q.Create(
-        q.Collection('children'),
-        {  data: q.Var('children_products') },
+        q.Collection('women'),
+        {  data: q.Var('women_products') },
       )
     ),
   )
@@ -558,7 +558,7 @@ handleNavMenuLinkClick() {
 							<div className='head_mob_menu col-12'>
 								<Link to={'/products/men'}       className='h_mob_menu_btn' onClick={()=>this.handleMobileMenu()}>Bărbați</Link>
 								<Link to={'/products/women'}     className='h_mob_menu_btn' onClick={()=>this.handleMobileMenu()}>Femei</Link>
-								<Link to={'/products/childrens'} className='h_mob_menu_btn' onClick={()=>this.handleMobileMenu()}>Copii</Link>
+								<Link to={'/products/children'}  className='h_mob_menu_btn' onClick={()=>this.handleMobileMenu()}>Copii</Link>
 								<Link to={'/products/customize'} className='h_mob_menu_btn' onClick={()=>this.handleMobileMenu()}>Customize</Link>
 								<Link to={'/products/contact'}   className='h_mob_menu_btn' style={{borderBottom:'1px solid transparent'}} onClick={()=>this.handleMobileMenu()}>Contact</Link>
 								{this.props.userIsSignedIn && this.props.userDbInfo !== null && this.props.userDbInfo.data.access_granted === 'mod' && (
