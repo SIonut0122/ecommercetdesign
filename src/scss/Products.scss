@@ -392,14 +392,16 @@ z-index: 2;
   position: relative;
   width: 100%;
   max-width: 400px;
+  max-height: 325px;
   display: flex;
   flex-direction: column;
   max-width: 50%;
   flex-basis: 50%;
   height: auto;
   padding: 8px;
-  margin-top: 5px;
+  margin-top: 3px;
   transition: 0.2s;
+  border:1px solid red;
 
 
 
@@ -547,7 +549,7 @@ z-index: 2;
 
 @media screen and (min-width:870px) and (max-width: 1099.5px) {
   .dp_wrap_prod_wrapper {
-    justify-content: space-around;
+    justify-content: start;
   }
   .d_product_card {
     max-width: 33.3%;

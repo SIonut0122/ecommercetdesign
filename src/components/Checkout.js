@@ -1,17 +1,15 @@
-import React from 'react';
-import '../css/Checkout.css';
-import { Link, Redirect               } from 'react-router-dom';
-import cashOnDeliveryIcon from '../images/cash-on-delivery.png';
-import expressDelivery from '../images/express_delivery.png';
-import { connect }            from "react-redux";
-import { v4 as uuidv4 } from 'uuid';
- import { client, q } from '../fauna/db';
-
+import   React                   from 'react';
+import   cashOnDeliveryIcon      from '../images/cash-on-delivery.png';
+import   expressDelivery         from '../images/express_delivery.png';
+import   getAllWomenProducts     from './products/getAllWomenProducts';
+import   getAllMenProducts       from './products/getAllMenProducts';
+import   getAllChildrenProducts  from './products/getAllChildrenProducts';
+import { Link, Redirect        } from 'react-router-dom';
+import { connect               } from 'react-redux';
+import { v4 as uuidv4          } from 'uuid';
+import { client, q             } from '../fauna/db';
 import { setCart,setUserDbInfo } from '../actions';
-
-import getAllWomenProducts from './products/getAllWomenProducts';
-import getAllMenProducts from './products/getAllMenProducts';
-import getAllChildrenProducts from './products/getAllChildrenProducts';
+import '../css/Checkout.css';
 
 
 const mapStateToProps = state => {
@@ -19,7 +17,8 @@ const mapStateToProps = state => {
           cart            : state.cart,
           totalCartAmount : state.totalCartAmount,
           cartIsLoaded    : state.cartIsLoaded, // Use this to avoid accessing checkout with manually URL. If true, from cart - proceed.
-          userDbInfo      : state.userDbInfo
+          userDbInfo      : state.userDbInfo,
+          userIsSignedIn  : state.userIsSignedIn
         };
 };
 
@@ -43,7 +42,7 @@ class connectedCheckout extends React.Component {
 		courierPrice                : '',
 		cart                        : null,
 		chkAddressLoading           : false,
-
+		// Inputs fields values
 		addressName                 : '',
 		addressNameValid            : false,
 		invalidNameMsg              : false,
@@ -65,7 +64,7 @@ class connectedCheckout extends React.Component {
 		addressAdditionalInfo       : '',
 		addressInputsValid          : false,
 
-		chkPaymentLoading           :false,
+		chkPaymentLoading           : false,
 		paymentChecked              : false,
 		paymentMsgError             : false,
 		payementAgreeTerms          : false,
@@ -91,6 +90,7 @@ componentDidMount() {
 	}
 	this.setState({ cart: this.props.cart })
 }
+
 
 handleDeliverySelect(e,courierType,courierPrice) {
 	this.setState({ deliveryChecked: e.target.checked, courierType: courierType, courierPrice: courierPrice })
@@ -183,9 +183,11 @@ handleAddressStreet(e) {
 
 handleAddressCity(e) {
 	if(e.target.value !== 'Judet *') {
-		 this.setState({addressCity: e.target.value, addressCityValid: true, invalidCityMsg: false})
+		this.setState({addressCity: e.target.value, addressCityValid: true, invalidCityMsg: false})
+		e.target.style.color = '#202020';
 	} else {
 		this.setState({addressCity: '', addressCityValid: false})
+		e.target.style.color = '#7D7D7D';
 	}
 }
 handleAddressSubCity(e) {
@@ -376,8 +378,6 @@ handleFinishOrderBtn() {
 			// Push products to active orders array to be sent to database
 			activeOrders.push(product);
 		})
-		
-		console.log(activeOrders);
 		// Send updated myorders to userDb database
 		client.query(
 		  q.Update(
@@ -396,7 +396,8 @@ handleFinishOrderBtn() {
 			this.props.setCart({ cart: [] })
 		})
 		// If error, refresh window
-		.catch((err) => console.log('NOT SENT: '+err))
+		.catch((err) => console.log('Not sent: '+err))
+		window.location.reload();
 
 	} else {
 		this.setState({ paymentMsgError: true})
@@ -420,7 +421,7 @@ async sendActiveOrdesToDatabase(activeOrders) {
 	    ),
 	  )
 	)
-	.then(() => console.log(''))
+	.then(() => {})
 	.catch((err) => {
 			console.log('Error while trying to set active orders to database: '+err);
 	})
@@ -461,8 +462,8 @@ async modifyProductsAvailableNumber(activeOrders) {
 										    { data: { availableProductNo: el.availableProductNo - activeOrders[c].quantity } },
 										  )
 										)
-										.then((updated) => console.log(''))
-										.catch((err) => console.log('EROARE ACI'))
+										.then(() => {})
+										.catch((err) => console.log(err))
 
 									}
 								})
@@ -517,7 +518,6 @@ fillAddressDelivery() {
 		let selCityOpt = document.querySelectorAll('.chk_city_opt_sel');
 			selCityOpt.forEach((city) => {
 				if(city.value === userDbInfo.city) {
-					console.log('gasit:'+userDbInfo.city);
 					city.setAttribute('selected','selected');
 					city.parentElement.setAttribute('style','border:1px solid #000');
 				}
@@ -540,14 +540,14 @@ fillAddressDelivery() {
 	render() {
 
 		// If user doesn't come from the Cart using 'Go to checkout' button, redirect.
-		if(!this.props.cartIsLoaded && !this.props.cart.length > 0) {
+		if(!this.props.cartIsLoaded && !this.props.cart.length > 0 || this.props.userDbInfo === null) {
 			return (<Redirect to='/cart'/>)
 		}
+
 		if(this.state.cart === null) {
-			return (
-					<span>Încărcare ...</span>
-				)
+			return (<span>Încărcare...</span>)
 		}
+
 		// Style for checkout header steps
 		const stepCheckedIcon        = {color:'#fff',backgroundColor:'#289b38'},
 			  stepUncheckedIcon      = {color:'#000',backgroundColor:'#fff'},

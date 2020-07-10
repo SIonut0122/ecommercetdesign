@@ -1,11 +1,13 @@
-import React from 'react';
+import   React   			   from 'react';
+import { Link                } from 'react-router-dom';
+import { connect             } from "react-redux";
+import { client, q           } from '../fauna/db';
+import { addProdToCart       } from '../fauna/addProdToCart';
+import { addProdToWishlist   } from '../fauna/addProdToWishlist';
+import { setCart,setWishList,
+		 setTotalCartAmount,
+		 setCartIsLoaded     } from '../actions';
 import '../css/Cart.css';
-import { Link               } from 'react-router-dom';
-import { connect }            from "react-redux";
-import { setCart,setWishList,setTotalCartAmount,setCartIsLoaded } from '../actions';
- import { client, q } from '../fauna/db';
-import { addProdToCart } from '../fauna/addProdToCart';
-import { addProdToWishlist } from '../fauna/addProdToWishlist';
 
 
 const mapStateToProps = state => {
@@ -22,8 +24,8 @@ function mapDispatchToProps(dispatch) {
   return {
           setCart            : cart     => dispatch(setCart(cart)),
           setWishList        : wishlist => dispatch(setWishList(wishlist)),
-          setTotalCartAmount : amount => dispatch(setTotalCartAmount(amount)),
-          setCartIsLoaded    : bol => dispatch(setCartIsLoaded(bol))
+          setTotalCartAmount : amount   => dispatch(setTotalCartAmount(amount)),
+          setCartIsLoaded    : bol      => dispatch(setCartIsLoaded(bol))
         };
 }
 
@@ -31,14 +33,12 @@ function mapDispatchToProps(dispatch) {
 
 class connectedCart extends React.Component {
 
-	state ={
-		cart : this.props.cart
-	}
+	state = { cart : this.props.cart }
 
 
 
 componentDidMount() {
-	 if(this.props.userIsSignedIn !== null && this.props.userDbInfo === null) {
+	if(this.props.userIsSignedIn !== null && this.props.userDbInfo === null) {
 		this.populateCart();
 	}
 	// Scoll to top on every mount
@@ -49,7 +49,6 @@ populateCart() {
 
 	// When page loads, if user is connected & user data was fetched from userDbInfo, set userDbInfo
     if(this.props.userIsSignedIn && this.props.userDbInfo !== null) {
-    	console.log('cart: SIGNED cart');
     		  let cartDb = this.props.userDbInfo.cart !== undefined ? this.props.userDbInfo.cart : [];
 	          this.props.setCart({ cart: cartDb })
 	          this.setState({ cart: cartDb })
@@ -63,7 +62,6 @@ populateCart() {
 	          let cartLS = JSON.parse(localStorage.getItem('cart'));
 	          this.props.setCart({ cart: cartLS })
 	          this.setState({ cart: cartLS })
-	          console.log('cart: LOCALSTORAGE cart');
 	          // Check if inside cart are products that were added to the wishlist, and set prop to true
 	          setTimeout(() => { this.checkWishlist(); },1500);
 	    } 
@@ -145,8 +143,6 @@ cartAddToWishlist(e,product) {
 	}
 }
 
-
-
 cartRemoveProduct(e,productId) {
 	let cartproduct = document.querySelectorAll('.cart_product_b');
 	// Map through all the cart DOM products
@@ -178,7 +174,6 @@ cartRemoveProduct(e,productId) {
 		} 
 	})		
 }
-
 
 handleProductQuantityChange(e,cartProductId) {
 	let cart = [...this.props.cart];
@@ -214,8 +209,9 @@ handleProductQuantityChange(e,cartProductId) {
 			// Change localstorage after removing the product
 			localStorage.setItem('cart', JSON.stringify(cart));
 		}
-}
 
+	this.handleBlurInputQuantity(e,cartProductId);
+}
 
 handleBlurInputQuantity(e,cartProductId) {
 	let cart = [...this.props.cart];
@@ -238,7 +234,13 @@ handleBlurInputQuantity(e,cartProductId) {
 			// Change localstorage after removing the product
 			localStorage.setItem('cart', JSON.stringify(cart));
 		}
-	},1000);
+
+	},500);
+}
+
+handleProductQuantityKey(e,cartProductId) {
+	if(e.key === 'Enter') 
+		this.handleBlurInputQuantity(e,cartProductId) 
 }
 
 getTotalCartAmount() {
@@ -249,23 +251,26 @@ getTotalCartAmount() {
 	if(totalCartAmount) {
 		this.props.setTotalCartAmount({ totalCartAmount })
 	}
+
 	// Return recalculated total cart amount
 	return parseFloat(totalCartAmount.toFixed(2));
 }
 
 getTotalCartSaveUpPercent() {
 	let cart = [...this.props.cart],
-		// Collect all discounts amounts to be displayed
+	// Collect all discounts amounts to be displayed
 		totalCartSaveUpAmount = []; 
-	// Map through cart, if oldPrice => calculate oldprice - price and push result to totalCartSaveUpAmount
+	// Map through cart, if oldPrice => calculate (oldprice - price) * product quantity and push result to totalCartSaveUpAmount
 	for(let c in cart) {
 		if(cart[c].oldPrice !== undefined) {
-			let saveUp  = cart[c].oldPrice - cart[c].price;
+			let saveUp  = (cart[c].oldPrice - cart[c].price) * cart[c].quantity;
 			totalCartSaveUpAmount.push(parseFloat(saveUp.toFixed(2)));
+		
 		}
 	}
-	// Return total save up amount
-	return totalCartSaveUpAmount.reduce((a,b) => a+b,0);
+ 
+		// Set total cart save up amount with delay of 1 sec
+		return totalCartSaveUpAmount.reduce((a,b) => a+b,0);
 }
 
 
@@ -281,9 +286,8 @@ getTotalCartSaveUpPercent() {
 					</div>)
  		}
 
- 		// Check if saveUp !== 0
+ 		// Check saveup percent
  		let saveUp = this.getTotalCartSaveUpPercent();
-
 
 		return (
 				<div>
@@ -362,6 +366,7 @@ getTotalCartSaveUpPercent() {
 																			   value     = {cartProduct.quantity}
 																			   onBlur    = {(e) => this.handleBlurInputQuantity(e,cartProduct.id)}
 																			   onChange  = {(e) => this.handleProductQuantityChange(e,cartProduct.id)}
+																			   onKeyPress = {(e) => this.handleProductQuantityKey(e,cartProduct.id)}
 																			   maxLength = '2'/>
 																	</div>
 																	<span className='cprod_inf_refresh'><span onClick={() => { window.location.reload() }}>Actualizează</span></span>
@@ -422,7 +427,7 @@ getTotalCartSaveUpPercent() {
 												<div className='row justify-content-center'>
 													<div className='cart_bottom_usecpn'>
 														<span className='cart_bottom_wrap_usecpn'>
-															<input type='text' placeholder='Cod promotional'/>
+															<input type='text' placeholder='Cod promoțional'/>
 														</span>
 														<div className='row justify-content-center'>
 															<span className='cart_bottom_applycpn'>Aplică</span>
@@ -459,10 +464,16 @@ getTotalCartSaveUpPercent() {
 															{saveUp !== 0 && (
 															<div className='cart_savings cart_sbt'>
 																<span className='cart_label'>Economisești</span>
-																<span className='cart_value'>{this.getTotalCartSaveUpPercent()} lei</span>
+																<span className='cart_value'>{saveUp} lei</span>
 															</div>
 															)}
-															<Link to={'/checkout'} className='cart_totals_proceed_btn' onClick={() => { this.props.setCartIsLoaded({ cartIsLoaded: true }) }}>Mergi la casa</Link>
+
+															{this.props.userDbInfo !== null && this.props.userIsSignedIn ? (
+															<Link to={'/checkout'} className='cart_totals_proceed_btn' onClick={() => { this.props.setCartIsLoaded({ cartIsLoaded: true }) }}>Mergi la casă</Link>
+															):(
+															<Link to={'/login'} className='cart_totals_proceed_btn'>Conectează-te</Link>
+															)}
+
 															<span className='cart_totals_underbtn_note'>* 30 de zile pentru returnare gratuită</span>
 													</div>
 												</div>
