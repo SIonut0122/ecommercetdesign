@@ -1,0 +1,463 @@
+
+
+$grayColorBorder: #C6C6C6;
+$grayColorInside: #808080;
+$blackColor: #202020;
+$logGrayColor: #4B4B4B;
+$redColor: #FF3E3E;
+$greenColor: #289b38;
+$blueLightColor: #007bff;
+
+
+@mixin disable-select {
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-khtml-user-select: none;
+	-ms-user-select: none;
+}
+
+@mixin align-y {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+}
+
+@mixin account-btn {
+	display: inline-block;
+	border: 2px solid $blackColor;
+	border-radius: 3px;
+	width: 300px;
+	min-height: 40px;
+	max-width: 100%;
+	text-align: center;
+	cursor: pointer;
+	font-weight: bold;
+	font-size: 13px;
+	padding-top: 9px;
+	margin: 40px 10px 5px 0;
+	transition: 0.2s ease-out;
+	color: $blackColor;
+	@include disable-select;
+	&:active {
+		box-shadow: 0 0 2px 0 #000;
+	}
+}
+
+.account_container {
+	min-height: 550px;
+	position: relative;
+	display: block;
+	background-color: #fff;
+	padding-bottom: 50px;
+}
+
+
+/* Wishlist title */
+
+.account_title {
+	display: flex;
+	flex-direction: column;
+	border-bottom: 1px solid $grayColorBorder;
+	font-weight: bold;
+	font-size: 30px;
+	min-width: 100%;
+	position: relative;
+	padding-bottom: 10px;
+	margin-top: 20px;
+	.acc_title_signout_btn {
+		font-size: 15px;
+		height: 35px;
+		margin-left: 3px;
+		font-weight: normal;
+		color: $blueLightColor;
+		cursor: pointer;
+		transition: 0.1s;
+		&:hover {
+			opacity: 0.8;
+		}
+	}
+}
+
+@media screen and (max-width: 400px) {
+	.account_title {
+		font-size: 25px;
+		.acc_title_signout_btn {
+			font-size: 14px;
+			margin-top: 4px;
+		}
+	}
+}
+
+
+/* Acc sections */
+
+.account_sec {
+	position: relative;
+	min-height: 500px;
+}
+
+
+/* LOADING ACCOUNT MODAL */
+
+.account_loading_modal {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	left: 0;
+	top: 0;
+	background-color: #fff;
+	z-index: 2;
+}
+
+.acc_load_mod {
+	display: inline-block;
+	position: relative;
+	width: 70px;
+	height: 70px;
+}
+
+.acc_load_mod div {
+	box-sizing: border-box;
+	display: block;
+	position: absolute;
+	width: 54px;
+	height: 54px;
+	margin: 7px;
+	border: 7px solid $grayColorBorder;
+	border-radius: 50%;
+	animation: acc_load_mod 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+	border-color: $grayColorBorder transparent transparent transparent;
+}
+
+.acc_load_mod div:nth-child(1) {
+	animation-delay: -0.45s;
+}
+
+.acc_load_mod div:nth-child(2) {
+	animation-delay: -0.3s;
+}
+
+.acc_load_mod div:nth-child(3) {
+	animation-delay: -0.15s;
+}
+
+@keyframes acc_load_mod {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
+}
+
+
+/* SEC ACCOUNT RIGHT MENU */
+
+.acc_sec_menu_right {
+	min-height: 230px;
+}
+
+.acc_sec_menu {
+	display: flex;
+	flex-direction: column;
+	min-height: 220px;
+	width: 100%;
+	padding: 10px;
+}
+
+.acc_menu_selected_title {
+	font-size: 20px;
+	width: 280px;
+	max-width: 100%;
+	padding-left: 25px;
+	margin-bottom: 30px;
+	align-self: center;
+}
+
+.account_menu_btn {
+	position: relative;
+	display: inline-block;
+	width: 280px;
+	max-width: 100%;
+	padding-top: 4px;
+	font-size: 15px;
+	height: 35px;
+	padding-left: 25px;
+	cursor: pointer;
+	border: 1px solid $grayColorBorder;
+	border-bottom: 0;
+	color: $grayColorInside;
+	transition: 0.1s;
+	align-self: center;
+	&:hover {
+		color: #000;
+		text-decoration: none;
+	}
+	i {
+		position: absolute;
+		color: #blackColor;
+		right: 10px;
+		top: 50%;
+		transform: translateY(-50%);
+		font-size: 20px;
+	}
+}
+
+.acc_menbtn_last {
+	border-bottom: 1px solid $grayColorBorder;
+}
+
+
+/* Account menu info */
+
+.acc_menu_info {
+	min-height: 200px;
+	min-width: 200px;
+	width: 100%;
+	border-top: 1px solid $grayColorBorder;
+	border-bottom: 1px solid $grayColorBorder;
+	position: relative;
+	margin-top: 90px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	.acc_menu_info_title {
+		width: 110px;
+		font-size: 19px;
+		text-align: center;
+		font-weight: bold;
+		background-color: #fff;
+		position: absolute;
+		margin-top: -25px;
+		span {
+			font-size: 14px;
+		}
+	}
+	.fa-mobile-alt {
+		margin-top: 60px;
+		font-size: 40px;
+		transform: rotate(25deg);
+	}
+	.acc_menu_info_schd {
+		font-size: 13px;
+		color: $grayColorInside;
+		margin-top: 5px;
+	}
+	.acc_menu_info_phone {
+		font-weight: bold;
+		font-size: 20px;
+		margin-top: 30px;
+		text-align: center;
+	}
+}
+
+@media screen and (max-width: 991.5px) {
+	.account_menu_btn,
+	.acc_menu_selected_title {
+		width: 100%;
+	}
+	.acc_menu_info {
+		display: none;
+	}
+}
+
+
+/* -------------------- ACCOUNT USER PROFILE ---------------------- */
+
+.acc_prof_wrap_inputs {
+	display: flex;
+	flex-direction: column;
+	width: 700px;
+	max-width: 100%;
+	min-height: 400px;
+	padding: 20px 20px 100px 20px;
+}
+
+.acc_profinputs_title {
+	font-size: 14px;
+	color: $grayColorInside;
+	margin: 8px 0 3px 0;
+}
+
+.acc_profinputs_err_msg {
+	font-size: 12px;
+	margin-top: 3px;
+	color: $redColor;
+}
+
+.acc_profinput_wrap {
+	position: relative;
+	width: 430px;
+	max-width: 100%;
+	height: 40px;
+	border: 2px solid $grayColorBorder;
+	border-radius: 3px;
+	input {
+		position: absolute;
+		left: 0;
+		top: 0;
+		border: 0;
+		width: 100%;
+		height: 100%;
+		border-radius: 3px;
+		padding: 0 10px 0 10px;
+		color: $blackColor;
+		font-size: 14px;
+		&:focus {
+			background-color: #ECECEC;
+			border: 2px solid #ECECEC;
+			border-radius: 0;
+		}
+	}
+	select {
+		border: 0;
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100%;
+		padding-left: 8px;
+		color: $blackColor;
+		font-size: 14px;
+		&:focus {
+			outline: 1px solid $blackColor;
+			box-shadow: none;
+		}
+	}
+}
+
+.acc_select_sex {
+	margin-top: 15px;
+}
+
+.acc_updateprofile_btn {
+	@include account-btn;
+	border: 2px solid $greenColor;
+	background-color: $greenColor;
+	color: #fff;
+	&:hover {
+		background-color: #207E2D;
+	}
+}
+
+.acc_updateprofil_confirm_msg {
+	font-size: 14px;
+	margin-top: 5px;
+	color: $greenColor;
+}
+
+.acc_updateprofil_error_msg {
+	font-size: 14px;
+	margin-top: 5px;
+	color: $redColor;
+}
+
+
+/* -------------------- ACCOUNT USER MY ORDERS ---------------------- */
+
+.acc_myorders_container {
+	min-height: 300px;
+}
+
+.acc_myorders_empty {
+	display: flex;
+	flex-direction: column;
+	margin-top: 50px;
+	padding: 30px;
+	a {
+		font-size: 15px;
+		margin-top: 10px;
+	}
+}
+
+.acc_myorders_empty_title {
+	font-size: 22px;
+}
+
+.acc_myorders_wrap {
+	min-height: 150px;
+	display: flex;
+	flex-direction: column;
+	padding: 10px;
+}
+
+.acc_ordered_prod {
+	max-width: 100%;
+	min-width: 230px;
+	width: 600px;
+	margin-top: 10px;
+	height: auto;
+	align-self: center;
+	display: inline-flex;
+	flex-direction: row;
+	padding: 5px 5px 10px 5px;
+	border-bottom: 1px solid $grayColorBorder;
+	img {
+		width: 100px;
+		min-width: 100px;
+		height: 110px;
+		cursor: pointer;
+	}
+	.acc_ordered_prod_info {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		width: 500px;
+		max-width: 100%;
+		min-height: 100%;
+		overflow: hidden;
+		.acc_ord_prodinfo_title,
+		.acc_ord_prodinfo_delivered,
+		.acc_ord_prodinfo_price {
+			width: 100%;
+			margin: 0 10px 5px 0;
+			padding: 0 5px 0 10px;
+		}
+		.acc_o_pd_status span {
+			color: $greenColor;
+		}
+		.acc_ord_prodinfo_title {
+			font-weight: bold;
+			color: $grayColorInside;
+			cursor: pointer;
+			&:hover {
+				text-decoration: none;
+				opacity: 0.9;
+			}
+		}
+		.acc_ord_prodinfo_delivered {
+			font-size: 13px;
+			span {
+				font-weight: bold;
+			}
+		}
+		.acc_ord_prodinfo_price {
+			text-align: right;
+			font-weight: bold;
+			span {
+				font-weight: normal;
+				font-size: 13.5px;
+			}
+		}
+	}
+}
+
+@media screen and (max-width: 450px) {
+	.acc_ord_prodinfo_title {
+		font-size: 13.5px;
+	}
+}
+
+
+/* -------------------- ACCOUNT USER ADDRESS SHIPPING ---------------------- */
+
+.shipp_update_cont_inputs {
+	padding-top: 40px;
+}
+
+.shipping_sec .check_postal_code {
+	font-size: 14px;
+	width: 120px;
+	margin-top: 5px;
+}
+

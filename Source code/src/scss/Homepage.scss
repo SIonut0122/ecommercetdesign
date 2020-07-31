@@ -1,0 +1,228 @@
+
+
+$grayColorBorder: #C6C6C6;
+$grayColorInside: #808080;
+$blackColor: #202020;
+
+
+@mixin disable-select {
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-khtml-user-select: none;
+	-ms-user-select: none;
+}
+
+.homepage_container {
+	min-height: 400px;
+	border-bottom: 1px solid $grayColorBorder;
+	padding: 0 0 50px 0;
+	margin-top: 100px;
+	width: 1300px;
+	max-width: 1600px;
+	display: flex;
+	flex-direction: column;
+}
+
+.homepage_cont_firstban {
+	position: relative;
+	min-width: 100%;
+	min-height: 350px;
+	background-image: url('../images/homepage/forest-hiker_540x.jpg');
+	background-repeat: no-repeat;
+	background-position: center;
+	h2 {
+		position: absolute;
+		bottom: 38px;
+		left: 30px;
+		font-size: 35px;
+		font-weight: bold;
+		color: $blackColor;
+		background-color: #fff;
+		padding: 5px 10px 5px 10px;
+	}
+	a {
+		position: absolute;
+		bottom: 10px;
+		left: 30px;
+		font-size: 18px;
+		background-color: #fff;
+		padding: 5px 10px 5px 10px;
+		color: $blackColor;
+		@include disable-select;
+	}
+}
+
+.homepage_prom_ban {
+	min-width: 100%;
+	min-height: 35px;
+	line-height: 35px;
+	color: #fff;
+	text-align: center;
+	margin-top: 50px;
+	font-size: 13px;
+	background-color: $blackColor;
+}
+
+@media screen and (min-width: 540px) {
+	.homepage_cont_firstban {
+		background-image: url('../images/homepage/forest-hiker_720x.jpg');
+	}
+}
+
+@media screen and (min-width: 740px) {
+	.homepage_cont_firstban {
+		background-image: url('../images/homepage/forest-hiker_900x.jpg');
+	}
+}
+
+@media screen and (min-width: 980px) {
+	.homepage_cont_firstban {
+		background-image: url('../images/homepage/forest-hiker_1080x.jpg');
+	}
+}
+
+@media screen and (min-width: 1175px) {
+	.homepage_cont_firstban {
+		background-image: url('../images/homepage/forest-hiker_1296x.jpg');
+	}
+}
+
+@media screen and (min-width: 1400px) {
+	.homepage_cont_firstban {
+		background-image: url('../images/homepage/forest-hiker_1512x.jpg');
+	}
+}
+
+.homepage_cont_sec_sect {
+	position: relative;
+	min-width: 100%;
+	min-height: 350px;
+	margin: 80px 0 80px 0;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	padding: 20px;
+}
+
+.hompg_secsect_box {
+	flex-basis: 25%;
+	min-height: 300px;
+	min-width: 300px;
+	border: 1px solid $grayColorBorder;
+	margin: 20px 10px 0 10px;
+	position: relative;
+	overflow: hidden;
+	span {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		left: 0;
+		top: 0;
+		background-repeat: no-repeat;
+		background-size: cover;
+		transition: 0.3s;
+	}
+	&:hover span {
+		transform: scale(1.05);
+	}
+	.hp_ssb_link_btn {
+		position: absolute;
+		width: 150px;
+		height: 35px;
+		line-height: 32px;
+		text-align: center;
+		font-size: 15px;
+		background-color: #fff;
+		color: #000;
+		bottom: 10px;
+		left: 50%;
+		transform: translateX(-50%);
+		overflow: hidden;
+		@include disable-select;
+		&:hover {
+			text-decoration: none;
+		}
+		.hp_ssblink_aft {
+			position: absolute;
+			width: 170px;
+			height: 35px;
+			left: -180px;
+			background-color: $blackColor;
+			transform: skew(-25deg);
+			transition: 0.2s ease-out;
+			color: #fff;
+			overflow: hidden;
+			span {
+				position: absolute;
+				width: 100%;
+				height: 100%;
+				transform: skew(25deg);
+			}
+		}
+		&:hover {
+			color: #fff;
+		}
+		&:hover .hp_ssblink_aft {
+			left: -10px;
+		}
+	}
+}
+
+.hp_secsectbox_men {
+	background-image: url('../images/homepage/hp_men.jpg');
+}
+
+.hp_secsectbox_children {
+	background-image: url('../images/homepage/hp_children.jpg');
+}
+
+.hp_secsectbox_women {
+	background-image: url('../images/homepage/hp_women.jpg');
+}
+
+.homepage_cont_sec_third {
+	position: relative;
+	min-width: 100%;
+	margin-top: 50px;
+	min-height: 320px;
+	background-image: url('../images/homepage/hp_new_collection.jpg');
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+.hp_csec_th_txt {
+	position: absolute;
+	min-width: 300px;
+	min-height: 200px;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	padding: 10px;
+	display: flex;
+	flex-direction: column;
+	align-content: center;
+	align-items: center;
+	h2 {
+		font-size: 35px;
+		font-weight: bold;
+		color: $blackColor;
+		padding: 5px 10px 5px 10px;
+		background-color: #fff;
+	}
+	span {
+		font-size: 35px;
+		font-weight: bold;
+		color: $blackColor;
+		padding: 0 10px 0 10px;
+		background-color: #fff;
+	}
+	a {
+		font-size: 18px;
+		background-color: #fff;
+		padding: 5px 10px 5px 10px;
+		color: $blackColor;
+		margin-top: 30px;
+		@include disable-select;
+	}
+}
+
