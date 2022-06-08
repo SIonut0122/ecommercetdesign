@@ -1,0 +1,426 @@
+
+
+$grayColorBorder: #C6C6C6;
+$grayColorInside: #808080;
+$blackColor: #202020;
+$logGrayColor: #4B4B4B;
+$redColor: #FF3E3E;
+
+
+@mixin disable-select {
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-khtml-user-select: none;
+	-ms-user-select: none;
+}
+
+@mixin align-y {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+}
+
+@media screen and (max-width:767.5px) {
+	.login_cont_wrap,
+	.login_newmember_wrap {
+		width: 100% !important;
+	}
+	.login_newmember_wrap {
+		margin-top: 30px;
+	}
+}
+
+.login_container {
+	display: inline-block;
+	min-height: 600px;
+	position: relative;
+	max-width: 1800px !important;
+}
+
+.login_cont_loading {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	left: 0;
+	top: 0;
+	background-color: #fff;
+	z-index: 2;
+}
+
+
+/* Sections */
+
+.login_sect_box {
+	display: inline-block;
+	min-height: 600px;
+}
+
+.login_cont_wrap,
+.login_newmember_wrap {
+	display: flex;
+	flex-direction: column;
+	position: absolute;
+	min-height: 100%;
+	width: 98%;
+	background-color: #fff;
+	text-align: center;
+	padding: 10px;
+}
+
+.login_newmember_wrap {
+	right: 0;
+}
+
+.log_title_font {
+	font-size: 22px;
+	font-weight: bold;
+	margin-top: 50px;
+}
+
+.log_title_font_two {
+	font-size: 19px;
+	font-weight: bold;
+	margin-top: 10px;
+}
+
+.log_subtitle_font {
+	font-weight: normal;
+	font-size: 17px;
+}
+
+
+/* Login section */
+
+.login_sec_inputs {
+	position: relative;
+	border: 1px solid $grayColorBorder;
+	min-height: 190px;
+	align-items: center;
+	margin-top: 20px;
+	padding: 20px;
+	width: 88%;
+}
+
+.log_input_wrapper {
+	position: relative;
+	width: 80%;
+	max-width: 100%;
+	height: 40px;
+	margin: 10px;
+	border-radius: 4px;
+}
+
+.log_input_wrapper input {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	border: 1px solid $grayColorInside;
+	padding: 0 10px 0 10px;
+	border-radius: 4px;
+	transition: 0.1s;
+	font-size: 14px;
+}
+
+.log_txt_input_pass {
+	padding-right: 40px !important;
+}
+
+.log_input_wrapper label {
+	z-index: 1;
+	position: absolute;
+	left: 10px;
+	pointer-events: none;
+	top: 50%;
+	height: 21px;
+	transform: translateY(-50%);
+	padding: 0 2px 0 2px;
+	background-color: #fff;
+	transition: 0.2s ease-out;
+	border-radius: 3px;
+	font-size: 14px;
+}
+
+.log_showhide_icon {
+	display: block;
+	position: absolute;
+	right: 10px;
+	z-index: 1;
+	@include align-y;
+	cursor: default;
+	font-size: 20px;
+	opacity: 0.7;
+}
+
+.login_err_msg {
+	font-size: 12px;
+	width: 80%;
+	max-width: 100%;
+	text-align: left;
+	margin-bottom: 3px;
+	color: $redColor;
+	margin: 5px;
+}
+
+
+/* Forgot password button */
+
+.login_forgotpass_button {
+	font-size: 13px;
+	text-decoration: underline;
+	cursor: pointer;
+	margin-top: 20px;
+}
+
+.login_forgotpass_button:hover {
+	opacity: 0.9;
+}
+
+@mixin login-p-button {
+	border: 2px solid $blackColor;
+	text-align: center;
+	height: 40px;
+	width: 85%;
+	background-color: $blackColor;
+	color: #fff;
+	cursor: pointer;
+	padding-top: 5px;
+	margin: 30px 0 10px 0;
+	border-radius: 3px;
+	transition: 0.2s;
+	@include disable-select;
+	&:hover {
+		background-color: #fff;
+		color: #000;
+	}
+	&:active {
+		box-shadow: 0 0 2px 0 #000;
+	}
+}
+
+.login_button {
+	@include login-p-button;
+}
+
+.log_title_or {
+	font-weight: bold;
+	font-size: 15px;
+	margin: 10px 0 5px 0;
+}
+
+
+/* Register section */
+
+.log_register_button {
+	@include login-p-button;
+	width: 350px;
+	&:hover {
+		background-color: #fff;
+		color: #000;
+		text-decoration: none;
+	}
+}
+
+.log_regtitle_benefits {
+	width: 50%;
+	text-align: left;
+	font-size: 14px;
+	font-weight: bold;
+	text-transform: uppercase;
+	margin-top: 30px;
+	padding-top: 20px;
+	color: $logGrayColor;
+	border-top: 1px solid $grayColorBorder;
+}
+
+.log_register_benefitsbox {
+	display: flex;
+	flex-direction: column;
+	min-height: 110px;
+	margin-top: 20px;
+	text-align: left;
+}
+
+.log_register_benefitsbox span {
+	margin-top: 20px;
+	font-size: 13.5px;
+}
+
+.log_register_benefitsbox i {
+	margin-right: 10px;
+	color: $logGrayColor;
+	font-size: 23px;
+	opacity: 0.7;
+}
+
+.log_register_benefitsbox {
+	.fa-user {
+		margin-right: 13px;
+	}
+}
+
+
+/* Google plus button */
+
+.log_with_google_plus_button {
+	position: relative;
+	border: 2px solid #db4a39;
+	text-align: center;
+	height: 40px;
+	width: 85%;
+	min-width: 200px;
+	background-color: #db4a39;
+	color: #fff;
+	cursor: pointer;
+	padding-top: 5px;
+	border-radius: 3px;
+	transition: 0.2s;
+	overflow: hidden;
+	@include disable-select;
+	&:hover {
+		background-color: #C14334;
+	}
+	&:active {
+		box-shadow: 0 0 2px 0 #000;
+	}
+}
+
+.log_with_google_plus_button i {
+	padding-top: 6px;
+	position: absolute;
+	left: 0;
+	top: -1px;
+	font-size: 25px;
+	border-right: 1px solid $grayColorBorder;
+	height: 109%;
+	width: 50px;
+}
+
+
+/* Forgot password container */
+
+.forgot_password_container {
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.7);
+	top: 0;
+	left: 0;
+	z-index: 2;
+}
+
+.forgot_pass_box {
+	position: relative;
+	min-height: 300px;
+	background-color: #fff;
+	top: 50%;
+	@include align-y;
+	padding: 20px;
+	box-shadow: 0 0 3px 0 $blackColor;
+}
+
+.close_forgotpass_cont {
+	font-size: 30px;
+	position: absolute;
+	right: 15px;
+	top: 10px;
+	cursor: pointer;
+	transition: 0.1s;
+	&:hover {
+		color: $grayColorInside;
+	}
+	&:active {
+		transform: scale(0.8);
+	}
+}
+
+.forgotpass_title {
+	font-size: 20px;
+	font-weight: bold;
+	border-bottom: 1px solid $grayColorBorder;
+	padding-bottom: 5px;
+	margin-top: 30px;
+}
+
+.forgotpass_subtitle {
+	font-size: 14px;
+	margin-top: 10px;
+}
+
+.forgotpass_input_wrap {
+	width: 80%;
+	height: 40px;
+	margin-top: 10px;
+	display: block;
+	position: relative;
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+.forgotpass_input_wrap input {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	border: 1px solid $grayColorBorder;
+	left: 0;
+	top: 0;
+	padding: 0 10px 0 10px;
+	border-radius: 3px;
+	font-size: 14px;
+}
+
+.send_newpass_btn {
+	width: 80%;
+	height: 35px;
+	margin-top: 20px;
+	display: block;
+	position: relative;
+	left: 50%;
+	transform: translateX(-50%);
+	border-radius: 3px;
+	text-align: center;
+	background-color: $blackColor;
+	color: #fff;
+	padding-top: 6px;
+	font-size: 14px;
+	cursor: pointer;
+	@include disable-select;
+	&:hover {
+		background-color: #2B2B2B;
+	}
+	&:active {
+		box-shadow: 0 0 2px 0 #000;
+	}
+}
+
+.forgotpass_err_msg,
+.forgotpass_snet_msg {
+	width: 80%;
+	position: relative;
+	left: 50%;
+	transform: translateX(-50%);
+	font-size: 13px;
+	color: $redColor;
+	margin-top: 5px;
+}
+
+.forgotpass_snet_msg {
+	color: #2A9D2F;
+}
+
+@media screen and (max-width:370.5px) {
+	.log_input_wrapper,
+	.login_err_msg,
+	.login_button,
+	.log_with_google_plus_button {
+		width: 100%;
+	}
+}
+
+@media screen and (max-width:400px) {
+	.log_register_button {
+		width: 250px;
+	}
+}
+

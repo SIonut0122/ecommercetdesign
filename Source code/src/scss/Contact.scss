@@ -1,0 +1,141 @@
+
+
+$grayColorBorder: #C6C6C6;
+$grayColorInside: #808080;
+$blackColor: #202020;
+
+
+.contact_container {
+	position: relative;
+	min-height: 500px;
+	max-width: 1500px;
+	overflow: hidden;
+}
+
+.contact_sp_banner {
+	position: relative;
+	min-width: 100%;
+	min-height: 280px;
+	background: url('../images/ct_banner.jpg');
+	background-repeat: no-repeat;
+	background-position: 100% 100%;
+	background-size: 100% 100%;
+	h2 {
+		position: absolute;
+		font-size: 55px;
+		color: #fff;
+		left: 30px;
+		bottom: 30px;
+	}
+}
+
+@media screen and (max-width:450.5px) {
+	.contact_sp_banner {
+		background-position: 20% 80%;
+		background-size: 200% 100%;
+	}
+}
+
+@media screen and (min-width:451px) and (max-width: 768px) {
+	.contact_sp_banner {
+		background-position: 100% 50%;
+		background-size: 150% 100%;
+	}
+}
+
+.contact_wrap {
+	min-width: 100%;
+	min-height: 300px;
+	display: flex;
+	flex-direction: column;
+	padding: 20px;
+	ul {
+		padding: 0;
+		li {
+			font-size: 14px;
+		}
+	}
+}
+
+.contact_stitle {
+	min-width: 100%;
+	border-bottom: 1px solid $grayColorBorder;
+	font-weight: bold;
+	padding-bottom: 10px;
+	margin: 20px 0 20px 0;
+	font-size: 20px;
+}
+
+.contact_wrap_storelocator {
+	min-width: 100%;
+	min-height: 300px;
+	display: flex;
+}
+
+.cont_wrapstoreloc_sec {
+	min-height: 200px;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	width: 50%;
+}
+
+.cont_wrapstoreloc_map {
+	position: relative;
+	min-width: 300px;
+	max-width: 600px;
+	min-height: 280px;
+}
+
+@media screen and (max-width:767.5px) {
+	.contact_wrap_storelocator {
+		display: flex;
+		flex-wrap: wrap;
+	}
+	.cont_wrapstoreloc_sec_info {
+		padding: 20px 10px 10px 0 !important;
+	}
+}
+
+.cont_wrapstoreloc_sec_info {
+	padding: 30px;
+	li:nth-child(1) {
+		font-weight: bold;
+		font-size: 23px;
+	}
+}
+
+.contact_social_title {
+	text-align: center;
+	font-size: 25px !important;
+	margin: 100px 0 15px 0;
+}
+
+.contact_wrap_social {
+	min-width: 100%;
+	width: auto;
+	display: inline-flex;
+	justify-content: center;
+	border-bottom: 1px solid $grayColorBorder;
+	padding-bottom: 30px;
+	i {
+		font-size: 27px;
+		margin: 0 20px 0 20px;
+		cursor: pointer;
+		&:hover {
+			opacity: 0.8;
+		}
+	}
+}
+
+@media screen and (max-width:400px) {
+	.contact_wrap_social {
+		display: inline-flex;
+		flex-wrap: wrap;
+		i {
+			font-size: 24px;
+			margin: 10px 15px 0 15px;
+		}
+	}
+}
+
